@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Packets">
+      <UniqueIdentifier>{f1a913c7-3206-4696-b94d-5c09c6c037be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlayerData">
+      <UniqueIdentifier>{9f3941bc-44ed-4b18-8fe7-4313b0ab6e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{71571e87-d723-493b-9c2d-116c693656eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Globals">
+      <UniqueIdentifier>{4ceeefdd-df5c-426e-b975-aad119aa1bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{1f10625f-8d08-4fce-ad5d-aee757809963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{1faadd0f-1359-41b9-a496-95cd4040f8cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Packets.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PacketHandler.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlayerDetails.h">
+      <Filter>PlayerData</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)vec3.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)vec2.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)UUID.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Globals.hpp">
+      <Filter>Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventListener.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skill.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EntityDetails.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{f7cbae21-cb4a-4492-b076-ab8336d8b188}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EntityDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Globals.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PacketHandler.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Packets.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlayerDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skill.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UUID.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vec2.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vec3.hpp" />
+  </ItemGroup>
+</Project>

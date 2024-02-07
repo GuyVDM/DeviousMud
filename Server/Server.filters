@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\precomp">
+      <UniqueIdentifier>{50680d25-28c7-4c00-a771-e26b373d4c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pathfinding">
+      <UniqueIdentifier>{447c6340-8654-424b-ace6-984dcf17e1b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{f8eb0f6e-acdd-42e2-bc8f-89ab67b60863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{bd8980b4-ebc1-4fe1-8688-ccafd55fe186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\events">
+      <UniqueIdentifier>{64018de3-4b5c-43b0-9594-66d68a3237e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\global">
+      <UniqueIdentifier>{fec291d9-093d-4074-a7e7-eb23c959b830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network\connection">
+      <UniqueIdentifier>{3c7fc8b1-e05d-4ba1-9789-635835054242}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\events\query">
+      <UniqueIdentifier>{d4e5ac9d-f063-433e-b84e-49f3797f7d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network\connection\client">
+      <UniqueIdentifier>{f10fe70d-cf89-4965-a19b-ff85599cb189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\config">
+      <UniqueIdentifier>{1c2d823e-5448-4ce5-8105-10cfe57aefc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\events\handler">
+      <UniqueIdentifier>{43e451fe-4b5a-44fa-b262-3b342dc2db9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\players">
+      <UniqueIdentifier>{73670e3a-1b0b-459e-9e4a-87e8b0dadbe6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="precomp.cpp">
+      <Filter>Source Files\precomp</Filter>
+    </ClCompile>
+    <ClCompile Include="AStar.cpp">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkHandler.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionHandler.cpp">
+      <Filter>Source Files\network\connection</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>Source Files\events\handler</Filter>
+    </ClCompile>
+    <ClCompile Include="EventQuery.cpp">
+      <Filter>Source Files\events\query</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientInfo.cpp">
+      <Filter>Source Files\network\connection\client</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files\config</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHandler.cpp">
+      <Filter>Source Files\players</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="precomp.h">
+      <Filter>Source Files\precomp</Filter>
+    </ClInclude>
+    <ClInclude Include="AStar.h">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkHandler.h">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="S_Globals.h">
+      <Filter>Source Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionHandler.h">
+      <Filter>Source Files\network\connection</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Source Files\events\handler</Filter>
+    </ClInclude>
+    <ClInclude Include="EventQuery.h">
+      <Filter>Source Files\events\query</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInfo.h">
+      <Filter>Source Files\network\connection\client</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Source Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHandler.h">
+      <Filter>Source Files\players</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
