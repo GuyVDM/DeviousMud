@@ -83,8 +83,12 @@ const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
     Utilities::ivec3 camPos = g_globals.renderer.lock()->get_camera()->get_position();
 
-    const uint32_t viewportWidth = Client::WINDOW_SIZE_X / 2;
-    const uint32_t viewportHeight = Client::WINDOW_SIZE_Y / 2;
+
+    int32_t viewportWidth, viewportHeight;
+    g_globals.renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
+
+    viewportWidth /= 2;
+    viewportHeight /= 2;
 
     // Calculate sprite's screen coordinates
     int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);

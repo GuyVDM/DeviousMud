@@ -123,7 +123,7 @@ void Client::start_ticking()
 
 	//Renderer creation
 	const std::string texture_path = "assets/sprites/";
-	const Utilities::ivec2 window_size = Utilities::ivec2(WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	const Utilities::ivec2 window_size = Utilities::ivec2(1000, 1000);
 
 	auto renderer = std::shared_ptr<Graphics::Renderer>
 	(

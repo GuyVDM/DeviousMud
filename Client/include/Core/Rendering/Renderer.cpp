@@ -32,6 +32,9 @@ std::shared_ptr<Camera>& Graphics::Renderer::get_camera()
 Graphics::Renderer::Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path) :
 	window(_window), renderer(_renderer), texturepath(_texture_path)
 {
+	//Make the window resizable
+	SDL_SetWindowResizable(_window, SDL_bool(true));
+
 	textures.resize(MAX_TEXTURE_COUNT);
 	std::cout << "[SDL_Renderer] Succesfully created renderer." << std::endl;
 
@@ -105,12 +108,11 @@ void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utiliti
 		size.y
 	};
 
-	printf("Rendering at: %i, %i, with the size of: %i, %i \n", rect.x, rect.y, rect.w, rect.h);
+	//DEVIOUS_LOG("Rendering at: %i, %i, with the size of: %i, %i.", rect.x, rect.y, rect.w, rect.h);
 
 	SDL_RenderCopy(renderer, texture, NULL, &rect);
 
 	SDL_DestroyTexture(texture);
-
 }
 
 /// <summary>
@@ -131,8 +133,11 @@ void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::ivec2& pos
 			size.x, size.y
 		};
 
-		const uint32_t viewportWidth = Client::WINDOW_SIZE_X / 2;
-		const uint32_t viewportHeight = Client::WINDOW_SIZE_Y / 2;
+		int32_t windowSize_w, windowSize_h;
+		get_viewport_size(&windowSize_w, &windowSize_h);
+
+		const uint32_t viewportWidth = windowSize_w / 2;
+		const uint32_t viewportHeight = windowSize_h / 2;
 
 		Utilities::ivec3 camPos = camera->get_position();
 		r.x = (pos.x * GRID_CELL_SIZE_PX) - camPos.x + viewportWidth;
@@ -175,6 +180,11 @@ void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::vec2& pos,
 	};
 
 	plot_frame(s, ipos, isize);
+}
+
+void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
+{
+	SDL_GetWindowSize(window, _w, _h);
 }
 
 /// <summary>

@@ -104,7 +104,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	newClient->packetquery   = new EventQuery();
 
 	client_info[clientId] = newClient;     //Generate Client info
-	client_handles.push_back(clientId); //Register client handle.;
+	client_handles.push_back(clientId); //Register client handle
 
 	//Register our player in the player handler.
 	pHandler->register_player(newClient->playerId);

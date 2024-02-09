@@ -95,7 +95,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				bool reachedDest = g_globals.playerHandler->move_player_towards(playerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
 
 				// Send updated player position back to the clients.
-				// TODO: Multicast the event when available.
+				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that doesn't exist.
 				{
 					ivec2 pos = g_globals.playerHandler->get_player_position(playerId);
 

@@ -55,6 +55,8 @@ constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHos
 		}
 		else
 		{
+			DEVIOUS_ASSERT(peer != nullptr);
+			DEVIOUS_ASSERT(packet != nullptr);
 			fprintf(stderr, "Something went wrong with sending out a packet... \n");
 		}
 

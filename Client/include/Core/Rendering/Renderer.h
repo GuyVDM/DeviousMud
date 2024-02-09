@@ -63,8 +63,6 @@ namespace Graphics
 
 		std::shared_ptr<Camera>& get_camera();
 
-
-
 		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount);
 
 		void start_frame();
@@ -74,6 +72,8 @@ namespace Graphics
 		void plot_frame(const Sprite& s, const Utilities::ivec2& pos, const Utilities::ivec2& size);
 
 		void plot_frame(const Sprite& s, const Utilities::vec2& pos,  const Utilities::vec2& size);
+
+		void get_viewport_size(int32_t* _w, int32_t* _h);
 
 		void end_frame();
 

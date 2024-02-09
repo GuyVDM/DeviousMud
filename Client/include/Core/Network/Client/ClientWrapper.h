@@ -13,11 +13,7 @@ public:
 
 	static Client connect_host(bool& succeeeded, const char* ip, int32_t port);
 
-	static constexpr int WINDOW_SIZE_X = 1000;
-
-	static constexpr int WINDOW_SIZE_Y = 1000;
-
-	static constexpr const char* TITLE = "DeviousMud Replicant";
+	static constexpr const char* TITLE = "DeviousMud";
 
 	void start_ticking();
 

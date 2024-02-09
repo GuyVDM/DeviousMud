@@ -8,6 +8,7 @@ PlayerHandler::PlayerHandler()
 {
 	localPlayerId = 0;
 
+	//TODO: Remove this and add the invocation of the on local player assigned instead.
 	on_local_player_assigned.add_listener
 	(
 		std::bind(&PlayerHandler::register_local_player, this, std::placeholders::_1)
