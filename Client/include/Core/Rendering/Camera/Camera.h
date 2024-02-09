@@ -5,13 +5,14 @@ class Camera
 public:
 	void set_position(const Utilities::ivec3& _pos);
 
-	void set_render_distance(const uint32_t& _rd);
+	const Utilities::ivec3& get_position() const;
 
-	const Utilities::ivec3& get_pos() const;
+	void set_render_distance(const uint32_t& _rd);
 
 	const uint32_t& get_render_distance() const;
 
 public:
+	Camera();
 	Camera(uint32_t _rd);
 	Camera(Utilities::ivec3 _pos, uint32_t _rd);
 	~Camera() = default;

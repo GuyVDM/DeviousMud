@@ -8,10 +8,12 @@
 #include <array>
 #include <map>
 #include <cmath>
-#include <cassert>
 #include <unordered_map>
 #include <xmemory>
 #include <string>
+
+#include "Shared/Utilities/Assert.h"
+#include "Shared/Utilities/Logger.hpp"
 
 //---SDL---//
 #include "../vendor/SDL2/SDL.h"

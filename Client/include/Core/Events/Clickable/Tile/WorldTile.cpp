@@ -14,12 +14,6 @@ WorldTile::~WorldTile()
 
 std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& position)
 {
-	const Utilities::vec2 pos = 
-	{ 
-		position.x * Graphics::Renderer::GRID_CELL_SIZE_PX,
-		position.y * Graphics::Renderer::GRID_CELL_SIZE_PX
-	};
-
 	const Utilities::vec2 scale
 	(
 		Graphics::Renderer::GRID_CELL_SIZE_PX,
@@ -30,43 +24,19 @@ std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& positio
 
 	Graphics::Sprite sprite = renderer->create_sprite_from_surface(Graphics::SpriteType::TILE_DEFAULT);
 	
-	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(scale, pos, sprite);
+	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(scale, position, sprite);
 	return tile;
-}
-
-const Utilities::ivec2& WorldTile::get_tile_position() const
-{
-	Utilities::ivec2 worldPos(0);
-
-	if (pos.x != 0)
-	{
-		worldPos.x = static_cast<int32_t>(pos.x / Graphics::Renderer::GRID_CELL_SIZE_PX);
-	}
-
-	if (pos.y != 0)
-	{
-		worldPos.y = static_cast<int32_t>(pos.y / Graphics::Renderer::GRID_CELL_SIZE_PX);
-	}
-
-	return worldPos;
-}
-
-const Utilities::vec2& WorldTile::get_center_position() const
-{
-	const float half_extends = Graphics::Renderer::GRID_CELL_SIZE_PX * 0.5f;
-
-	return
-	{
-		pos.x + half_extends,
-		pos.y + half_extends
-	};
 }
 
 void WorldTile::on_left_click()
 {
-	const Utilities::ivec2 worldPos = get_tile_position();
+	const Utilities::ivec2 worldPos
+	{
+		static_cast<int32_t>(get_pos().x),
+		static_cast<int32_t>(get_pos().y)
+	};
 
-	std::cout << "Clicked tile: " << worldPos.x << ", " << worldPos.y << std::endl;
+	DEVIOUS_LOG("Clicked tile: " << worldPos.x << ", " << worldPos.y);
 
 	Packets::s_PlayerMovement pos;
 	pos.interpreter = PACKET_MOVE_PLAYER;

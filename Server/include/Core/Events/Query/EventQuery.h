@@ -34,7 +34,7 @@ public:
 	void clear();
 
 	/// <summary>
-	/// Move all the events to another eventquery.
+	/// Move all the events to another eventquery and empty the one that's being moved from.
 	/// </summary>
 	/// <param name=""></param>
 	void move(EventQuery* _target);

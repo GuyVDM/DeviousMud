@@ -22,24 +22,31 @@ class EventListener;
 class PlayerHandler 
 {
 public:
+	EventListener<uint64_t> on_local_player_assigned;
+
 	EventListener<uint64_t> on_player_created;
 
 	EventListener<uint64_t> on_player_removed;
 
 	PlayerDetails& get_details(const uint64_t& _playerhandle);
 
+	PlayerDetails& get_local_player_details();
+
 	void create_player(const uint64_t& _playerhandle, PlayerDetails& _details);
 
 	void remove_player(const uint64_t& _playerhandle);
 
 public:
-	PlayerHandler() = default;
-	~PlayerHandler() = default;
+	PlayerHandler();
+	~PlayerHandler();
 
 private:
 	PlayerHandler(const PlayerHandler&) = delete;
 
 private:
-	std::unordered_map<DEVIOUSMUD::RANDOM::UUID, PlayerDetails> players;
+	void register_local_player(uint64_t _localPlayerId);
 
+private:
+	std::unordered_map<DEVIOUSMUD::RANDOM::UUID, PlayerDetails> players;
+	uint64_t localPlayerId;
 };

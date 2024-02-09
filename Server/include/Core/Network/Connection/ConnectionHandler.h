@@ -55,6 +55,16 @@ namespace Server
 		/// </summary>
 		const uint32_t TICKS_TILL_TIMEOUT = 36000; // 6 hours
 
+		/// <summary>
+		/// The amount of tick cycles needed for the client to be inactive before the server will send out a ping to a client to see if it's still there.
+		/// </summary>
+		const uint32_t PING_TICK_INTERVAL = 10; // 6 seconds.
+
+		/// <summary>
+		/// Amount of ticks of no response before the client gets disconnected serverside.
+		/// </summary>
+		const uint32_t MAX_TICK_INTERVAL_NO_RESPONSE = 40; // 24 seconds
+
 
 	public:
 		ConnectionHandler() = default;

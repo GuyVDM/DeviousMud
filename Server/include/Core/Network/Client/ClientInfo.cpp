@@ -19,7 +19,9 @@ _ClientInfo::~_ClientInfo()
 	delete packetquery;
 }
 
-void _ClientInfo::reset_idle_timer()
+void _ClientInfo::refresh()
 {
+	bAwaitingPing = false;
+	ticksSinceLastResponse = 0;
 	idleticks = 0;
 }

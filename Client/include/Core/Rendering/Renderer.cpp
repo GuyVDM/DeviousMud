@@ -1,7 +1,13 @@
 #include "precomp.h"
-#include "Renderer.h"
+
+#include "Core/Rendering/Renderer.h"
+
+#include "Core/Rendering/Camera/Camera.h"
+
+#include "Core/Network/Client/ClientWrapper.h"
 
 #include <random>
+
 #include <filesystem>
 
 Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, const Utilities::ivec2& _c_scale, const std::string& _texture_path)
@@ -12,11 +18,24 @@ Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, cons
 	return new Graphics::Renderer(w, r, _texture_path);
 }
 
+void Graphics::Renderer::set_camera(std::shared_ptr<Camera>& _camera)
+{
+	DEVIOUS_ASSERT(_camera != nullptr);
+	camera = _camera;
+}
+
+std::shared_ptr<Camera>& Graphics::Renderer::get_camera()
+{
+	return camera;
+}
+
 Graphics::Renderer::Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path) :
 	window(_window), renderer(_renderer), texturepath(_texture_path)
 {
 	textures.resize(MAX_TEXTURE_COUNT);
 	std::cout << "[SDL_Renderer] Succesfully created renderer." << std::endl;
+
+	camera = std::make_shared<Camera>();
 }
 
 Graphics::Renderer::~Renderer()
@@ -74,6 +93,26 @@ void Graphics::Renderer::start_frame()
 	SDL_RenderClear(renderer);
 }
 
+void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utilities::ivec2& size)
+{
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surfaces[SpriteType::TILE_DEBUG]->get_surface());
+
+	SDL_Rect rect
+	{
+		pos.x,
+		pos.y,
+		size.x,
+		size.y
+	};
+
+	printf("Rendering at: %i, %i, with the size of: %i, %i \n", rect.x, rect.y, rect.w, rect.h);
+
+	SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+	SDL_DestroyTexture(texture);
+
+}
+
 /// <summary>
 /// This function plots the given sprite ontop of the canvas, call endframe when you have build the final frame that you want to render.
 /// </summary>
@@ -82,27 +121,37 @@ void Graphics::Renderer::start_frame()
 /// <param name="(scale)"></param>
 void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::ivec2& pos, const Utilities::ivec2& size)
 {
-	const size_t i = texturehandles[s.get_handle()];
-
-	const SDL_Rect r
+	if (camera)
 	{
-		pos.x, pos.y,
-		size.x, size.y
-	};
+		const size_t i = texturehandles[s.get_handle()];
 
-	SDL_Texture* texture = textures[i];
+		SDL_Rect r
+		{
+			pos.x, pos.y,
+			size.x, size.y
+		};
 
-	assert(texture != nullptr);
+		const uint32_t viewportWidth = Client::WINDOW_SIZE_X / 2;
+		const uint32_t viewportHeight = Client::WINDOW_SIZE_Y / 2;
 
-	//Set colors.
-	SDL_SetTextureColorMod(texture, s.color.r, s.color.b, s.color.g);
-	SDL_SetTextureAlphaMod(texture, s.color.a);
+		Utilities::ivec3 camPos = camera->get_position();
+		r.x = (pos.x * GRID_CELL_SIZE_PX) - camPos.x + viewportWidth;
+		r.y = (pos.y * GRID_CELL_SIZE_PX) - camPos.y + viewportHeight;
 
-	SDL_RenderCopy(renderer, texture, NULL, &r);
+		SDL_Texture* texture = textures[i];
 
-	//Reset to default colors after rendering.
-	SDL_SetTextureColorMod(texture, 255, 255, 255);
-	SDL_SetTextureAlphaMod(texture, 255);
+		DEVIOUS_ASSERT(texture != nullptr);
+
+		//Set colors.
+		SDL_SetTextureColorMod(texture, s.color.r, s.color.b, s.color.g);
+		SDL_SetTextureAlphaMod(texture, s.color.a);
+
+		SDL_RenderCopy(renderer, texture, NULL, &r);
+
+		//Reset to default colors after rendering.
+		SDL_SetTextureColorMod(texture, 255, 255, 255);
+		SDL_SetTextureAlphaMod(texture, 255);
+	}
 }
 
 /// <summary>
@@ -147,16 +196,10 @@ void Graphics::Renderer::destroy_sprite(const Sprite& sprite)
 Graphics::Sprite Graphics::Renderer::create_sprite_from_surface(const SpriteType& _spritetype)
 {
 	auto s_iterator = surfaces.find(_spritetype);
-	if(s_iterator == surfaces.end()) 
-	{
-		fprintf(stderr, "Could not find the sprite specified.");
-		return Sprite
-		{
-		};
-	}
+	DEVIOUS_ASSERT(s_iterator != surfaces.end())
 
 	auto t_iterator = std::find(textures.begin(), textures.end(), nullptr);
-	assert(t_iterator != textures.end()); //Assert if the max capacity of textures have been reached.
+	DEVIOUS_ASSERT(t_iterator != textures.end()); //Assert if the max capacity of textures have been reached.
 
 	//Create and store texture made from a SDL_Surface
 	int i = std::distance(textures.begin(), t_iterator);

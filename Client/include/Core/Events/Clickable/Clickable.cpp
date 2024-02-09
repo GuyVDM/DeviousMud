@@ -3,7 +3,11 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
+#include "Core/Network/Client/ClientWrapper.h"
+
 #include "Core/Rendering/Renderer.h"
+
+#include "Core/Rendering/Camera/Camera.h"
 
 #include "Core/Global/C_Globals.h"
 
@@ -77,8 +81,28 @@ bool Clickable::handle_event(const SDL_Event* _event)
 
 const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
-    return (pos.x < _x) && (pos.x + size.x > _x) && //Is within the horizontal boundries of the rect.
-           (pos.y < _y) && (pos.y + size.y > _y);   //Is within the vertical boundries of the rect.
+    Utilities::ivec3 camPos = g_globals.renderer.lock()->get_camera()->get_position();
+
+    const uint32_t viewportWidth = Client::WINDOW_SIZE_X / 2;
+    const uint32_t viewportHeight = Client::WINDOW_SIZE_Y / 2;
+
+    // Calculate sprite's screen coordinates
+    int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);
+    int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
+
+    Utilities::ivec2 transformedPos;
+    transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_SIZE_PX) - camPos.x + viewportWidth;
+    transformedPos.y = (static_cast<int32_t>(pos.y) * Graphics::Renderer::GRID_CELL_SIZE_PX) - camPos.y + viewportHeight;
+    transformedPos.x += halfExtendsWidth;
+    transformedPos.y += halfExtendsHeight;
+
+    // Calculate sprite's bounding box
+    const int32_t left   = transformedPos.x - halfExtendsWidth;
+    const int32_t right  = transformedPos.x + halfExtendsWidth;
+    const int32_t top    = transformedPos.y - halfExtendsHeight;
+    const int32_t bottom = transformedPos.y + halfExtendsHeight;
+
+    return (_x > left && _x < right && _y > top && _y < bottom);
 }
 
 void Clickable::on_left_click()
@@ -111,3 +135,4 @@ const Utilities::vec2& Clickable::get_size() const
 {
     return size;
 }
+

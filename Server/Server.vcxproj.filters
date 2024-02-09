@@ -3,25 +3,97 @@
   <ItemGroup>
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="include\precomp.cpp" />
-    <ClCompile Include="include\Core\Network\NetworkHandler.cpp" />
-    <ClCompile Include="include\Core\Network\Connection\ConnectionHandler.cpp" />
-    <ClCompile Include="include\Core\Network\Client\ClientInfo.cpp" />
-    <ClCompile Include="include\Core\Navigation\AStar.cpp" />
-    <ClCompile Include="include\Core\Game\Player\PlayerHandler.cpp" />
-    <ClCompile Include="include\Core\Events\Query\EventQuery.cpp" />
-    <ClCompile Include="include\Core\Events\Handler\EventHandler.cpp" />
-    <ClCompile Include="include\Core\Config\Config.cpp" />
+    <ClCompile Include="include\Core\Navigation\AStar.cpp">
+      <Filter>Core\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Network\Connection\ConnectionHandler.cpp">
+      <Filter>Core\Network\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Network\NetworkHandler.cpp">
+      <Filter>Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Events\Query\EventQuery.cpp">
+      <Filter>Core\Events\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Events\Handler\EventHandler.cpp">
+      <Filter>Core\Events\Handler</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Game\Player\PlayerHandler.cpp">
+      <Filter>Core\Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Config\Config.cpp">
+      <Filter>Core\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Network\Client\ClientInfo.cpp">
+      <Filter>Core\Network\Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\precomp.h" />
-    <ClInclude Include="include\Core\Network\NetworkHandler.h" />
-    <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h" />
-    <ClInclude Include="include\Core\Network\Client\ClientInfo.h" />
-    <ClInclude Include="include\Core\Navigation\AStar.h" />
-    <ClInclude Include="include\Core\Globals\S_Globals.h" />
-    <ClInclude Include="include\Core\Game\Player\PlayerHandler.h" />
-    <ClInclude Include="include\Core\Events\Query\EventQuery.h" />
-    <ClInclude Include="include\Core\Events\Handler\EventHandler.h" />
-    <ClInclude Include="include\Core\Config\Config.h" />
+    <ClInclude Include="include\Core\Navigation\AStar.h">
+      <Filter>Core\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h">
+      <Filter>Core\Network\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Network\NetworkHandler.h">
+      <Filter>Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Globals\S_Globals.h">
+      <Filter>Core\Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Events\Query\EventQuery.h">
+      <Filter>Core\Events\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Events\Handler\EventHandler.h">
+      <Filter>Core\Events\Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Game\Player\PlayerHandler.h">
+      <Filter>Core\Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Config\Config.h">
+      <Filter>Core\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Network\Client\ClientInfo.h">
+      <Filter>Core\Network\Client</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{89f5cf13-577f-4773-9cdc-185eadd45ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Config">
+      <UniqueIdentifier>{3528a61f-2cd8-43dc-9ba7-94499678b00c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Events">
+      <UniqueIdentifier>{09548fa6-677d-4166-948e-aead9d554440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Game">
+      <UniqueIdentifier>{2d882ba5-1225-476e-bd59-a929935f27dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Globals">
+      <UniqueIdentifier>{f0894fbd-2a8e-4525-9a23-31c38ff26b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Navigation">
+      <UniqueIdentifier>{bb8f2bb9-ca04-4ca3-a68a-44fddd85a604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Network">
+      <UniqueIdentifier>{fdfa7a6b-de1d-4d91-abfa-f8e387a818da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Network\Client">
+      <UniqueIdentifier>{4f947aad-ab24-4a5d-8571-25188c1787a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Network\Connection">
+      <UniqueIdentifier>{ccaf60ab-f0d2-4274-bbb2-106c8999da3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Events\Handler">
+      <UniqueIdentifier>{7f32aeb8-5c2f-4d42-b06b-f55c35a47a0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Events\Query">
+      <UniqueIdentifier>{98c34f3f-1963-4366-8c12-960e4c6a3e7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Game\Player">
+      <UniqueIdentifier>{b1c9fa10-40cc-4ce1-9087-64b89075d829}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -115,10 +115,6 @@ void Client::quit()
 
 void Client::start_ticking()
 {
-	//Camera creation
-	const uint32_t render_distance = 100;
-	auto camera = std::make_shared<Camera>(render_distance);
-
 	//Packethandler creation.
 	auto packetHandler = std::make_shared<ENetPacketHandler>(host, peer);
 
@@ -135,7 +131,6 @@ void Client::start_ticking()
 	);
 
 	//Setup globals
-	g_globals.camera = camera;
 	g_globals.renderer = renderer;
 	g_globals.packetHandler = packetHandler;
 	g_globals.playerHandler = playerHandler;

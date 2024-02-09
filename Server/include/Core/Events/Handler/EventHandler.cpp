@@ -15,29 +15,31 @@
 
 using ivec2 = Utilities::ivec2;
 
-void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo& _clientinfo)
+void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo& _clientInfo)
 {
-	//Reset Inactivity time
-	_clientinfo->reset_idle_timer();
+	EventQuery* eventQuery = _clientInfo->packetquery;
 
 	Packets::s_PacketHeader packetHeader;
-
-	EventQuery* eventQuery = _clientinfo->packetquery;
-
 	PacketHandler::retrieve_packet_data<Packets::s_PacketHeader>(packetHeader, _event);
+
 	switch (packetHeader.interpreter)
 	{
-#pragma region PLAYER_DISCONNECT
+		//TODO: Move these rpcs to a specific handler for immidiate unrelated to game events, e.g logout, ping
+		case e_PacketInterpreter::PACKET_PING:
+		{
+			_clientInfo->bAwaitingPing = false;
+			_clientInfo->ticksSinceLastResponse = 0;
+			DEVIOUS_LOG("Received Ping, player: " << _clientInfo->clientId << " is reachable.");
+		}
+		return;
+
 		case e_PacketInterpreter::PACKET_DISCONNECT_PLAYER:
 		{
 			std::shared_ptr<Server::ConnectionHandler> cHandler = g_globals.connectionHandler;
-			cHandler->disconnect_client(_clientinfo->peer->connectID);
-
+			cHandler->disconnect_client(_clientInfo->clientId);
 		}
-		break;
-#pragma endregion
+		return;
 
-#pragma region PLAYER_POSITION_REQUEST
 		case e_PacketInterpreter::PACKET_MOVE_PLAYER:
 		{
 			Packets::s_PlayerMovement position;
@@ -49,10 +51,9 @@ void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo
 			);
 		}
 		break;
-#pragma endregion
 	}
 
-	std::cout << "Received packet from client handle: " << _clientinfo->peer->connectID << std::endl;
+	DEVIOUS_EVENT("Received packet from client handle: " << _clientInfo->peer->connectID << " Event Id: " << static_cast<unsigned>(packetHeader.interpreter));
 }
 
 void Server::EventHandler::handle_queud_events(ENetHost* _host)
@@ -65,10 +66,13 @@ void Server::EventHandler::handle_queud_events(ENetHost* _host)
 		RefClientInfo clientInfo = connectionHandler->get_client_info(clientHandle);
 
 		//If the client has any tickets queud
-		if (clientInfo->packetquery->contains_packets())
-		{
-			handle_client_specific_packets(clientInfo, _host);
-		}
+		if (!clientInfo->packetquery->contains_packets())
+			continue;
+
+		handle_client_specific_packets(clientInfo, _host);
+
+		//Reset Inactivity time
+		clientInfo->refresh();
 	}
 }
 

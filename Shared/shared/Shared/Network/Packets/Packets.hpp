@@ -7,13 +7,17 @@ enum e_PacketInterpreter : uint8_t
 {
 	PACKET_NONE                 = 0x00,
 
-	PACKET_CREATE_PLAYER        = 0x01,
+	PACKET_PING                 = 0x01,
 
-	PACKET_DISCONNECT_PLAYER    = 0x02,
+	PACKET_CREATE_PLAYER        = 0x02,
 
-	PACKET_MOVE_PLAYER          = 0x03,
+	PACKET_ASSIGN_LOCAL_PLAYER  = 0x03,
 
-	PACKET_TIMEOUT_WARNING      = 0x04
+	PACKET_DISCONNECT_PLAYER    = 0x04,
+
+	PACKET_MOVE_PLAYER          = 0x05,
+
+	PACKET_TIMEOUT_WARNING      = 0x06
 };
 
 namespace Packets

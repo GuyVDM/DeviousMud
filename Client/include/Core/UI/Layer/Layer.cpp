@@ -26,6 +26,7 @@ void Graphics::UI::Layer::update()
 	{
 		const std::shared_ptr<Renderer> r = renderer.lock();
 		const std::shared_ptr<Clickable> clickable = std::static_pointer_cast<Clickable>(eventReceiver);
+
 		r->plot_frame(clickable->get_sprite(), clickable->get_pos(), clickable->get_size());
 	}
 }

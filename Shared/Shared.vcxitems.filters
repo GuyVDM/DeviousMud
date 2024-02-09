@@ -21,35 +21,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Packets.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)PacketHandler.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)PlayerDetails.h">
-      <Filter>PlayerData</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)vec3.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)vec2.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)UUID.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Globals.hpp">
-      <Filter>Globals</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)EventListener.h">
-      <Filter>Events</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Skill.hpp">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)EntityDetails.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\Packets.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\PacketHandler.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Skill.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\PlayerDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\EntityDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\EventListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Globals.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\UUID.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\vec2.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\vec3.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Logger.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Assert.h" />
   </ItemGroup>
 </Project>

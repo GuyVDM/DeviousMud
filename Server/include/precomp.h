@@ -8,3 +8,5 @@
 #include <array>
 #include <string>
 #include <math.h>
+
+#include "Shared/Utilities/Logger.hpp"

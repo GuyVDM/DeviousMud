@@ -9,7 +9,8 @@ namespace Graphics
 	enum class SpriteType : uint16_t
 	{
 		TILE_DEFAULT = 0,
-		PLAYER       = 1
+		PLAYER       = 1,
+		TILE_DEBUG   = 2
 	}; 
 
 	typedef class _Sprite 

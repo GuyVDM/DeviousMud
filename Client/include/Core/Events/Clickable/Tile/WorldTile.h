@@ -15,18 +15,6 @@ public:
 
 	virtual void on_left_click();
 
-	/// <summary>
-	/// Returns the tile position gridspace. 
-	/// </summary>
-	/// <returns></returns>
-	const Utilities::ivec2& get_tile_position() const;
-
-	/// <summary>
-	/// Returns the precise coordinates of the central point of the tile.
-	/// </summary>
-	/// <returns></returns>
-	const Utilities::vec2& get_center_position() const;
-
 
 public:
 	using Clickable::Clickable;

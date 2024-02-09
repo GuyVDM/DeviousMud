@@ -7,16 +7,18 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Graphics 
-{
+
 #pragma region FORWARD_DECLARATIONS
-	typedef struct SDL_Renderer SDL_Renderer;
-	typedef struct SDL_Window   SDL_Window;
-	typedef struct SDL_Surface  SDL_Surface;
-	typedef struct SDL_Texture  SDL_Texture;
-	typedef struct SDL_Color    SDL_Color;
+typedef struct SDL_Renderer SDL_Renderer;
+typedef struct SDL_Window   SDL_Window;
+typedef struct SDL_Surface  SDL_Surface;
+typedef struct SDL_Texture  SDL_Texture;
+typedef struct SDL_Color    SDL_Color;
+class Camera;
 #pragma endregion
 
+namespace Graphics 
+{
 	/// <summary>
 	/// Used for the process of plotting sprites ontop of the canvas.
 	/// </summary>
@@ -57,9 +59,17 @@ namespace Graphics
 
 		static Renderer* create_renderer(const char* _title, const Utilities::ivec2& _c_scale, const std::string& _texture_path);
 
+		void set_camera(std::shared_ptr<Camera>& _camera);
+
+		std::shared_ptr<Camera>& get_camera();
+
+
+
 		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount);
 
 		void start_frame();
+
+		void debug_render(const Utilities::ivec2& pos, const Utilities::ivec2& size);
 
 		void plot_frame(const Sprite& s, const Utilities::ivec2& pos, const Utilities::ivec2& size);
 
@@ -80,6 +90,8 @@ namespace Graphics
 		Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path);
 	
 	private:
+		std::shared_ptr<Camera> camera;
+
 		std::string texturepath;
 
 		std::vector<SDL_Texture*> textures;

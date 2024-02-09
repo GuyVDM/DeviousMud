@@ -31,9 +31,7 @@ void ENetPacketHandler::update()
 		switch (event.type)
 		{
 		case ENET_EVENT_TYPE_CONNECT:
-			printf("A new client connected from %x:%u.\n",
-				event.peer->address.host,
-				event.peer->address.port);
+			DEVIOUS_LOG("Succesfully connected to server.");
 			break;
 
 		case ENET_EVENT_TYPE_RECEIVE:
@@ -72,7 +70,16 @@ void ENetPacketHandler::process_packet()
 			playerPos.x = playerData.x;
 			playerPos.y = playerData.y;
 
-			std::cout << "New position received: " << playerPos.x << ", " << playerPos.y << std::endl;
+			DEVIOUS_LOG("New position received: " << playerPos.x << ", " << playerPos.y);
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_PING:
+		{
+			//Respond to the ping if we can to let the server know we are still here.
+			Packets::s_PacketHeader packet;
+			packet.interpreter = e_PacketInterpreter::PACKET_PING;
+			send_packet<Packets::s_PacketHeader>(&packet, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 		break;
 
@@ -89,19 +96,25 @@ void ENetPacketHandler::process_packet()
 		}
 		break;
 
+		case e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER:
+		{
+			Packets::s_Player player;
+			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &event);
+			playerHandler->on_local_player_assigned.invoke(player.playerId);
+		}
+		break;
+
 		case e_PacketInterpreter::PACKET_DISCONNECT_PLAYER:
 		{
 			Packets::s_Player playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &event);
-
-			//Remove player.
 			playerHandler->remove_player(playerData.playerId);
 		}
 		break;
 
 		case e_PacketInterpreter::PACKET_TIMEOUT_WARNING:
 		{
-			std::cout << "[SERVER WARNING] You have been idle for a while, you will get disconnected soon if you stay idle." << std::endl;
+			DEVIOUS_WARN("You have been idle for a while, you will get disconnected soon if you stay idle.");
 		}
 		break;
 	}

@@ -18,7 +18,6 @@ namespace Graphics
 /// </summary>
 typedef struct _Globals 
 {
-	std::weak_ptr<Camera>             camera;
 	std::weak_ptr<Graphics::Renderer> renderer;
 	std::weak_ptr<ENetPacketHandler>  packetHandler;
 	std::weak_ptr<PlayerHandler>      playerHandler;

@@ -2,12 +2,16 @@
 #include "Core/UI/Layer/Layer.h"
 #include "Core/Rendering/Sprite/Sprite.h"
 
+#pragma region FORWARD_DECLERATIONS
 class PlayerHandler;
+
+class Camera;
 
 namespace Graphics 
 {
 	class Renderer;
 }
+#pragma endregion
 
 namespace Graphics
 {
@@ -29,12 +33,20 @@ namespace Graphics
 
 			void player_destroyed(uint64_t _playerId);
 
+			void player_local_assigned(uint64_t _playerId);
+
 		private:
-			std::vector<uint64_t>         playerHandles;
+			bool bHasLocalPlayer = false;
 
-			std::weak_ptr<PlayerHandler> weakPlayerHandler;
+			std::shared_ptr<Camera>		        playerCamera;
 
-			Graphics::Sprite             playerSprite;
+			std::shared_ptr<PlayerHandler>      playerHandler;
+
+			std::shared_ptr<Graphics::Renderer> renderer;
+
+			std::vector<uint64_t>               playerHandles;
+
+			Graphics::Sprite                    playerSprite;
 
 		};
 	}

@@ -1,12 +1,12 @@
 #include "precomp.h"
+
 #include "Config.h"
 
 #include <cmath>
 
-//Declaration of static variable deltatime.
+
 float DEVIOUSMUD::SERVER::Config::deltaTime;
 
-//Decleration of last time tracked.
 std::chrono::time_point<std::chrono::high_resolution_clock> DEVIOUSMUD::SERVER::Config::last_time;
 
 //Return the last updated deltatime.

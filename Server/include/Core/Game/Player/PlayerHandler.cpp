@@ -22,30 +22,29 @@
 
 #include <cmath>
 
-
 void Server::PlayerHandler::register_player(const PlayerUUID& _playerId)
 {
 	if (players.find(_playerId) != players.end())
 	{
-		std::cout << "A player already exists with this handle. " << _playerId << std::endl;
+		DEVIOUS_WARN("A player already exists with this handle. " << _playerId);
 		return;
 	}
 
 	players[_playerId] = std::make_shared<PlayerDetails>();
 	players[_playerId]->handle = _playerId;
 
-	std::cout << "Player " << _playerId << " has logged in." << std::endl;
+	DEVIOUS_EVENT("Player " << _playerId << " has logged in.");
 }
 
 void Server::PlayerHandler::logout_player(const PlayerUUID& _playerId)
 {
 	if (players.find(_playerId) == players.end())
 	{
-		std::cout << "Couldn't logout player: " << _playerId << std::endl;
+		DEVIOUS_WARN("Couldn't logout player: " << _playerId);
 		return;
 	}
 
-	std::cout << "Player: " << _playerId << " has logged out." << std::endl;
+	DEVIOUS_EVENT("Player: " << _playerId << " has logged out.");
 	players.erase(_playerId);
 
 	//TODO: Add RPC to other clients that they should remove the player too locally.
@@ -55,7 +54,7 @@ void Server::PlayerHandler::add_experience(const PlayerUUID& _playerId, const DE
 {
 	if(players.find(_playerId) == players.end()) 
 	{
-		std::cout << "No player data was found with the handle: " << _playerId << std::endl;
+		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
 		return;
 	}
 
@@ -87,7 +86,7 @@ void Server::PlayerHandler::add_experience(const PlayerUUID& _playerId, const DE
 			skill->levelboosted++;
 		}
 
-		std::cout << "Player " << _playerId << "has leveled up a skill." << std::endl;
+		DEVIOUS_LOG("Player " << _playerId << "has leveled up a skill.");
 	}
 }
 
@@ -95,7 +94,7 @@ bool Server::PlayerHandler::move_player_towards(const PlayerUUID& _playerId, con
 {
 	if (players.find(_playerId) == players.end())
 	{
-		std::cout << "No player data was found with the handle: " << _playerId << std::endl;
+		DEVIOUS_WARN("No player data was found with the handle: " << _playerId);
 		return false;
 	}
 
@@ -131,7 +130,7 @@ void Server::PlayerHandler::set_player_position(const PlayerUUID& _playerId, con
 {
 	if (players.find(_playerId) == players.end())
 	{
-		std::cout << "No player data was found with the handle: " << _playerId << std::endl;
+		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
 		return;
 	}
 
@@ -142,7 +141,7 @@ const Utilities::ivec2& Server::PlayerHandler::get_player_position(const PlayerU
 {
 	if (players.find(_playerId) == players.end())
 	{
-		std::cout << "No player data was found with the handle: " << _playerId << std::endl;
+		DEVIOUS_WARN("No player data was found with the handle: " << _playerId);
 		return { };
 	}
 
