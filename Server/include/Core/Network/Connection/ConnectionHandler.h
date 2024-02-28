@@ -18,8 +18,6 @@ namespace Server
 	class ConnectionHandler
 	{
 	public:
-		void update_idle_timers();
-
 		/// <summary>
 		/// Registers the client to the server.
 		/// </summary>
@@ -65,6 +63,12 @@ namespace Server
 		/// </summary>
 		const uint32_t MAX_TICK_INTERVAL_NO_RESPONSE = 40; // 24 seconds
 
+	private:
+		/// <summary>
+		/// Increments all clients their idle timers.
+		/// </summary>
+		void update_idle_timers();
+
 
 	public:
 		ConnectionHandler() = default;
@@ -76,5 +80,7 @@ namespace Server
 	private:
 		std::vector<enet_uint32>                       client_handles;
 		std::unordered_map<enet_uint32, RefClientInfo> client_info;
+
+		friend class NetworkHandler;
 	};
 }

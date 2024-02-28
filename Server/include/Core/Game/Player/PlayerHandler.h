@@ -16,6 +16,9 @@ typedef unsigned int enet_uint32;
 
 using PlayerUUID = DEVIOUSMUD::RANDOM::UUID;
 
+using namespace DEVIOUSMUD;
+using namespace SKILLS;
+
 namespace Server 
 {
 	class PlayerHandler
@@ -26,7 +29,7 @@ namespace Server
 		void logout_player(const PlayerUUID& _playerId);
 
 		void add_experience(const PlayerUUID& _playerId,
-							const DEVIOUSMUD::SKILLS::e_skills& _skilltype,
+							const e_skills& _skilltype,
 							const uint32_t& _experience);
 
 		bool move_player_towards(const PlayerUUID& _playerId,

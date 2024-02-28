@@ -119,7 +119,7 @@ void SimPosition::update()
 	const float TILE_DURATION = 1.0f / path.size();
 
 	//TODO: replace the 0.6 with the gametick amount in seconds.
-	timeline = CLAMP(timeline + (Config::get_deltaTime() / 0.4f), 0.000001f, 1.0f);
+	timeline = CLAMP(timeline + (Config::get_deltaTime() * 1.6f), 0.000001f, 1.0f);
 
 	//Calculate which tile we're walking towards.
 	uint32_t targetTile = (uint32_t)ceilf(timeline / (1.0f / path.size())) - 1;
