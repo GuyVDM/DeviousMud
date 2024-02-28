@@ -53,7 +53,7 @@ namespace Graphics
 		/// <summary>
 		/// The size of a cell in pixels.
 		/// </summary>
-		constexpr static int32_t GRID_CELL_SIZE_PX = 64;
+		constexpr static int32_t GRID_CELL_PX_SIZE = 64;
 
 	public:
 
@@ -67,17 +67,15 @@ namespace Graphics
 
 		void start_frame();
 
-		void debug_render(const Utilities::ivec2& pos, const Utilities::ivec2& size);
+		void debug_render(const Utilities::ivec2& _pos, const Utilities::ivec2& _size);
 
-		void plot_frame(const Sprite& s, const Utilities::ivec2& pos, const Utilities::ivec2& size);
-
-		void plot_frame(const Sprite& s, const Utilities::vec2& pos,  const Utilities::vec2& size);
+		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize = GRID_CELL_PX_SIZE);
 
 		void get_viewport_size(int32_t* _w, int32_t* _h);
 
 		void end_frame();
 
-		void destroy_sprite(const Sprite& sprite);
+		void destroy_sprite(const Sprite& _sprite);
 
 		Sprite create_sprite_from_surface(const SpriteType& _spritetype);
 

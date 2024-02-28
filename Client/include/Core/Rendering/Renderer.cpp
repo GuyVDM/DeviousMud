@@ -100,7 +100,7 @@ void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utiliti
 {
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surfaces[SpriteType::TILE_DEBUG]->get_surface());
 
-	SDL_Rect rect
+	const SDL_Rect rect
 	{
 		pos.x,
 		pos.y,
@@ -121,35 +121,36 @@ void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utiliti
 /// <param name="(s)">, Sprite that you want to render ontop of the canvas.</param>
 /// <param name="(pos)"></param>
 /// <param name="(scale)"></param>
-void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::ivec2& pos, const Utilities::ivec2& size)
+void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize)
 {
 	if (camera)
 	{
-		const size_t i = texturehandles[s.get_handle()];
-
-		SDL_Rect r
-		{
-			pos.x, pos.y,
-			size.x, size.y
-		};
+		const size_t i = texturehandles[_s.get_handle()];
 
 		int32_t windowSize_w, windowSize_h;
 		get_viewport_size(&windowSize_w, &windowSize_h);
 
-		const uint32_t viewportWidth = windowSize_w / 2;
-		const uint32_t viewportHeight = windowSize_h / 2;
+		const int32_t viewportWidth = windowSize_w / 2;
+		const int32_t viewportHeight = windowSize_h / 2;
 
 		Utilities::ivec3 camPos = camera->get_position();
-		r.x = (pos.x * GRID_CELL_SIZE_PX) - camPos.x + viewportWidth;
-		r.y = (pos.y * GRID_CELL_SIZE_PX) - camPos.y + viewportHeight;
+
+		// Create a new rect with the given size and transformed position.
+		const SDL_Rect r
+		{
+			(int32_t)roundf(_pos.x * (float)_gridsize) - camPos.x + viewportWidth,
+			(int32_t)roundf(_pos.y * (float)_gridsize) - camPos.y + viewportHeight,
+			(int32_t)roundf(_size.x),
+			(int32_t)roundf(_size.y)
+		};
 
 		SDL_Texture* texture = textures[i];
 
 		DEVIOUS_ASSERT(texture != nullptr);
 
 		//Set colors.
-		SDL_SetTextureColorMod(texture, s.color.r, s.color.b, s.color.g);
-		SDL_SetTextureAlphaMod(texture, s.color.a);
+		SDL_SetTextureColorMod(texture, _s.color.r, _s.color.b, _s.color.g);
+		SDL_SetTextureAlphaMod(texture, _s.color.a);
 
 		SDL_RenderCopy(renderer, texture, NULL, &r);
 
@@ -157,29 +158,6 @@ void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::ivec2& pos
 		SDL_SetTextureColorMod(texture, 255, 255, 255);
 		SDL_SetTextureAlphaMod(texture, 255);
 	}
-}
-
-/// <summary>
-/// This function plots the given sprite ontop of the canvas, call endframe when you have build the final frame that you want to render.
-/// </summary>
-/// <param name="(s)">, Sprite that you want to render ontop of the canvas.</param>
-/// <param name="(pos)"></param>
-/// <param name="(scale)"></param>
-void Graphics::Renderer::plot_frame(const Sprite& s, const Utilities::vec2& pos, const Utilities::vec2& size)
-{
-	const Utilities::ivec2 ipos
-	{
-		static_cast<int32_t>(std::floor(pos.x)),
-		static_cast<int32_t>(std::floor(pos.y))
-	};
-
-	const Utilities::ivec2 isize
-	{
-		static_cast<int32_t>(std::floor(size.x)),
-		static_cast<int32_t>(std::floor(size.y))
-	};
-
-	plot_frame(s, ipos, isize);
 }
 
 void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
@@ -212,7 +190,7 @@ Graphics::Sprite Graphics::Renderer::create_sprite_from_surface(const SpriteType
 	DEVIOUS_ASSERT(t_iterator != textures.end()); //Assert if the max capacity of textures have been reached.
 
 	//Create and store texture made from a SDL_Surface
-	int i = std::distance(textures.begin(), t_iterator);
+	const int32_t i = (int32_t)std::distance(textures.begin(), t_iterator);
 
 	//Default sprite color.
 	const SDL_Color color = { 255, 255, 255, 255 };

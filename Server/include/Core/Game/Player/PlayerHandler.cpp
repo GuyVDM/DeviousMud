@@ -8,6 +8,8 @@
 
 #include "Shared/Utilities/UUID.hpp"
 
+#include "Shared/Navigation/AStar.hpp"
+
 #include "Core/Network/NetworkHandler.h"
 
 #include "Core/Network/Connection/ConnectionHandler.h"
@@ -18,9 +20,9 @@
 
 #include "Core/Globals/S_Globals.h"
 
-#include "Core/Navigation/AStar.h"
-
 #include <cmath>
+
+using Path = std::vector<Utilities::ivec2>;
 
 void Server::PlayerHandler::register_player(const PlayerUUID& _playerId)
 {
@@ -31,7 +33,6 @@ void Server::PlayerHandler::register_player(const PlayerUUID& _playerId)
 	}
 
 	players[_playerId] = std::make_shared<PlayerDetails>();
-	players[_playerId]->handle = _playerId;
 
 	DEVIOUS_EVENT("Player " << _playerId << " has logged in.");
 }
@@ -99,7 +100,7 @@ bool Server::PlayerHandler::move_player_towards(const PlayerUUID& _playerId, con
 	}
 
 	const Utilities::ivec2 playerPos = players[_playerId]->position;
-
+	
 	if (playerPos == _target) 
 		return true;
 
@@ -141,8 +142,8 @@ const Utilities::ivec2& Server::PlayerHandler::get_player_position(const PlayerU
 {
 	if (players.find(_playerId) == players.end())
 	{
-		DEVIOUS_WARN("No player data was found with the handle: " << _playerId);
-		return { };
+		throw std::runtime_error("No player data was found with the handle given");
+		return { Utilities::ivec2(0) };
 	}
 
 	return players[_playerId]->position;

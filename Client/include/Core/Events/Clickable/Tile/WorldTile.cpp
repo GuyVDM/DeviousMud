@@ -16,8 +16,8 @@ std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& positio
 {
 	const Utilities::vec2 scale
 	(
-		Graphics::Renderer::GRID_CELL_SIZE_PX,
-		Graphics::Renderer::GRID_CELL_SIZE_PX
+		Graphics::Renderer::GRID_CELL_PX_SIZE,
+		Graphics::Renderer::GRID_CELL_PX_SIZE
 	);
 
 	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();

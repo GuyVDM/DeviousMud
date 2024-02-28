@@ -17,7 +17,7 @@ namespace DEVIOUSMUD
 			/// </summary>
 			/// <param name="_experience"></param>
 			/// <returns></returns>
-			uint8_t get_level(uint32_t _experience) 
+			const uint8_t get_level(uint32_t _experience) 
 			{
 					uint8_t level = 1;
 					uint32_t totalExperience = 0;

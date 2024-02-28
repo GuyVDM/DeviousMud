@@ -66,11 +66,12 @@ void ENetPacketHandler::process_packet()
 			Packets::s_PlayerMovement playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &event);
 
-			Utilities::ivec2& playerPos = playerHandler->get_details(playerData.playerId).position;
-			playerPos.x = playerData.x;
-			playerPos.y = playerData.y;
+			playerHandler->get_data(playerData.playerId).set_position_from_server
+			(
+				Utilities::ivec2(playerData.x, playerData.y)
+			);
 
-			DEVIOUS_LOG("New position received: " << playerPos.x << ", " << playerPos.y);
+			DEVIOUS_LOG("New position received: " << playerData.x << ", " << playerData.y);
 		}
 		break;
 

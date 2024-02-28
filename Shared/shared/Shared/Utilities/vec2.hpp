@@ -193,8 +193,37 @@ namespace Utilities
             return !(*this == a);
         }
 
+        inline static _vec2 lerp(const _vec2& a, const _vec2& b, const float& timeline) 
+        {
+            return _vec2
+            {
+                a.x + (b.x - a.x) * timeline,
+                a.y + (b.y - a.y) * timeline 
+            };
+        }
+
     } vec2;
+
+    inline const vec2 to_vec2(const Utilities::_ivec2& _ivec)
+    {
+        return Utilities::vec2
+        {
+            (float)_ivec.x,
+            (float)_ivec.y
+        };
+    }
+
+    inline static ivec2 to_ivec2(const Utilities::vec2 _vec)
+    {
+        return Utilities::ivec2
+        {
+            (int32_t)roundf(_vec.x),
+            (int32_t)roundf(_vec.y)
+        };
+    }
 }
+
+
 #pragma endregion
 
 /// <summary>

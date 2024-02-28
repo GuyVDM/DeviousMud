@@ -1,5 +1,7 @@
 #pragma once
 #include <fstream>
+#include <vector>
+#include <utility>
 #include "cereal/types/memory.hpp"
 #include "cereal/archives/binary.hpp"
 
@@ -17,7 +19,9 @@ enum e_PacketInterpreter : uint8_t
 
 	PACKET_MOVE_PLAYER          = 0x05,
 
-	PACKET_TIMEOUT_WARNING      = 0x06
+	PACKET_TIMEOUT_WARNING      = 0x06,
+
+	PACKET_PLAYER_PATH          = 0x07
 };
 
 namespace Packets
@@ -63,6 +67,24 @@ namespace Packets
 		{
 			ar(cereal::base_class<s_Player>(this));
 			ar(x, y, isRunning);
+		}
+	};
+
+	struct s_PlayerPath : public s_Player 
+	{
+		int pathSize;
+		std::vector<std::pair<int, int>> path;
+
+		template <class Archive>
+		void serialize(Archive& ar) 
+		{
+			ar(cereal::base_class<s_Player>(this));
+			ar(pathSize);
+			
+			for(int i = 0; i < path.size(); i++) 
+			{
+				ar(path[i].first, path[i].second);
+			}
 		}
 	};
 

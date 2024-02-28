@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="include\precomp.cpp" />
-    <ClCompile Include="include\Core\Navigation\AStar.cpp">
-      <Filter>Core\Navigation</Filter>
-    </ClCompile>
     <ClCompile Include="include\Core\Network\Connection\ConnectionHandler.cpp">
       <Filter>Core\Network\Connection</Filter>
     </ClCompile>
@@ -30,9 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\precomp.h" />
-    <ClInclude Include="include\Core\Navigation\AStar.h">
-      <Filter>Core\Navigation</Filter>
-    </ClInclude>
     <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h">
       <Filter>Core\Network\Connection</Filter>
     </ClInclude>
@@ -73,9 +67,6 @@
     </Filter>
     <Filter Include="Core\Globals">
       <UniqueIdentifier>{f0894fbd-2a8e-4525-9a23-31c38ff26b0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Navigation">
-      <UniqueIdentifier>{bb8f2bb9-ca04-4ca3-a68a-44fddd85a604}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Network">
       <UniqueIdentifier>{fdfa7a6b-de1d-4d91-abfa-f8e387a818da}</UniqueIdentifier>

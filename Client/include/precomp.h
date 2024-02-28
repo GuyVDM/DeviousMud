@@ -14,6 +14,7 @@
 
 #include "Shared/Utilities/Assert.h"
 #include "Shared/Utilities/Logger.hpp"
+#include "Shared/Utilities/Math.hpp"
 
 //---SDL---//
 #include "../vendor/SDL2/SDL.h"

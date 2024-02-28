@@ -50,27 +50,34 @@ void Graphics::UI::PlayerLayer::init()
 
 void Graphics::UI::PlayerLayer::update()
 {
+	//Render all player sprites.
+	for (const uint64_t playerHandle : playerHandles)
+	{
+		const Utilities::vec2 size{ 32.0f, 32.0f };
+
+		SimPosition& simPos = playerHandler->get_data(playerHandle).simPos;
+
+		//Update the simulated player position.
+		if(simPos.is_dirty()) 
+		{
+			simPos.update();
+		}
+
+		renderer->plot_frame(playerSprite, simPos.get_position(), size);
+	}
+
 	if(bHasLocalPlayer) 
 	{
 		//Set camera position to be the player
-		PlayerDetails& localPlayer = playerHandler->get_local_player_details();
+		SimPosition& localPlayer = playerHandler->get_local_player_data().simPos;
 
 		const Utilities::ivec2 transformedPos
 		{
-			localPlayer.position.x * Renderer::GRID_CELL_SIZE_PX,
-			localPlayer.position.y * Renderer::GRID_CELL_SIZE_PX
+			static_cast<int32_t>(localPlayer.get_position().x * (float)Renderer::GRID_CELL_PX_SIZE),
+			static_cast<int32_t>(localPlayer.get_position().y * (float)Renderer::GRID_CELL_PX_SIZE)
 		};
 
 		playerCamera->set_position(Utilities::ivec3{ transformedPos.x, transformedPos.y, playerCamera->get_position().z });
-	}
-
-	//Render all player sprites.
-	for(const uint64_t playerHandle : playerHandles) 
-	{
-		const PlayerDetails details = playerHandler->get_details(playerHandle);
-		const Utilities::ivec2 size{ 32, 32 };
-
-		renderer->plot_frame(playerSprite, details.position, size);
 	}
 }
 

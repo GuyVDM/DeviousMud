@@ -19,6 +19,54 @@ template <typename Parameter>
 class EventListener;
 #pragma endregion
 
+class SimPosition 
+{
+public:
+
+	void update();
+
+	const bool& is_dirty() const;
+
+	const Utilities::vec2& get_position() const;
+
+public:
+	explicit SimPosition() = default;
+	~SimPosition() = default;
+
+	explicit SimPosition(const Utilities::_vec2& _startPos);
+
+private:
+	void set_target(const Utilities::vec2& _details);
+
+	Utilities::vec2 startPos;
+	Utilities::vec2 currentPos;
+	Utilities::vec2 endPos;
+
+	std::vector<Utilities::ivec2> path;
+
+	bool  bIsDirty = false;
+	float timeline = 0.0f;
+
+	friend struct _PlayerData;
+};
+
+/// <summary>
+/// Holds data to simulating the player movement, alongside entity stats.
+/// </summary>
+typedef struct _PlayerData 
+{ 
+	PlayerDetails details;
+	SimPosition   simPos;
+
+	void set_position_from_server(const Utilities::ivec2 _position);
+
+	const Utilities::vec2& get_position() const;
+
+}   PlayerData;
+
+/// <summary>
+/// Tracks everything that's related to the players that are registered.
+/// </summary>
 class PlayerHandler 
 {
 public:
@@ -28,9 +76,9 @@ public:
 
 	EventListener<uint64_t> on_player_removed;
 
-	PlayerDetails& get_details(const uint64_t& _playerhandle);
+	PlayerData& get_data(const uint64_t& _playerhandle);
 
-	PlayerDetails& get_local_player_details();
+	PlayerData& get_local_player_data();
 
 	void create_player(const uint64_t& _playerhandle, PlayerDetails& _details);
 
@@ -47,6 +95,6 @@ private:
 	void register_local_player(uint64_t _localPlayerId);
 
 private:
-	std::unordered_map<DEVIOUSMUD::RANDOM::UUID, PlayerDetails> players;
+	std::unordered_map<DEVIOUSMUD::RANDOM::UUID, PlayerData> players;
 	uint64_t localPlayerId;
 };

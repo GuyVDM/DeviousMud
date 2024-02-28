@@ -7,6 +7,8 @@
 
 #include <type_traits>
 
+#include "../shared/Shared/Utilities/Assert.h"
+
 class PacketHandler
 {
 #define PACKET_SENT 0;

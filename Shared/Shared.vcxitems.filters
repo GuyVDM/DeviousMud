@@ -33,5 +33,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\vec3.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Logger.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Assert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Math.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Navigation\AStar.hpp" />
   </ItemGroup>
 </Project>
