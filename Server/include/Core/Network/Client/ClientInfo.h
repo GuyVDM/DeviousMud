@@ -25,7 +25,7 @@ typedef struct _ClientInfo
 
 	bool                      bAwaitingPing;           //Whether the server is waiting for the client to respond to a sent out ping to see if there's still a valid connection.
 	uint32_t                  ticksSinceLastResponse;  //How many ticks have elapsed since the server has last received a ping from the client.
-	uint32_t	              idleticks;               //Time since the player has last done a interaction.
+	uint32_t	              idleticks;               //Time since the player has last done any interaction.
 
 	/// <summary>
 	/// When called, will reset any bound timers related to its activity.
