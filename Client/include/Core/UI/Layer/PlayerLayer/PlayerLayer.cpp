@@ -58,7 +58,7 @@ void Graphics::UI::PlayerLayer::update()
 		SimPosition& simPos = playerHandler->get_data(playerHandle).simPos;
 
 		//Update the simulated player position.
-		if(simPos.is_dirty()) 
+		if (simPos.is_dirty())
 		{
 			simPos.update();
 		}
@@ -66,18 +66,18 @@ void Graphics::UI::PlayerLayer::update()
 		renderer->plot_frame(playerSprite, simPos.get_position(), size);
 	}
 
-	if(bHasLocalPlayer) 
+	if (bHasLocalPlayer)
 	{
 		//Set camera position to be the player
 		SimPosition& localPlayer = playerHandler->get_local_player_data().simPos;
 
-		const Utilities::ivec2 transformedPos
+		const Utilities::vec2 transformedPos
 		{
-			static_cast<int32_t>(localPlayer.get_position().x * (float)Renderer::GRID_CELL_PX_SIZE),
-			static_cast<int32_t>(localPlayer.get_position().y * (float)Renderer::GRID_CELL_PX_SIZE)
+			localPlayer.get_position().x * (float)Renderer::GRID_CELL_PX_SIZE,
+			localPlayer.get_position().y * (float)Renderer::GRID_CELL_PX_SIZE
 		};
 
-		playerCamera->set_position(Utilities::ivec3{ transformedPos.x, transformedPos.y, playerCamera->get_position().z });
+		playerCamera->set_position(transformedPos);
 	}
 }
 

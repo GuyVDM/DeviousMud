@@ -19,6 +19,9 @@ template <typename Parameter>
 class EventListener;
 #pragma endregion
 
+/// <summary>
+/// Simulates the path that is taken by an actor based on server input.
+/// </summary>
 class SimPosition 
 {
 public:
@@ -27,17 +30,18 @@ public:
 
 	const bool& is_dirty() const;
 
-	const Utilities::vec2& get_position() const;
+	const Utilities::vec2 get_position() const;
 
 public:
-	explicit SimPosition() = default;
 	~SimPosition() = default;
 
+	explicit SimPosition();
 	explicit SimPosition(const Utilities::_vec2& _startPos);
 
 private:
 	void set_target(const Utilities::vec2& _details);
 
+private:
 	Utilities::vec2 startPos;
 	Utilities::vec2 currentPos;
 	Utilities::vec2 endPos;
@@ -45,7 +49,7 @@ private:
 	std::vector<Utilities::ivec2> path;
 
 	bool  bIsDirty = false;
-	float timeline = 0.0f;
+	float elapsedTime = 0.0f;
 
 	friend struct _PlayerData;
 };
@@ -59,8 +63,6 @@ typedef struct _PlayerData
 	SimPosition   simPos;
 
 	void set_position_from_server(const Utilities::ivec2 _position);
-
-	const Utilities::vec2& get_position() const;
 
 }   PlayerData;
 

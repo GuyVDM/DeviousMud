@@ -134,22 +134,28 @@ namespace Utilities
             y = v;
         }
 
-        inline _vec2 operator=(const _vec2& a)
+        inline _vec2 operator=(const _vec2& _a)
         {
-            x = a.x;
-            y = a.y;
+            x = _a.x;
+            y = _a.y;
             return *this;
         }
 
-        inline _vec2 operator+(const _vec2& a)
+        friend inline _vec2 operator+(const _vec2& _lhs, const _vec2& _rhs) 
         {
-            x += a.x;
-            y += a.y;
+            return _vec2(_lhs.x + _rhs.x, _lhs.y + _rhs.y);
+        }
+
+        inline _vec2 operator+=(const _vec2& _rhs)
+        {
+            x += _rhs.x;
+            y += _rhs.y;
             return *this;
         }
 
         inline _vec2 operator-(const _vec2& a)
         {
+
             x -= a.x;
             y -= a.y;
             return *this;

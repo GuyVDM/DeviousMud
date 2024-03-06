@@ -14,7 +14,7 @@ typedef unsigned int enet_uint32;
 
 /// <summary>
 /// Struct containing all info regarding the client.
-/// NOTE: DON'T USE ANY PEER RELATED VARIABLES, THEY'RE ALL VOLATILE.
+/// Warning: DON'T USE ANY PEER RELATED VARIABLES, THEY'RE ALL VOLATILE.
 /// </summary>
 typedef struct _ClientInfo 
 {

@@ -4,6 +4,8 @@
 
 #include "Core/Player/PlayerHandler.h"
 
+#include "Core/Rendering/Renderer.h"
+
 #include "Core/Application/Config/Config.h"
 
 #include "Core/Global/C_Globals.h"
@@ -90,15 +92,13 @@ void _PlayerData::set_position_from_server(const Utilities::ivec2 _position)
 	simPos.set_target(Utilities::to_vec2(_position));
 }
 
-const Utilities::vec2& _PlayerData::get_position() const
-{
-	return simPos.get_position();
-}
-
 void SimPosition::set_target(const Utilities::vec2& _target)
 {
+	if (Utilities::to_ivec2(_target) == Utilities::to_ivec2(endPos))
+		return;
+
 	bIsDirty = true;
-	timeline = 0.0f;
+	elapsedTime = 0.0f;
 
 	// Update positions
 	{
@@ -116,10 +116,11 @@ void SimPosition::set_target(const Utilities::vec2& _target)
 void SimPosition::update()
 {
 	const float MAX_TIMELINE = 1.0f;
-	const float TILE_DURATION = 1.0f / path.size();
+	const float DURATION_TO_TILE = 1.0f / path.size();
 
-	//TODO: replace the 0.6 with the gametick amount in seconds.
-	timeline = CLAMP(timeline + (Config::get_deltaTime() * 1.6f), 0.000001f, 1.0f);
+	elapsedTime += DEVIOUSMUD::CLIENT::Config::get_deltaTime();
+
+	float timeline = CLAMP(elapsedTime, 0.0f, 1.0f);
 
 	//Calculate which tile we're walking towards.
 	uint32_t targetTile = (uint32_t)ceilf(timeline / (1.0f / path.size())) - 1;
@@ -131,14 +132,14 @@ void SimPosition::update()
 
 		const Utilities::vec2 TILE_END = Utilities::to_vec2(path[targetTile]);
 
-		const float LOCAL_TIMELINE = (timeline - (targetTile * TILE_DURATION)) / TILE_DURATION;
+		const float LOCAL_TIMELINE = (timeline - (targetTile * DURATION_TO_TILE)) / DURATION_TO_TILE;
 
+		//const Utilities::vec2 offset = Utilities::vec2(0.25f);
 		currentPos = Utilities::vec2::lerp(TILE_START, TILE_END, LOCAL_TIMELINE);
 	}
 
 	if(timeline == MAX_TIMELINE) 
 	{
-		DEVIOUS_LOG("Synchronization is complete.")
 		bIsDirty = false;
 	}
 }
@@ -148,15 +149,25 @@ const bool& SimPosition::is_dirty() const
 	return bIsDirty;
 }
 
-const Utilities::vec2& SimPosition::get_position() const
+const Utilities::vec2 SimPosition::get_position() const
 {
-	return currentPos;
+	const Utilities::vec2 offset = Utilities::vec2(0.25f);
+	return currentPos + offset;
+}
+
+SimPosition::SimPosition()
+{
+	bIsDirty = false;
+	elapsedTime = 0.0f;
+	startPos = Utilities::vec2(0.0f);
+	currentPos = startPos;
+	endPos = startPos;
 }
 
 SimPosition::SimPosition(const Utilities::_vec2& _startPos)
 {
 	bIsDirty = false;
-	timeline = 0.0f;
+	elapsedTime = 0.0f;
 	startPos = _startPos;
 	currentPos = _startPos;
 	endPos = _startPos;

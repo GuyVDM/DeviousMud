@@ -81,7 +81,7 @@ bool Clickable::handle_event(const SDL_Event* _event)
 
 const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
-    Utilities::ivec3 camPos = g_globals.renderer.lock()->get_camera()->get_position();
+    Utilities::vec2 camPos = g_globals.renderer.lock()->get_camera()->get_position();
 
     int32_t viewportWidth, viewportHeight;
     g_globals.renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
@@ -94,8 +94,8 @@ const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
     int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
 
     Utilities::ivec2 transformedPos;
-    transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - camPos.x + viewportWidth;
-    transformedPos.y = (static_cast<int32_t>(pos.y) * Graphics::Renderer::GRID_CELL_PX_SIZE) - camPos.y + viewportHeight;
+    transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
+    transformedPos.y = (static_cast<int32_t>(pos.y) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.y + viewportHeight;
     transformedPos.x += halfExtendsWidth;
     transformedPos.y += halfExtendsHeight;
 

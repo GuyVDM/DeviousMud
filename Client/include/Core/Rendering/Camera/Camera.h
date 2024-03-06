@@ -1,11 +1,11 @@
-#include "Shared/Utilities/vec3.hpp"
+#include "Shared/Utilities/vec2.hpp"
 
 class Camera 
 {
 public:
-	void set_position(const Utilities::ivec3& _pos);
+	void set_position(const Utilities::vec2& _pos);
 
-	const Utilities::ivec3& get_position() const;
+	const Utilities::vec2& get_position() const;
 
 	void set_render_distance(const uint32_t& _rd);
 
@@ -14,11 +14,11 @@ public:
 public:
 	Camera();
 	Camera(uint32_t _rd);
-	Camera(Utilities::ivec3 _pos, uint32_t _rd);
+	Camera(Utilities::vec2 _pos, uint32_t _rd);
 	~Camera() = default;
 
 private:
-	Utilities::ivec3 pos;
+	Utilities::vec2  pos;
 	uint32_t         render_distance;
 
 };

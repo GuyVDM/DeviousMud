@@ -55,7 +55,7 @@ void Server::PlayerHandler::add_experience(const PlayerUUID& _playerId, const DE
 {
 	if(players.find(_playerId) == players.end()) 
 	{
-		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
+   		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
 		return;
 	}
 
@@ -87,7 +87,7 @@ void Server::PlayerHandler::add_experience(const PlayerUUID& _playerId, const DE
 			skill->levelboosted++;
 		}
 
-		DEVIOUS_LOG("Player " << _playerId << "has leveled up a skill.");
+		DEVIOUS_EVENT("Player " << _playerId << "has leveled up a skill.");
 	}
 }
 
@@ -101,6 +101,7 @@ bool Server::PlayerHandler::move_player_towards(const PlayerUUID& _playerId, con
 
 	const Utilities::ivec2 playerPos = players[_playerId]->position;
 	
+	//Check if we already gave a destination that's equal to our current position.
 	if (playerPos == _target) 
 		return true;
 

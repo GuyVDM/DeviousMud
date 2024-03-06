@@ -2,19 +2,19 @@
 #include "Camera.h"
 
 
-Camera::Camera(Utilities::ivec3 _pos, uint32_t _rd) : pos(_pos), render_distance(_rd)
+Camera::Camera(Utilities::vec2 _pos, uint32_t _rd) : pos(_pos), render_distance(_rd)
 {
 }
 
-Camera::Camera() : pos(Utilities::ivec3(0)), render_distance(0)
+Camera::Camera() : pos(Utilities::vec2(0)), render_distance(0)
 {
 }
 
-Camera::Camera(uint32_t _rd) : pos(Utilities::ivec3(0)), render_distance(_rd)
+Camera::Camera(uint32_t _rd) : pos(Utilities::vec2(0)), render_distance(_rd)
 {
 }
 
-void Camera::set_position(const Utilities::ivec3& _pos)
+void Camera::set_position(const Utilities::vec2& _pos)
 {
     pos = _pos;
 }
@@ -24,7 +24,7 @@ void Camera::set_render_distance(const uint32_t& _rd)
     render_distance = _rd;
 }
 
-const Utilities::ivec3& Camera::get_position() const
+const Utilities::vec2& Camera::get_position() const
 {
     return pos;
 }

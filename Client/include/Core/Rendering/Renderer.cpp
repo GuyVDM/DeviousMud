@@ -1,5 +1,7 @@
 #include "precomp.h"
 
+#include "Shared/Utilities/UUID.hpp"
+
 #include "Core/Rendering/Renderer.h"
 
 #include "Core/Rendering/Camera/Camera.h"
@@ -9,6 +11,9 @@
 #include <random>
 
 #include <filesystem>
+
+using namespace DEVIOUSMUD;
+using namespace RANDOM;
 
 Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, const Utilities::ivec2& _c_scale, const std::string& _texture_path)
 {
@@ -108,7 +113,6 @@ void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utiliti
 		size.y
 	};
 
-	//DEVIOUS_LOG("Rendering at: %i, %i, with the size of: %i, %i.", rect.x, rect.y, rect.w, rect.h);
 
 	SDL_RenderCopy(renderer, texture, NULL, &rect);
 
@@ -130,16 +134,16 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 		int32_t windowSize_w, windowSize_h;
 		get_viewport_size(&windowSize_w, &windowSize_h);
 
-		const int32_t viewportWidth = windowSize_w / 2;
-		const int32_t viewportHeight = windowSize_h / 2;
+		const float viewportWidth = (float)windowSize_w / 2.0f;
+		const float viewportHeight = (float)windowSize_h / 2.0f;
 
-		Utilities::ivec3 camPos = camera->get_position();
+		const Utilities::vec2 camPos = camera->get_position();
 
 		// Create a new rect with the given size and transformed position.
 		const SDL_Rect r
 		{
-			(int32_t)roundf(_pos.x * (float)_gridsize) - camPos.x + viewportWidth,
-			(int32_t)roundf(_pos.y * (float)_gridsize) - camPos.y + viewportHeight,
+			(int32_t)roundf((_pos.x * (float)_gridsize) - camPos.x + viewportWidth),
+			(int32_t)roundf((_pos.y * (float)_gridsize) - camPos.y + viewportHeight),
 			(int32_t)roundf(_size.x),
 			(int32_t)roundf(_size.y)
 		};
@@ -178,7 +182,7 @@ void Graphics::Renderer::destroy_sprite(const Sprite& sprite)
 	const size_t i = texturehandles[sprite.get_handle()]; //Get index from handle.
 	SDL_DestroyTexture(textures[i]);                      //Destroy texture using the index.
 	textures[i] = nullptr;				                  //Clear up the index to make it available again.
-	texturehandles.erase(sprite.get_handle());		          //Remove availability of the handle.
+	texturehandles.erase(sprite.get_handle());		      //Remove availability of the handle.
 }
 
 Graphics::Sprite Graphics::Renderer::create_sprite_from_surface(const SpriteType& _spritetype)
@@ -195,11 +199,8 @@ Graphics::Sprite Graphics::Renderer::create_sprite_from_surface(const SpriteType
 	//Default sprite color.
 	const SDL_Color color = { 255, 255, 255, 255 };
 
-	//Generate a handle based on normal distribution
-	std::random_device rd;
-	std::mt19937_64 gen(rd());
-	std::uniform_int_distribution<uint64_t> dis;
-	const SpriteHandle sprite_handle = dis(gen); 
+	//Generate a handle
+	const UUID sprite_handle = UUID::generate(); 
 
 	//Register the sprite handle that refers to the index of the unique texture.
 	texturehandles[sprite_handle] = i;
