@@ -139,8 +139,10 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 
 		const Utilities::vec2 camPos = camera->get_position();
 
+		SDL_Texture* texture = textures[i];
+
 		// Create a new rect with the given size and transformed position.
-		const SDL_Rect r
+		const SDL_Rect destRect
 		{
 			(int32_t)roundf((_pos.x * (float)_gridsize) - camPos.x + viewportWidth),
 			(int32_t)roundf((_pos.y * (float)_gridsize) - camPos.y + viewportHeight),
@@ -148,7 +150,20 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 			(int32_t)roundf(_size.y)
 		};
 
-		SDL_Texture* texture = textures[i];
+		int32_t imageWidth, imageHeight;
+		SDL_QueryTexture(texture, NULL, NULL, &imageWidth, &imageHeight);
+
+		const int32_t spriteWidth = imageWidth / _s.get_framecount();
+		const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
+
+		const SDL_Rect srcRect
+		{
+			spriteWidth * frame,
+			0,
+			spriteWidth,
+			imageHeight,
+		};
+
 
 		DEVIOUS_ASSERT(texture != nullptr);
 
@@ -156,7 +171,7 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 		SDL_SetTextureColorMod(texture, _s.color.r, _s.color.b, _s.color.g);
 		SDL_SetTextureAlphaMod(texture, _s.color.a);
 
-		SDL_RenderCopy(renderer, texture, NULL, &r);
+		SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
 
 		//Reset to default colors after rendering.
 		SDL_SetTextureColorMod(texture, 255, 255, 255);

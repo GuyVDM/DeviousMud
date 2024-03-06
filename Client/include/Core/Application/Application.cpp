@@ -47,9 +47,8 @@ void Application::load_textures()
 	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
 	//--Set texture file path---//
-	renderer->load_and_bind_surface("Tile.png", Graphics::SpriteType::TILE_DEFAULT, 1);
+	renderer->load_and_bind_surface("Tile.png", Graphics::SpriteType::TILE_DEFAULT, 2);
 	renderer->load_and_bind_surface("Kirby.png", Graphics::SpriteType::PLAYER, 1);
-	renderer->load_and_bind_surface("Tile_Hitbox.png", Graphics::SpriteType::TILE_DEBUG, 1);
 }
 
 void Application::create_layers()

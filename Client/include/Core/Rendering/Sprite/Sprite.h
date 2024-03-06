@@ -17,7 +17,8 @@ namespace Graphics
 	{
 	public:
 		SDL_Color color;
-		
+		uint32_t frame = 0;
+
 		const uint64_t get_handle() const; 
 
 		const uint64_t get_framecount() const;
