@@ -19,7 +19,7 @@ void Graphics::UI::WorldLayer::init()
 	{
 		for(int32_t j = 0; j < WORLD_SIZE.y; j++)
 		{
-			receivers.push_back(WorldTile::create_tile
+			tiles.push_back(WorldTile::create_tile
 			(
 				Utilities::vec2
 				(
@@ -29,4 +29,25 @@ void Graphics::UI::WorldLayer::init()
 			));
 		}
 	}
+}
+
+void Graphics::UI::WorldLayer::update()
+{
+	for(const auto& tile : tiles) 
+	{
+		renderer->plot_frame(tile->get_sprite(), tile->get_pos(), tile->get_size());
+	}
+}
+
+bool Graphics::UI::WorldLayer::handle_event(const SDL_Event* event)
+{
+	for(const auto& tile : tiles) 
+	{
+		if(tile->handle_event(event)) 
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

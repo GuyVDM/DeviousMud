@@ -11,8 +11,8 @@
 
 #include "Core/Global/C_Globals.h"
 
-Clickable::Clickable(const Utilities::vec2& _size, const Utilities::vec2& _pos, Graphics::Sprite _sprite) : EventReceiver(),
-    pos(_pos), size(_size), sprite(_sprite), is_hovered(false)
+Clickable::Clickable(const Utilities::vec2& _pos, const Utilities::vec2& _scale, Graphics::Sprite _sprite) : EventReceiver(),
+    pos(_pos), scale(_scale), sprite(_sprite), is_hovered(false)
 {
 }
 
@@ -20,7 +20,6 @@ Clickable::~Clickable()
 {
     //Ewww..
     //I don't think i need to create a texture from a pre-existing surface, it's fine for members to share.
-    g_globals.renderer.lock()->destroy_sprite(sprite);
 }
 
 bool Clickable::handle_event(const SDL_Event* _event)
@@ -90,8 +89,8 @@ const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
     viewportHeight /= 2;
 
     // Calculate sprite's screen coordinates
-    int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);
-    int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
+    int32_t halfExtendsWidth = static_cast<int32_t>(scale.x / 2.0f);
+    int32_t halfExtendsHeight = static_cast<int32_t>(scale.y / 2.0f);
 
     Utilities::ivec2 transformedPos;
     transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
@@ -136,6 +135,6 @@ const Utilities::vec2& Clickable::get_pos() const
 
 const Utilities::vec2& Clickable::get_size() const
 {
-    return size;
+    return scale;
 }
 

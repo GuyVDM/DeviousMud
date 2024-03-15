@@ -1,28 +1,47 @@
 #include "precomp.h"
-#include "Sprite.h"
 
-const uint64_t Graphics::_Sprite::get_handle() const
+#include "Core/Rendering/Sprite/Sprite.h"
+
+using namespace DEVIOUSMUD;
+using namespace RANDOM;
+
+const Graphics::SpriteType Graphics::_Sprite::get_sprite_type() const
 {
-	return handle;
+	return spriteType;
 }
 
-const uint64_t Graphics::_Sprite::get_framecount() const
+const uint32_t Graphics::_Sprite::get_framecount() const
 {
-	return framecount;
+	return frameCount;
+}
+
+const DEVIOUSMUD::RANDOM::UUID Graphics::_Sprite::get_uuid() const
+{
+	return uuid;
+}
+
+const float& Graphics::_Sprite::get_width() const
+{
+	return size.x;
+}
+
+const float& Graphics::_Sprite::get_height() const
+{
+	return size.y;
+}
+
+const Utilities::vec2& Graphics::_Sprite::get_dimensions() const
+{
+	return size;
 }
 
 Graphics::_Sprite::_Sprite() : 
-	handle(-1), framecount(-1), color({})
+	spriteType(SpriteType::NONE), frameCount(-1), color({255, 255, 255, 255}), uuid(UUID::generate()), size(0)
 {
-}
-
-Graphics::_Sprite::_Sprite(const uint64_t _handle, const uint32_t _framecount, const SDL_Color& _color) :
-	handle(_handle), framecount(_framecount), color(_color) 
-{
-
 }
 
 Graphics::_Sprite::_Sprite(const _Sprite& _other) :
-	handle(_other.handle), framecount(_other.framecount), color(_other.color)
+	spriteType(_other.spriteType), frameCount(_other.frameCount), color(_other.color), 
+	uuid(UUID::generate()), size(_other.size)
 {
 }

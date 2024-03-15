@@ -24,7 +24,7 @@ void Graphics::UI::PlayerLayer::init()
 	//Grab the player sprite from the renderer and cache it for rendering.
 	{
 		playerHandler = g_globals.playerHandler.lock();
-		playerSprite = renderer->create_sprite_from_surface(SpriteType::PLAYER);
+		playerSprite = renderer->get_sprite(SpriteType::PLAYER);
 	}
 
 	//Bind listeners

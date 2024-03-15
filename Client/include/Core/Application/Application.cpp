@@ -4,6 +4,8 @@
 
 #include "Core/Network/Packets/ENetPacketHandler.h"
 
+#include "Core/UI/Layer/HUDLayer/HUDLayer.h"
+
 #include "Core/UI/Layer/PlayerLayer/PlayerLayer.h"
 
 #include "Core/UI/Layer/WorldLayer/WorldLayer.h"
@@ -13,6 +15,8 @@
 #include "Core/Rendering/Camera/Camera.h"
 
 #include "Core/Global/C_Globals.h"
+
+#include "Core/Rendering/Animation/Animator/Animator.h"
 
 Application::Application() 
 {
@@ -30,10 +34,12 @@ Application::Application()
 void Application::init()
 {
 	//Load in all textures
-	load_textures();
+	load_sprites();
 
 	//Create 2D layers for interaction.
 	create_layers();
+
+	cursor = std::make_unique<RSCross>(Utilities::vec2{ 32.0f, 32.0f });
 
 	//Initialize all layers.
 	for (const auto& layer : layers)
@@ -42,42 +48,72 @@ void Application::init()
 	}
 }
 
-void Application::load_textures()
+void Application::load_sprites()
 {
 	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
-	//--Set texture file path---//
-	renderer->load_and_bind_surface("Tile.png", Graphics::SpriteType::TILE_DEFAULT, 2);
-	renderer->load_and_bind_surface("Kirby.png", Graphics::SpriteType::PLAYER, 1);
+	// Miscelaneous sprites
+	{
+		renderer->load_and_bind_surface("Kirby.png", Graphics::SpriteType::PLAYER);
+		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
+		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
+	}
+
+	// Load in all HUD elements.
+	{
+		renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
+		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
+		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
+	}
+
+	// Load in all icons.
+	{
+		renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
+		renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
+	}
 }
 
 void Application::create_layers()
 {
-	//World Layer creation
-	layers.push_back(std::make_unique<Graphics::UI::WorldLayer>());
+	layers.push_back(std::make_unique<Graphics::UI::HUDLayer>());
 	layers.push_back(std::make_unique<Graphics::UI::PlayerLayer>());
+	layers.push_back(std::make_unique<Graphics::UI::WorldLayer>());
 }
 
 void Application::update()
 {
-	//Update layers
-	for(const auto& layer : layers) 
+	//Update layers in reverse order, we want the first layer to be able to render ontop of everything else.
+	for(auto it = layers.rbegin(); it != layers.rend(); ++it)
 	{
-		layer->update();
+		(*it)->update();
 	}
-
-	SDL_Event e;
 	
 	//Handle any events that SDL passes onto us.
+	SDL_Event e;
 	if(SDL_PollEvent(&e) != 0)
 	{
+		const bool clickedLeftMouse = e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT;
+		bool handledEvent = false;
+
 		for (const auto& layer : layers)
 		{
 			// Handle input events
 			if (layer->handle_event(&e))
 			{
+				handledEvent = true;
 				break;
 			}
+		}
+
+		// Want to move this somewhere else, possibly redo the renderer so registered sprites always render.
+		if (clickedLeftMouse) 
+		{
+			// Get the current mouse coordinates
+			int mouseX, mouseY;
+			SDL_GetMouseState(&mouseX, &mouseY);
+
+			const e_InteractionType interaction = handledEvent ? e_InteractionType::RED_CLICK : e_InteractionType::YELLOW_CLICK;
+			cursor->click(Utilities::vec2((float)mouseX, (float)mouseY), interaction);
 		}
 
 		switch(e.type) 
@@ -87,6 +123,10 @@ void Application::update()
 			return;
 		}
 	}
+
+	cursor->update();
+
+	Graphics::Animation::Animator::update();
 }
 
 const bool Application::is_running() const

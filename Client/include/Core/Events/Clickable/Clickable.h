@@ -29,12 +29,12 @@ protected:
 	virtual void on_right_click();
 
 protected:
-	Utilities::vec2   size;
+	Utilities::vec2   scale;
 	Utilities::vec2	  pos;
 	Graphics::Sprite  sprite;
 
 private:
-	const bool overlaps_rect(const int& _x, const int& _y) const;
+	virtual const bool overlaps_rect(const int& _x, const int& _y) const;
 
 private:
 	bool is_hovered;

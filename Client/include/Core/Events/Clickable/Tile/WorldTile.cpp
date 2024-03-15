@@ -14,6 +14,7 @@ WorldTile::~WorldTile()
 
 std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& position)
 {
+	//Scale each tile up to the specified cellsize within a grid.
 	const Utilities::vec2 scale
 	(
 		Graphics::Renderer::GRID_CELL_PX_SIZE,
@@ -22,9 +23,9 @@ std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& positio
 
 	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
-	Graphics::Sprite sprite = renderer->create_sprite_from_surface(Graphics::SpriteType::TILE_DEFAULT);
-	
-	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(scale, position, sprite);
+	Graphics::Sprite sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
+
+	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(position, scale, sprite);
 	return tile;
 }
 
@@ -35,8 +36,6 @@ void WorldTile::on_left_click()
 		static_cast<int32_t>(get_pos().x),
 		static_cast<int32_t>(get_pos().y)
 	};
-
-	DEVIOUS_LOG("Clicked tile: " << worldPos.x << ", " << worldPos.y);
 
 	Packets::s_PlayerMovement pos;
 	pos.interpreter = PACKET_MOVE_PLAYER;

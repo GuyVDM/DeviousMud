@@ -29,19 +29,23 @@ namespace Graphics
 		/// Nested class to store details about the surface, such as the amount of frames this sprite contains.
 		/// This allows for dynamically switching to different images that are saved within the same specified image file.
 		/// </summary>
-		class SDL_SurfaceDetails final
+		class SDL_SpriteDetails final
 		{
 		public:
-			SDL_SurfaceDetails(SDL_Surface* _surface, const uint32_t& _maxframecount);
-			~SDL_SurfaceDetails();
+			SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _maxframecount);
+			virtual ~SDL_SpriteDetails();
 
 			const uint32_t& get_framecount() const;
 
 			SDL_Surface* get_surface() const;
 
+			SDL_Texture* get_texture();
+
+
 		private:
 			uint32_t     framecount;
 			SDL_Surface* surface;
+			SDL_Texture* texture;
 		};
 
 	public:
@@ -63,21 +67,19 @@ namespace Graphics
 
 		std::shared_ptr<Camera>& get_camera();
 
-		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount);
+		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount = 1);
 
 		void start_frame();
 
-		void debug_render(const Utilities::ivec2& _pos, const Utilities::ivec2& _size);
-
 		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize = GRID_CELL_PX_SIZE);
+
+		void plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size);
 
 		void get_viewport_size(int32_t* _w, int32_t* _h);
 
 		void end_frame();
 
-		void destroy_sprite(const Sprite& _sprite);
-
-		Sprite create_sprite_from_surface(const SpriteType& _spritetype);
+		Sprite get_sprite(const SpriteType& _spritetype);
 
 		virtual ~Renderer();
 
@@ -92,11 +94,7 @@ namespace Graphics
 
 		std::string texturepath;
 
-		std::vector<SDL_Texture*> textures;
-
-		std::unordered_map<SpriteHandle, int> texturehandles;
-
-		std::unordered_map<SpriteType, SDL_SurfaceDetails*> surfaces;
+		std::unordered_map<SpriteType, SDL_SpriteDetails*> sprites;
 
 		SDL_Window* window;
 

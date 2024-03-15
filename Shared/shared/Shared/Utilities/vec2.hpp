@@ -170,10 +170,12 @@ namespace Utilities
 
         inline _vec2 operator/(const _vec2& a) //TODO: Possibly broken, needs unit testing.
         {
+            vec2 v = a;
+
             try
             {
-                x /= a.x;
-                y /= a.y;
+                v.x = x / a.x;
+                v.y = y / a.y;
             }
             // catch block catches exception if any 
             // of type Exception 
@@ -185,8 +187,7 @@ namespace Utilities
                 std::cout << "Exception occurred" << std::endl << e.what();
             }
 
-
-            return *this;
+            return v;
         }
 
         inline bool operator==(const _vec2& a) const

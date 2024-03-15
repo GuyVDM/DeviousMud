@@ -40,7 +40,6 @@ Graphics::Renderer::Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const
 	//Make the window resizable
 	SDL_SetWindowResizable(_window, SDL_bool(true));
 
-	textures.resize(MAX_TEXTURE_COUNT);
 	std::cout << "[SDL_Renderer] Succesfully created renderer." << std::endl;
 
 	camera = std::make_shared<Camera>();
@@ -53,17 +52,11 @@ Graphics::Renderer::~Renderer()
 
 void Graphics::Renderer::free()
 {
-	//Clean up all textures.
-	for (SDL_Texture* t : textures)
-	{
-		SDL_DestroyTexture(t);
-	}	textures.clear();
-
-	//Clean up all surfaces
-	for (std::pair<SpriteType, SDL_SurfaceDetails*> details : surfaces)
+	//Clean up all textures & surfaces
+	for (std::pair<SpriteType, SDL_SpriteDetails*> details : sprites)
 	{
 		delete details.second;
-	}   surfaces.clear();
+	}   sprites.clear();
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
@@ -75,14 +68,14 @@ void Graphics::Renderer::free()
 /// <param name="_file"></param>
 /// <param name="_spritetype"></param>
 /// <param name="_maxframecount"></param>
-void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _maxframecount = 1)
+void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _maxframecount)
 {
 	std::string path = texturepath;
 	path.append(_file);
 
 	const char* asset_path = path.c_str();
 
-	assert(surfaces.find(_spritetype) == surfaces.end());
+	assert(sprites.find(_spritetype) == sprites.end());
 	SDL_Surface* surface = IMG_Load(asset_path);
 
 	//Check if the image got loaded correctly.
@@ -93,30 +86,13 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 	}
 
 	//Store the surface details and lock it behind the sprite type.
-	surfaces[_spritetype] = new SDL_SurfaceDetails(surface, _maxframecount);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	sprites[_spritetype] = new SDL_SpriteDetails(surface, texture, _maxframecount);
 }
 
 void Graphics::Renderer::start_frame()
 {
 	SDL_RenderClear(renderer);
-}
-
-void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utilities::ivec2& size)
-{
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surfaces[SpriteType::TILE_DEBUG]->get_surface());
-
-	const SDL_Rect rect
-	{
-		pos.x,
-		pos.y,
-		size.x,
-		size.y
-	};
-
-
-	SDL_RenderCopy(renderer, texture, NULL, &rect);
-
-	SDL_DestroyTexture(texture);
 }
 
 /// <summary>
@@ -127,32 +103,40 @@ void Graphics::Renderer::debug_render(const Utilities::ivec2& pos, const Utiliti
 /// <param name="(scale)"></param>
 void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize)
 {
+	if (_s.get_sprite_type() == SpriteType::NONE)
+		return;
+
 	if (camera)
 	{
-		const size_t i = texturehandles[_s.get_handle()];
-
+		// Get the viewport size.
 		int32_t windowSize_w, windowSize_h;
-		get_viewport_size(&windowSize_w, &windowSize_h);
+		{
+			get_viewport_size(&windowSize_w, &windowSize_h);
+		}
 
-		const float viewportWidth = (float)windowSize_w / 2.0f;
-		const float viewportHeight = (float)windowSize_h / 2.0f;
-
-		const Utilities::vec2 camPos = camera->get_position();
-
-		SDL_Texture* texture = textures[i];
+		const float vpWidthHalfExtends = (float)windowSize_w / 2.0f;
+		const float vpHeightHalfExtends = (float)windowSize_h / 2.0f;
 
 		// Create a new rect with the given size and transformed position.
+		const Utilities::vec2 camPos = camera->get_position();
 		const SDL_Rect destRect
 		{
-			(int32_t)roundf((_pos.x * (float)_gridsize) - camPos.x + viewportWidth),
-			(int32_t)roundf((_pos.y * (float)_gridsize) - camPos.y + viewportHeight),
+			(int32_t)roundf((_pos.x * (float)_gridsize) - camPos.x + vpWidthHalfExtends),
+			(int32_t)roundf((_pos.y * (float)_gridsize) - camPos.y + vpHeightHalfExtends),
 			(int32_t)roundf(_size.x),
 			(int32_t)roundf(_size.y)
 		};
 
-		int32_t imageWidth, imageHeight;
-		SDL_QueryTexture(texture, NULL, NULL, &imageWidth, &imageHeight);
+		//Get texture
+		SDL_Texture* texture = sprites[_s.get_sprite_type()]->get_texture();
 
+		// Get texture width and height.
+		int32_t imageWidth, imageHeight;
+		{
+			SDL_QueryTexture(texture, NULL, NULL, &imageWidth, &imageHeight);
+		}
+
+		// Generate rect based on what part of the png we want our sprite to be 
 		const int32_t spriteWidth = imageWidth / _s.get_framecount();
 		const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
 
@@ -164,19 +148,57 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 			imageHeight,
 		};
 
-
-		DEVIOUS_ASSERT(texture != nullptr);
-
 		//Set colors.
 		SDL_SetTextureColorMod(texture, _s.color.r, _s.color.b, _s.color.g);
 		SDL_SetTextureAlphaMod(texture, _s.color.a);
 
+		//Copy it over to the final frame.
 		SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
 
 		//Reset to default colors after rendering.
 		SDL_SetTextureColorMod(texture, 255, 255, 255);
 		SDL_SetTextureAlphaMod(texture, 255);
 	}
+}
+
+void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size)
+{
+	if (_s.get_sprite_type() == SpriteType::NONE)
+		return;
+
+	//Get texture
+	SDL_Texture* texture = sprites[_s.get_sprite_type()]->get_texture();
+
+	// Generate rect based on what part of the png we want our sprite to be 
+	const int32_t spriteWidth = (int32_t)_s.size.x / _s.get_framecount();
+	const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
+
+	const SDL_Rect srcRect
+	{
+		spriteWidth * frame,
+		0,
+		spriteWidth,
+		_s.size.y,
+	};
+
+	const SDL_Rect destRect
+	{
+		(int32_t)roundf(_pos.x),
+		(int32_t)roundf(_pos.y),
+		(int32_t)roundf(_size.x),
+		(int32_t)roundf(_size.y)
+	};
+
+	//Set colors.
+	SDL_SetTextureColorMod(texture, _s.color.r, _s.color.b, _s.color.g);
+	SDL_SetTextureAlphaMod(texture, _s.color.a);
+
+	//Copy it over to the final frame.
+	SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+
+	//Reset to default colors after rendering.
+	SDL_SetTextureColorMod(texture, 255, 255, 255);
+	SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
@@ -192,58 +214,52 @@ void Graphics::Renderer::end_frame()
 	SDL_RenderPresent(renderer);
 }
 
-void Graphics::Renderer::destroy_sprite(const Sprite& sprite)
+Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 {
-	const size_t i = texturehandles[sprite.get_handle()]; //Get index from handle.
-	SDL_DestroyTexture(textures[i]);                      //Destroy texture using the index.
-	textures[i] = nullptr;				                  //Clear up the index to make it available again.
-	texturehandles.erase(sprite.get_handle());		      //Remove availability of the handle.
-}
-
-Graphics::Sprite Graphics::Renderer::create_sprite_from_surface(const SpriteType& _spritetype)
-{
-	auto s_iterator = surfaces.find(_spritetype);
-	DEVIOUS_ASSERT(s_iterator != surfaces.end())
-
-	auto t_iterator = std::find(textures.begin(), textures.end(), nullptr);
-	DEVIOUS_ASSERT(t_iterator != textures.end()); //Assert if the max capacity of textures have been reached.
-
-	//Create and store texture made from a SDL_Surface
-	const int32_t i = (int32_t)std::distance(textures.begin(), t_iterator);
+	auto s_iterator = sprites.find(_spriteType);
+	DEVIOUS_ASSERT(s_iterator != sprites.end())
 
 	//Default sprite color.
 	const SDL_Color color = { 255, 255, 255, 255 };
 
-	//Generate a handle
-	const UUID sprite_handle = UUID::generate(); 
-
-	//Register the sprite handle that refers to the index of the unique texture.
-	texturehandles[sprite_handle] = i;
-
 	//Grab the surface details
-	const SDL_SurfaceDetails* details = surfaces[_spritetype];
+	const SDL_SpriteDetails* details = sprites[_spriteType];
 
-	textures[i] = SDL_CreateTextureFromSurface(renderer, details->get_surface());
+	Sprite sprite;
+	sprite.color      = SDL_Color{ 255, 255, 255, 255 };
+	sprite.frame      = 0;
+	sprite.frameCount = details->get_framecount();
+	sprite.spriteType = _spriteType;
+	sprite.size       = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
 
-	return Sprite { sprite_handle, details->get_framecount(), color };
+	return sprite;
 }
 
-Graphics::Renderer::SDL_SurfaceDetails::SDL_SurfaceDetails(SDL_Surface* _surface, const uint32_t& _framecount) 
-	: surface(_surface), framecount(_framecount)
+Graphics::Renderer::SDL_SpriteDetails::SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _framecount) 
+	: surface(_surface), framecount(_framecount), texture(_texture)
 {
+
 }
 
-const uint32_t& Graphics::Renderer::SDL_SurfaceDetails::get_framecount() const
+Graphics::Renderer::SDL_SpriteDetails::~SDL_SpriteDetails()
+{
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(surface);
+}
+
+const uint32_t& Graphics::Renderer::SDL_SpriteDetails::get_framecount() const
 {
 	return framecount;
 }
 
-SDL_Surface* Graphics::Renderer::SDL_SurfaceDetails::get_surface() const
+SDL_Surface* Graphics::Renderer::SDL_SpriteDetails::get_surface() const
 {
 	return surface;
 }
 
-Graphics::Renderer::SDL_SurfaceDetails::~SDL_SurfaceDetails()
+SDL_Texture* Graphics::Renderer::SDL_SpriteDetails::get_texture()
 {
-	SDL_FreeSurface(surface);
+	return texture;
 }
+
+
