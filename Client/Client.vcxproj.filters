@@ -28,6 +28,12 @@
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\precomp.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Tile\WorldTile.cpp" />
+    <ClCompile Include="include\Core\Rendering\Animation\Animation2D.cpp" />
+    <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
+    <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
+    <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\HUDTab\HUDTab.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -48,7 +54,7 @@
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Rendering\Animation\Animation.h">
+    <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Player\PlayerHandler.h">
@@ -82,6 +88,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\precomp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Rendering\Animation\Animations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTabType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\UIInterface\UIInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

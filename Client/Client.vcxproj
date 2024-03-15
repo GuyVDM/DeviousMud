@@ -178,6 +178,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="include\Core\Application\Application.cpp" />
     <ClCompile Include="include\Core\Application\Config\Config.cpp" />
+    <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Clickable.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Entity\WorldEntity.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Tile\WorldTile.cpp" />
@@ -185,12 +186,17 @@
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
     <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
     <ClCompile Include="include\Core\Player\PlayerHandler.cpp" />
+    <ClCompile Include="include\Core\Rendering\Animation\Animation2D.cpp" />
+    <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
     <ClCompile Include="include\Core\Rendering\Camera\Camera.cpp" />
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
     <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
+    <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\HUDTab\HUDTab.cpp" />
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
     <ClCompile Include="include\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -201,6 +207,7 @@
   <ItemGroup>
     <ClInclude Include="include\Core\Application\Application.h" />
     <ClInclude Include="include\Core\Application\Config\Config.h" />
+    <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
     <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
     <ClInclude Include="include\Core\Events\Clickable\Entity\WorldEntity.h" />
     <ClInclude Include="include\Core\Events\Clickable\Tile\WorldTile.h" />
@@ -209,13 +216,20 @@
     <ClInclude Include="include\Core\Network\Client\ClientWrapper.h" />
     <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
     <ClInclude Include="include\Core\Player\PlayerHandler.h" />
-    <ClInclude Include="include\Core\Rendering\Animation\Animation.h" />
+    <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h" />
+    <ClInclude Include="include\Core\Rendering\Animation\Animations.h" />
+    <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
     <ClInclude Include="include\Core\Rendering\Renderer.h" />
     <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
+    <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTab.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTabType.h" />
     <ClInclude Include="include\Core\UI\Layer\Layer.h" />
     <ClInclude Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.h" />
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\UIInterface\UIInterface.h" />
     <ClInclude Include="include\precomp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
