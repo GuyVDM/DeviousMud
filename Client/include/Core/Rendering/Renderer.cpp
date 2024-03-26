@@ -216,6 +216,17 @@ void Graphics::Renderer::end_frame()
 
 Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 {
+	if(_spriteType == SpriteType::NONE) 
+	{
+		Sprite sprite;
+		sprite.color = SDL_Color{ 255, 255, 255, 255 };
+		sprite.frame = 0;
+		sprite.frameCount = 0;
+		sprite.spriteType = _spriteType;
+		sprite.size = Utilities::vec2(0.0f, 0.0f);
+		return sprite;
+	}
+
 	auto s_iterator = sprites.find(_spriteType);
 	DEVIOUS_ASSERT(s_iterator != sprites.end())
 

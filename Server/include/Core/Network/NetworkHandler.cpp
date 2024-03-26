@@ -43,7 +43,7 @@ NetworkHandler NetworkHandler::create_host(const char* address, int32_t port, in
 		exit(EXIT_FAILURE);
 	}
 
-	DEVIOUS_LOG("Succesfully hosting server listening on: [" << address << ":" << port << "].");
+	DEVIOUS_EVENT("Server listening on: [" << address << ":" << port << "].");
 	return NetworkHandler(server);
 }
 

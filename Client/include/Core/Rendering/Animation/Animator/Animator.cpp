@@ -10,6 +10,7 @@ using namespace Graphics;
 using namespace Animation;
 
 using namespace DEVIOUSMUD;
+using namespace CLIENT;
 using namespace RANDOM;
 
 // All registered controllers.
@@ -36,14 +37,12 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 
 void Animator::update()
 {
-	const float deltaTime = DEVIOUSMUD::CLIENT::Config::get_deltaTime();
-
 	std::vector<UUID> toDestroy;
 
 	for (auto& pair : animators)
 	{
 		AnimationController& controller = pair.second;
-		controller.elapsedTime += (deltaTime * controller.playbackSpeed);
+		controller.elapsedTime += (Config::get_deltaTime() * controller.playbackSpeed);
 
 		if(controller.elapsedTime > 1.0f) 
 		{
@@ -74,7 +73,7 @@ void Animator::update()
 				}
 			}
 
-			// Increment keyframe index and set new animation frame.
+			// Set new animation frame.
 			{
 				controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 			}

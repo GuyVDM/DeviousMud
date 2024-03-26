@@ -33,8 +33,8 @@ void WorldTile::on_left_click()
 {
 	const Utilities::ivec2 worldPos
 	{
-		static_cast<int32_t>(get_pos().x),
-		static_cast<int32_t>(get_pos().y)
+		static_cast<int32_t>(get_position().x),
+		static_cast<int32_t>(get_position().y)
 	};
 
 	Packets::s_PlayerMovement pos;

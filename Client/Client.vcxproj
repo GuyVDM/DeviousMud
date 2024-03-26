@@ -192,7 +192,8 @@
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
     <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
     <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\HUDTab\HUDTab.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
@@ -223,13 +224,12 @@
     <ClInclude Include="include\Core\Rendering\Renderer.h" />
     <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
     <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTab.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\HUDTab\HUDTabType.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.h" />
     <ClInclude Include="include\Core\UI\Layer\Layer.h" />
     <ClInclude Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.h" />
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
     <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\UIInterface\UIInterface.h" />
     <ClInclude Include="include\precomp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -35,7 +35,7 @@ void Graphics::UI::WorldLayer::update()
 {
 	for(const auto& tile : tiles) 
 	{
-		renderer->plot_frame(tile->get_sprite(), tile->get_pos(), tile->get_size());
+		renderer->plot_frame(tile->get_sprite(), tile->get_position(), tile->get_size());
 	}
 }
 

@@ -12,14 +12,13 @@
 #include "Core/Global/C_Globals.h"
 
 Clickable::Clickable(const Utilities::vec2& _pos, const Utilities::vec2& _scale, Graphics::Sprite _sprite) : EventReceiver(),
-    pos(_pos), scale(_scale), sprite(_sprite), is_hovered(false)
+    pos(_pos), size(_scale), sprite(_sprite), bIsHovered(false)
 {
 }
 
 Clickable::~Clickable()
 {
-    //Ewww..
-    //I don't think i need to create a texture from a pre-existing surface, it's fine for members to share.
+
 }
 
 bool Clickable::handle_event(const SDL_Event* _event)
@@ -36,18 +35,18 @@ bool Clickable::handle_event(const SDL_Event* _event)
         {
             if (is_overlapping)
             {
-                if (!is_hovered) //If not hovering before, start hovering.
+                if (!bIsHovered) //If not hovering before, start hovering.
                 {
-                    is_hovered = true;
+                    bIsHovered = true;
                     on_hover();
                 }
 
                 return true;
             }
 
-            if(is_hovered) //If hovering before, but not anymore, stop hovering
+            if(bIsHovered) //If hovering before, but not anymore, stop hovering
             {
-                is_hovered = false;
+                bIsHovered = false;
                 on_stop_hover();
                 return false;
             }
@@ -89,8 +88,8 @@ const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
     viewportHeight /= 2;
 
     // Calculate sprite's screen coordinates
-    int32_t halfExtendsWidth = static_cast<int32_t>(scale.x / 2.0f);
-    int32_t halfExtendsHeight = static_cast<int32_t>(scale.y / 2.0f);
+    int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);
+    int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
 
     Utilities::ivec2 transformedPos;
     transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
@@ -128,13 +127,23 @@ const Graphics::Sprite& Clickable::get_sprite() const
     return sprite;
 }
 
-const Utilities::vec2& Clickable::get_pos() const
+const Utilities::vec2& Clickable::get_position() const
 {
     return pos;
 }
 
 const Utilities::vec2& Clickable::get_size() const
 {
-    return scale;
+    return size;
+}
+
+void Clickable::set_position(Utilities::vec2 _pos)
+{
+    pos = _pos;
+}
+
+void Clickable::set_size(Utilities::vec2 _size)
+{
+    size = _size;
 }
 

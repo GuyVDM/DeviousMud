@@ -1,12 +1,16 @@
 #pragma once
 #include "Shared/Utilities/vec2.hpp"
 
+#include "Shared/Utilities/EventListener.h"
+
 #include "Core/Rendering/Sprite/Sprite.h"
 
-#include <string>
-#include <unordered_map>
-#include <vector>
 
+#include <string>
+
+#include <unordered_map>
+
+#include <vector>
 
 #pragma region FORWARD_DECLARATIONS
 typedef struct SDL_Renderer SDL_Renderer;
@@ -25,6 +29,8 @@ namespace Graphics
     class Renderer final
 	{
 	public:
+		EventListener<Utilities::vec2> on_viewport_size_changed;
+
 		/// <summary>
 		/// Nested class to store details about the surface, such as the amount of frames this sprite contains.
 		/// This allows for dynamically switching to different images that are saved within the same specified image file.

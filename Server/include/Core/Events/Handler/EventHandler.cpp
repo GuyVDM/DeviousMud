@@ -95,21 +95,20 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				bool reachedDest = g_globals.playerHandler->move_player_towards(playerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
 
 				// Send updated player position back to the clients.
-				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that doesn't exist.
+				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that's invalid.
 				{
-					ivec2 pos = g_globals.playerHandler->get_player_position(playerId);
+					ivec2 playerPos = g_globals.playerHandler->get_player_position(playerId);
 
 					Packets::s_PlayerMovement packet;
 					packet.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
 					packet.playerId = playerId;
-					packet.x = pos.x;
-					packet.y = pos.y;
+					packet.x = playerPos.x;
+					packet.y = playerPos.y;
 
 					PacketHandler::send_packet_multicast<Packets::s_PlayerMovement>(&packet, _host, 0, 0);
 				}
 
-				//Make this packet recursive to the server if the player hasn't met their destination yet.
-				//TODO: If the destination is not reachable, make it so that the player atleast reachest the closest available tile to that destination.
+				//Recursively calls the packet until the player either cancels it or completes the action.
 				if (!reachedDest)
 				{
 					//Retrieve the current position after having moved the player.

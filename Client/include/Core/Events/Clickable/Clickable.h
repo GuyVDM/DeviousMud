@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Events/EventReceiver.h"
+
 #include "Core/Rendering/Sprite/Sprite.h"
 
 #include "Shared/Utilities/vec2.hpp"
@@ -7,13 +8,17 @@
 class Clickable : public EventReceiver 
 {
 public:
-	bool handle_event(const SDL_Event* _event) override;
+	virtual bool handle_event(const SDL_Event* _event) override;
 
 	const Graphics::Sprite& get_sprite() const;
 
-	const Utilities::vec2& get_pos() const;
+	const Utilities::vec2&  get_position() const;
 
-	const Utilities::vec2& get_size() const;
+	const Utilities::vec2&  get_size() const;
+
+	virtual void set_position(Utilities::vec2 _pos);
+
+	virtual void set_size(Utilities::vec2 _size);
 
 public:
 	explicit Clickable(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::Sprite _sprite);
@@ -28,8 +33,8 @@ protected:
 
 	virtual void on_right_click();
 
-protected:
-	Utilities::vec2   scale;
+private:
+	Utilities::vec2   size;
 	Utilities::vec2	  pos;
 	Graphics::Sprite  sprite;
 
@@ -37,5 +42,5 @@ private:
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const;
 
 private:
-	bool is_hovered;
+	bool bIsHovered;
 };

@@ -92,7 +92,6 @@ void Application::update()
 	SDL_Event e;
 	if(SDL_PollEvent(&e) != 0)
 	{
-		const bool clickedLeftMouse = e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT;
 		bool handledEvent = false;
 
 		for (const auto& layer : layers)
@@ -106,18 +105,32 @@ void Application::update()
 		}
 
 		// Want to move this somewhere else, possibly redo the renderer so registered sprites always render.
-		if (clickedLeftMouse) 
 		{
-			// Get the current mouse coordinates
-			int mouseX, mouseY;
-			SDL_GetMouseState(&mouseX, &mouseY);
+			const bool clickedLeftMouse = e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT;
+			if (clickedLeftMouse)
+			{
+				// Get the current mouse coordinates
+				int mouseX, mouseY;
+				SDL_GetMouseState(&mouseX, &mouseY);
 
-			const e_InteractionType interaction = handledEvent ? e_InteractionType::RED_CLICK : e_InteractionType::YELLOW_CLICK;
-			cursor->click(Utilities::vec2((float)mouseX, (float)mouseY), interaction);
+				const e_InteractionType interaction = handledEvent ? e_InteractionType::RED_CLICK : e_InteractionType::YELLOW_CLICK;
+				cursor->click(Utilities::vec2((float)mouseX, (float)mouseY), interaction);
+			}
 		}
 
 		switch(e.type) 
 		{
+		case SDL_WINDOWEVENT:
+			//Handle viewport resizing.
+			if(e.window.event == SDL_WINDOWEVENT_RESIZED) 
+			{
+				Utilities::ivec2 viewportSize;
+				viewportSize.x = e.window.data1;
+				viewportSize.y = e.window.data2;
+				g_globals.renderer.lock()->on_viewport_size_changed.invoke(Utilities::to_vec2(viewportSize));
+			}
+			break;
+
 			case SDL_QUIT:
 			close_application();
 			return;
