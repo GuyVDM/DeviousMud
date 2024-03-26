@@ -33,14 +33,15 @@ protected:
 
 	virtual void on_right_click();
 
+protected:
+	Graphics::Sprite  sprite;
+
 private:
 	Utilities::vec2   size;
 	Utilities::vec2	  pos;
-	Graphics::Sprite  sprite;
+	bool bIsHovered;
 
 private:
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const;
 
-private:
-	bool bIsHovered;
 };

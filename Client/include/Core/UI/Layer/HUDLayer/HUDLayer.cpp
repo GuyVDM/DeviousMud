@@ -17,6 +17,23 @@ void Graphics::UI::HUDLayer::init()
 
 bool Graphics::UI::HUDLayer::handle_event(const SDL_Event* event)
 {
+	switch (event->type)
+	{
+		case SDL_MOUSEMOTION:
+		{
+			if(UIComponent::sDraggedComponent) 
+			{
+				Utilities::ivec2 mousePos;
+				SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+				UIComponent* draggedComponent = UIComponent::sDraggedComponent;
+				draggedComponent->set_position(Utilities::to_vec2(mousePos) - UIComponent::sDragOffset);
+			}
+
+		}
+		break;
+	}
+
 	return canvas->handle_event(event);
 }
 
@@ -35,7 +52,8 @@ void Graphics::UI::HUDLayer::create_hud()
 		(
 			UIComponent::Position(0.0f, 0.0f),
 			UIComponent::Size(336.0f, 504.0f),
-			SpriteType::HUD_BACKDROP
+			SpriteType::HUD_BACKDROP,
+			true
 		);
 
 		Utilities::vec2 position = Utilities::to_vec2(viewportSize) - component->get_size();
@@ -51,7 +69,7 @@ void Graphics::UI::HUDLayer::update()
 
 	// Render loop
 	{	
-		base->render();
+		base->render(renderer);
 	}
 }
 

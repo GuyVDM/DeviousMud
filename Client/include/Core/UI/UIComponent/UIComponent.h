@@ -28,10 +28,17 @@ typedef struct _Rect
 		return *this;
 	}
 
+	const bool point_overlaps_rect(const Utilities::vec2& _point) const
+	{
+		return (_point.x >= minPos.x && _point.x <= maxPos.x && _point.y >= minPos.y && _point.y <= maxPos.y);
+	}
+
 }   Rect;
 
 namespace Graphics 
 {
+	class Renderer;
+
 	namespace UI
 	{
 		class HUDLayer;
@@ -91,7 +98,7 @@ public:
 	/// </summary>
 	/// <param name="_event"></param>
 	/// <returns></returns>
-	virtual bool handle_event(const SDL_Event* _event) override;
+	virtual bool handle_event(const SDL_Event* _event) override final;
 
 	virtual ~UIComponent() = default;
 	UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite);
@@ -102,6 +109,12 @@ protected:
 	/// </summary>
 	virtual void init();
 	
+	/// <summary>
+	/// If set to true, when you hold alt alongside with the left mouse button, you will be able to move the UI element around.
+	/// </summary>
+	/// <param name="_bIsMovable"></param>
+	void set_movable(bool _bIsMovable);
+
 	/// <summary>
 	/// Makes the transform of this object relative to the parent.
 	/// </summary>
@@ -123,28 +136,54 @@ protected:
 	/// <summary>
 	/// Renders the UI element.
 	/// </summary>
-	void render();
+	virtual void render(std::shared_ptr<Graphics::Renderer> _renderer);
 
 	/// <summary>
-	/// Override since it needs to incorporate the anchor points.
+	/// Changes the position of the UI element.
+	/// Updates the parent & the children accordingly.
 	/// </summary>
 	/// <param name="_pos"></param>
 	virtual void set_position(Utilities::vec2 _pos) override;
 
+	/// <summary>
+	/// Changes the size of this UI element.
+	/// Updates the parent & the children accordingly.
+	/// </summary>
+	/// <param name="_size"></param>
 	virtual void set_size(Utilities::vec2 _size) override;
 
 private:
+	/// <summary>
+	/// Reference to UI component that's getting moved.
+	/// </summary>
+	static UIComponent* sDraggedComponent;
+
+	/// <summary>
+	/// The point of offset 
+	/// </summary>
+	static Utilities::vec2 sDragOffset;
+
+	/// <summary>
+	/// When this UI elements is getting dragged.
+	/// </summary>
+	void on_drag_start();
+
+	/// <summary>
+	/// When this UI element is done getting dragged.
+	/// </summary>
+	void on_drag_end();
+
 	/// <summary>
 	/// Make children adjust to any potential changes. Call when a change related to the position or scale has been made.
 	/// </summary>
 	void update_children(Rect _oldRect);
 
+	template<typename T>
+	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite, bool _bInteractable);
+
 	friend UIComponent;
 
 	friend Graphics::UI::HUDLayer;
-
-	template<typename T>
-	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite, bool _bInteractable);
 
 protected:
 	bool									   bInteractable = true;
@@ -152,8 +191,8 @@ protected:
 	std::vector<std::shared_ptr<UIComponent>>  children;
 	
 private:
+	bool                                       bIsMovable = false;
 	e_AnchorPreset                             anchor;
-
 };
 
 template<typename T>

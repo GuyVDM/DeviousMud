@@ -1,6 +1,29 @@
 #pragma once
 #include "Core/UI/UIComponent/UIComponent.h"
 
+class HUDTab : public UIComponent
+{
+public:
+	virtual ~HUDTab() = default;
+
+	void set_icon(Graphics::SpriteType _sprite, Utilities::vec2 _iconSize);
+
+	virtual void render(std::shared_ptr<Graphics::Renderer> _renderer) override;
+
+private:
+	virtual void init();
+
+private:
+	using UIComponent::UIComponent;
+
+private:
+	Graphics::Sprite icon;
+	Utilities::vec2  iconSize;
+};
+
+/// <summary>
+/// The Super class implementing all of the HUD Components.
+/// </summary>
 class HUDTabMenu : public UIComponent 
 {
 public:

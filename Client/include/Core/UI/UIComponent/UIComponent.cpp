@@ -6,8 +6,22 @@
 
 #include "Core/Global/C_Globals.h"
 
+UIComponent*    UIComponent::sDraggedComponent = nullptr;
+Utilities::vec2 UIComponent::sDragOffset       = Utilities::vec2(0.0f);
+
+UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
+    Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
+{
+    set_position(_pos);
+}
+
 void UIComponent::init()
 {
+}
+
+void UIComponent::set_movable(bool _bIsMovable)
+{
+    bIsMovable = _bIsMovable;
 }
 
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
@@ -162,19 +176,81 @@ const Rect UIComponent::get_local_rect() const
     };;
 }
 
-void UIComponent::render()
+void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 {
     for(auto child : children) 
     {
-        child->render();
+        child->render(_renderer);
     }
 
-    auto renderer = g_globals.renderer.lock();
-    renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
+    _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
 }
 
 bool UIComponent::handle_event(const SDL_Event* _event)
 {
+    //TODO: MOVE THIS DISGUSTING SHIT TO A INPUT CLASS AT SOME POINT.
+    static bool altDown       = false;
+    static bool leftMouseDown = false;
+
+    //Check if we can move the component
+    if(bIsMovable)
+    {
+        switch (_event->type)
+        {
+        case SDL_KEYDOWN:
+            if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
+            {
+                altDown = true;
+            }
+            break;
+
+        case SDL_MOUSEBUTTONDOWN:
+            if (_event->button.button == SDL_BUTTON_LEFT)
+            {
+                leftMouseDown = true;
+            }
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            if (_event->button.button == SDL_BUTTON_LEFT)
+            {
+                leftMouseDown = false;
+            }
+            break;
+
+        case SDL_KEYUP:
+            if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
+            {
+                altDown = false;
+            }
+            break;
+        }
+    }
+
+    if (altDown && leftMouseDown)
+    {
+        if (!UIComponent::sDraggedComponent)
+        {
+            Utilities::ivec2 mousePos;
+            SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+            //If the mouse overlaps anywhere of the entirety of this UI element.
+            if (get_local_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
+            {
+                UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
+                UIComponent::sDraggedComponent = this;
+                on_drag_start();
+            }
+        }
+    }
+    else if(UIComponent::sDraggedComponent == this)
+    {
+        UIComponent::sDragOffset = Utilities::vec2(0.0f);
+        UIComponent::sDraggedComponent = nullptr;
+        on_drag_end();
+        
+    }
+
     //Check if any of the children handle it first.
     for (const auto& child : children)
     {
@@ -194,10 +270,16 @@ bool UIComponent::handle_event(const SDL_Event* _event)
     return false;
 }
 
-UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) : 
-    Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
+void UIComponent::on_drag_start()
 {
-    set_position(_pos);
+    DEVIOUS_LOG("W");
+    sprite.color.a = 122;
+}
+
+void UIComponent::on_drag_end()
+{
+    DEVIOUS_LOG("L");
+    sprite.color.a = 255;
 }
 
 /// <summary>
