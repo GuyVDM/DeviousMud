@@ -110,12 +110,6 @@ protected:
 	virtual void init();
 	
 	/// <summary>
-	/// If set to true, when you hold alt alongside with the left mouse button, you will be able to move the UI element around.
-	/// </summary>
-	/// <param name="_bIsMovable"></param>
-	void set_movable(bool _bIsMovable);
-
-	/// <summary>
 	/// Makes the transform of this object relative to the parent.
 	/// </summary>
 	/// <param name="_parent"></param>
@@ -143,14 +137,14 @@ protected:
 	/// Updates the parent & the children accordingly.
 	/// </summary>
 	/// <param name="_pos"></param>
-	virtual void set_position(Utilities::vec2 _pos) override;
+	virtual void set_position(Utilities::vec2 _pos) final override;
 
 	/// <summary>
 	/// Changes the size of this UI element.
 	/// Updates the parent & the children accordingly.
 	/// </summary>
 	/// <param name="_size"></param>
-	virtual void set_size(Utilities::vec2 _size) override;
+	virtual void set_size(Utilities::vec2 _size) final override;
 
 private:
 	/// <summary>
@@ -186,12 +180,12 @@ private:
 	friend Graphics::UI::HUDLayer;
 
 protected:
+	bool                                       bIsMovable    = false;
 	bool									   bInteractable = true;
 	UIComponent*                               parent;
 	std::vector<std::shared_ptr<UIComponent>>  children;
 	
 private:
-	bool                                       bIsMovable = false;
 	e_AnchorPreset                             anchor;
 };
 

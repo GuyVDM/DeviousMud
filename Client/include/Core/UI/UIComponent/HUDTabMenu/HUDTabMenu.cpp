@@ -26,10 +26,33 @@ void HUDTab::render(std::shared_ptr<Renderer> _renderer)
 	UIComponent::render(_renderer);
 }
 
+void HUDTab::on_left_click()
+{
+	sprite.color.r = 255;
+}
+
 /// <summary>
 /// MAIN
 /// </summary>
 void HUDTabMenu::init()
 {
-	set_movable(true);
+	bIsMovable = true;
+
+	const Size tabSize = Utilities::vec2(64.0f);
+	std::shared_ptr<HUDTab> tab;
+	Position tabPos;
+	
+	// Inventory tab;
+	{
+		tabPos = get_position() - Utilities::vec2(0.0f, tabSize.y);
+		tab = UIComponent::create_component<HUDTab>
+			(
+				tabPos, 
+				tabSize, 
+				SpriteType::HUD_TAB,
+				true
+			);
+		tab->set_anchor(e_AnchorPreset::CENTER);
+		add_child(tab);
+	}
 }

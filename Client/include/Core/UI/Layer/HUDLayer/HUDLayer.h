@@ -3,8 +3,13 @@
 
 #include "Core/Rendering/Sprite/Sprite.h"
 
-class UIComponent;
 class Canvas;
+
+enum class e_UIInteractionType 
+{
+	DEFAULT = 0,
+	MOVING  = 1
+};
 
 namespace Graphics
 {
@@ -13,6 +18,8 @@ namespace Graphics
 		class HUDLayer final : public Layer
 		{
 		public:
+			static e_UIInteractionType get_interaction_type();
+
 			virtual void init() override;
 
 			virtual bool handle_event(const SDL_Event* event) override;
@@ -31,6 +38,8 @@ namespace Graphics
 
 		private:
 			std::shared_ptr<Canvas> canvas;
+
+			static e_UIInteractionType sInteractionType;
 		};
 	}
 }

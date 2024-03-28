@@ -110,7 +110,7 @@ void Client::quit()
 	IMG_Quit();
 	SDL_Quit();
 
-	printf("Shutting down.\n");
+	DEVIOUS_EVENT("Shutting down.");
 }
 
 void Client::start_ticking()
@@ -142,7 +142,6 @@ void Client::start_ticking()
 	while (application->is_running())
 	{
 		DEVIOUSMUD::CLIENT::Config::update_deltaTime();
-
 
 		renderer->start_frame();
 

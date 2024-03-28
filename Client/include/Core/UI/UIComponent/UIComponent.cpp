@@ -1,5 +1,7 @@
 #include "precomp.h"
 
+#include "Core/UI/Layer/HUDLayer/HUDLayer.h"
+
 #include "Core/UI/UIComponent/UIComponent.h"
 
 #include "Core/Rendering/Renderer.h"
@@ -17,11 +19,6 @@ UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _si
 
 void UIComponent::init()
 {
-}
-
-void UIComponent::set_movable(bool _bIsMovable)
-{
-    bIsMovable = _bIsMovable;
 }
 
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
@@ -178,77 +175,40 @@ const Rect UIComponent::get_local_rect() const
 
 void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-    for(auto child : children) 
+    _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
+
+    for (auto child : children)
     {
         child->render(_renderer);
     }
-
-    _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
 }
 
 bool UIComponent::handle_event(const SDL_Event* _event)
 {
-    //TODO: MOVE THIS DISGUSTING SHIT TO A INPUT CLASS AT SOME POINT.
-    static bool altDown       = false;
-    static bool leftMouseDown = false;
-
-    //Check if we can move the component
-    if(bIsMovable)
+    if (bIsMovable)
     {
-        switch (_event->type)
+        if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVING)
         {
-        case SDL_KEYDOWN:
-            if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
+            if (!UIComponent::sDraggedComponent)
             {
-                altDown = true;
-            }
-            break;
+                Utilities::ivec2 mousePos;
+                SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
-        case SDL_MOUSEBUTTONDOWN:
-            if (_event->button.button == SDL_BUTTON_LEFT)
-            {
-                leftMouseDown = true;
-            }
-            break;
-
-        case SDL_MOUSEBUTTONUP:
-            if (_event->button.button == SDL_BUTTON_LEFT)
-            {
-                leftMouseDown = false;
-            }
-            break;
-
-        case SDL_KEYUP:
-            if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
-            {
-                altDown = false;
-            }
-            break;
-        }
-    }
-
-    if (altDown && leftMouseDown)
-    {
-        if (!UIComponent::sDraggedComponent)
-        {
-            Utilities::ivec2 mousePos;
-            SDL_GetMouseState(&mousePos.x, &mousePos.y);
-
-            //If the mouse overlaps anywhere of the entirety of this UI element.
-            if (get_local_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
-            {
-                UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
-                UIComponent::sDraggedComponent = this;
-                on_drag_start();
+                //If the mouse overlaps anywhere of the entirety of this UI element.
+                if (get_bounding_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
+                {
+                    UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
+                    UIComponent::sDraggedComponent = this;
+                    on_drag_start();
+                }
             }
         }
-    }
-    else if(UIComponent::sDraggedComponent == this)
-    {
-        UIComponent::sDragOffset = Utilities::vec2(0.0f);
-        UIComponent::sDraggedComponent = nullptr;
-        on_drag_end();
-        
+        else if (UIComponent::sDraggedComponent == this)
+        {
+            UIComponent::sDragOffset = Utilities::vec2(0.0f);
+            UIComponent::sDraggedComponent = nullptr;
+            on_drag_end();
+        }
     }
 
     //Check if any of the children handle it first.
@@ -272,13 +232,11 @@ bool UIComponent::handle_event(const SDL_Event* _event)
 
 void UIComponent::on_drag_start()
 {
-    DEVIOUS_LOG("W");
     sprite.color.a = 122;
 }
 
 void UIComponent::on_drag_end()
 {
-    DEVIOUS_LOG("L");
     sprite.color.a = 255;
 }
 
@@ -297,14 +255,14 @@ void UIComponent::set_size(Utilities::vec2 _size)
 
 void UIComponent::update_children(Rect _oldRect)
 {
-    for (auto child : children)
+    for (auto& child : children)
     {
         const e_AnchorPreset childAnchor = child->anchor;
         const Utilities::vec2 oldAnchorPoint = get_anchor_position(childAnchor, _oldRect);
         const Utilities::vec2 newAnchorPoint = get_anchor_position(childAnchor, get_local_rect());
 
         Utilities::vec2 oldOffset = child->get_position() - oldAnchorPoint;
-        Utilities::vec2 newPos = newAnchorPoint - oldOffset;
+        Utilities::vec2 newPos = newAnchorPoint + oldOffset;
         child->set_position(newPos);
     }
 }

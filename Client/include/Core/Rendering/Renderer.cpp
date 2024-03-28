@@ -18,7 +18,7 @@ using namespace RANDOM;
 Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, const Utilities::ivec2& _c_scale, const std::string& _texture_path)
 {
 	SDL_Window* w = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _c_scale.x, _c_scale.y, 0);
-	SDL_Renderer* r = SDL_CreateRenderer (w, -1, 0);
+	SDL_Renderer* r = SDL_CreateRenderer (w, -1, SDL_RENDERER_ACCELERATED);
 
 	return new Graphics::Renderer(w, r, _texture_path);
 }

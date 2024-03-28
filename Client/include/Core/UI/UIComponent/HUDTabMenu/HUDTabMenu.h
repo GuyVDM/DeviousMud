@@ -10,6 +10,8 @@ public:
 
 	virtual void render(std::shared_ptr<Graphics::Renderer> _renderer) override;
 
+	virtual void on_left_click() override;
+
 private:
 	virtual void init();
 
