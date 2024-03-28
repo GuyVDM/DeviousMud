@@ -17,8 +17,11 @@ using namespace RANDOM;
 
 Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, const Utilities::ivec2& _c_scale, const std::string& _texture_path)
 {
-	SDL_Window* w = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _c_scale.x, _c_scale.y, 0);
+	SDL_Window* w  = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _c_scale.x, _c_scale.y, 0);
 	SDL_Renderer* r = SDL_CreateRenderer (w, -1, SDL_RENDERER_ACCELERATED);
+
+	//Enable alpha blending
+	SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_BLEND);
 
 	return new Graphics::Renderer(w, r, _texture_path);
 }
@@ -92,7 +95,23 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 
 void Graphics::Renderer::start_frame()
 {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
+}
+
+void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color)
+{
+	SDL_Rect topRect = { _pos.x - _borderWidth, _pos.y - _borderWidth, _size.x + _borderWidth * 2, _borderWidth };
+	SDL_Rect bottomRect = { _pos.x - _borderWidth, _pos.y + _size.y, _size.x + _borderWidth * 2, _borderWidth };
+	SDL_Rect leftRect = { _pos.x - _borderWidth, _pos.y, _borderWidth, _size.y };
+	SDL_Rect rightRect = { _pos.x + _size.x, _pos.y, _borderWidth, _size.y };
+	
+	SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
+	
+	SDL_RenderFillRect(renderer, &topRect);
+	SDL_RenderFillRect(renderer, &bottomRect);
+	SDL_RenderFillRect(renderer, &leftRect);
+	SDL_RenderFillRect(renderer, &rightRect);
 }
 
 /// <summary>

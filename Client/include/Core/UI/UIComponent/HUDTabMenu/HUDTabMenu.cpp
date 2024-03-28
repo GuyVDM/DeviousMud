@@ -28,7 +28,7 @@ void HUDTab::render(std::shared_ptr<Renderer> _renderer)
 
 void HUDTab::on_left_click()
 {
-	sprite.color.r = 255;
+	sprite.color = { 255, 0, 0, 255};
 }
 
 /// <summary>

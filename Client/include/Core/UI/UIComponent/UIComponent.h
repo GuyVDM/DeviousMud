@@ -186,6 +186,7 @@ protected:
 	std::vector<std::shared_ptr<UIComponent>>  children;
 	
 private:
+	bool									   bIsDragged = false;
 	e_AnchorPreset                             anchor;
 };
 

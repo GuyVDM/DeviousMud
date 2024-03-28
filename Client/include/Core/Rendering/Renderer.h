@@ -77,6 +77,8 @@ namespace Graphics
 
 		void start_frame();
 
+		void draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color = { 255, 255, 255, 255 });
+
 		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize = GRID_CELL_PX_SIZE);
 
 		void plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size);

@@ -175,6 +175,16 @@ const Rect UIComponent::get_local_rect() const
 
 void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 {
+    if(bIsDragged) 
+    {
+        const SDL_Color yellow = { 255, 255, 0, 255 };
+        const Rect boundingRect = get_bounding_rect();
+        const Utilities::vec2 pos = boundingRect.minPos;
+        const Utilities::vec2 size = boundingRect.maxPos - boundingRect.minPos;
+
+        _renderer->draw_outline(pos, size, 3, yellow);
+    }
+
     _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
 
     for (auto child : children)
@@ -185,9 +195,9 @@ void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 
 bool UIComponent::handle_event(const SDL_Event* _event)
 {
-    if (bIsMovable)
+    if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVING)
     {
-        if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVING)
+        if (bIsMovable)
         {
             if (!UIComponent::sDraggedComponent)
             {
@@ -199,16 +209,21 @@ bool UIComponent::handle_event(const SDL_Event* _event)
                 {
                     UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
                     UIComponent::sDraggedComponent = this;
+                    bIsDragged = true;
                     on_drag_start();
                 }
             }
+
+            return true;
         }
-        else if (UIComponent::sDraggedComponent == this)
-        {
-            UIComponent::sDragOffset = Utilities::vec2(0.0f);
-            UIComponent::sDraggedComponent = nullptr;
-            on_drag_end();
-        }
+    }
+     
+    if (UIComponent::sDraggedComponent == this)
+    {
+        UIComponent::sDragOffset = Utilities::vec2(0.0f);
+        UIComponent::sDraggedComponent = nullptr;
+        bIsDragged = false;
+        on_drag_end();
     }
 
     //Check if any of the children handle it first.
@@ -232,12 +247,12 @@ bool UIComponent::handle_event(const SDL_Event* _event)
 
 void UIComponent::on_drag_start()
 {
-    sprite.color.a = 122;
+
 }
 
 void UIComponent::on_drag_end()
 {
-    sprite.color.a = 255;
+
 }
 
 /// <summary>
