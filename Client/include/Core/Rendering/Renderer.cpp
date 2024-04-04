@@ -101,10 +101,13 @@ void Graphics::Renderer::start_frame()
 
 void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color)
 {
-	SDL_Rect topRect = { _pos.x - _borderWidth, _pos.y - _borderWidth, _size.x + _borderWidth * 2, _borderWidth };
-	SDL_Rect bottomRect = { _pos.x - _borderWidth, _pos.y + _size.y, _size.x + _borderWidth * 2, _borderWidth };
-	SDL_Rect leftRect = { _pos.x - _borderWidth, _pos.y, _borderWidth, _size.y };
-	SDL_Rect rightRect = { _pos.x + _size.x, _pos.y, _borderWidth, _size.y };
+	Utilities::ivec2 iPos = Utilities::to_ivec2(_pos);
+	Utilities::ivec2 iSize = Utilities::to_ivec2(_size);
+
+	SDL_Rect topRect = { iPos.x - _borderWidth, iPos.y - _borderWidth, iSize.x + _borderWidth * 2, _borderWidth };
+	SDL_Rect bottomRect = { iPos.x - _borderWidth, iPos.y + iSize.y, iSize.x + _borderWidth * 2, _borderWidth };
+	SDL_Rect leftRect = { iPos.x - _borderWidth, iPos.y, _borderWidth, iSize.y };
+	SDL_Rect rightRect = { iPos.x + iSize.x, iPos.y, _borderWidth, iSize.y };
 	
 	SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
 	
@@ -172,7 +175,8 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 		SDL_SetTextureAlphaMod(texture, _s.color.a);
 
 		//Copy it over to the final frame.
-		SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+		SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+		SDL_RenderCopyEx(renderer, texture, &srcRect, &destRect, 0, NULL, flipFlags);
 
 		//Reset to default colors after rendering.
 		SDL_SetTextureColorMod(texture, 255, 255, 255);
@@ -189,7 +193,7 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 	SDL_Texture* texture = sprites[_s.get_sprite_type()]->get_texture();
 
 	// Generate rect based on what part of the png we want our sprite to be 
-	const int32_t spriteWidth = (int32_t)_s.size.x / _s.get_framecount();
+	const int32_t spriteWidth = (int32_t)_s.dimension.x / _s.get_framecount();
 	const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
 
 	const SDL_Rect srcRect
@@ -197,7 +201,7 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 		spriteWidth * frame,
 		0,
 		spriteWidth,
-		_s.size.y,
+		(int)_s.dimension.y,
 	};
 
 	const SDL_Rect destRect
@@ -213,7 +217,8 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 	SDL_SetTextureAlphaMod(texture, _s.color.a);
 
 	//Copy it over to the final frame.
-	SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+	SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+	SDL_RenderCopyEx(renderer, texture, &srcRect, &destRect, 0, NULL, flipFlags);
 
 	//Reset to default colors after rendering.
 	SDL_SetTextureColorMod(texture, 255, 255, 255);
@@ -242,7 +247,7 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 		sprite.frame = 0;
 		sprite.frameCount = 0;
 		sprite.spriteType = _spriteType;
-		sprite.size = Utilities::vec2(0.0f, 0.0f);
+		sprite.dimension = Utilities::vec2(0.0f, 0.0f);
 		return sprite;
 	}
 
@@ -260,7 +265,8 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 	sprite.frame      = 0;
 	sprite.frameCount = details->get_framecount();
 	sprite.spriteType = _spriteType;
-	sprite.size       = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
+	sprite.dimension  = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
+	sprite.bIsFlipped = false;
 
 	return sprite;
 }

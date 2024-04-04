@@ -7,8 +7,9 @@ class Canvas;
 
 enum class e_UIInteractionType 
 {
-	DEFAULT = 0,
-	MOVING  = 1
+	INTERACT          = 0,
+	DISPLAY           = 1,
+	MOVE              = 2
 };
 
 namespace Graphics

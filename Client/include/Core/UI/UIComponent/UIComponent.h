@@ -33,6 +33,11 @@ typedef struct _Rect
 		return (_point.x >= minPos.x && _point.x <= maxPos.x && _point.y >= minPos.y && _point.y <= maxPos.y);
 	}
 
+	 const Utilities::vec2 get_size() const 
+	 {
+		 return Utilities::vec2(maxPos.x - minPos.x, maxPos.y - minPos.y);
+	 }
+
 }   Rect;
 
 namespace Graphics 
@@ -52,7 +57,7 @@ public:
 	using Size     = Utilities::vec2;
 
 	template <typename T>
-	static std::shared_ptr<T> create_component(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite, bool _bInteractable = false);
+	static std::shared_ptr<T> create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable = false);
 
 	/// <summary>
 	/// Generates a anchor based on the preset and the parents transform.
@@ -158,22 +163,12 @@ private:
 	static Utilities::vec2 sDragOffset;
 
 	/// <summary>
-	/// When this UI elements is getting dragged.
-	/// </summary>
-	void on_drag_start();
-
-	/// <summary>
-	/// When this UI element is done getting dragged.
-	/// </summary>
-	void on_drag_end();
-
-	/// <summary>
 	/// Make children adjust to any potential changes. Call when a change related to the position or scale has been made.
 	/// </summary>
 	void update_children(Rect _oldRect);
 
 	template<typename T>
-	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite, bool _bInteractable);
+	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable);
 
 	friend UIComponent;
 
@@ -186,12 +181,11 @@ protected:
 	std::vector<std::shared_ptr<UIComponent>>  children;
 	
 private:
-	bool									   bIsDragged = false;
 	e_AnchorPreset                             anchor;
 };
 
 template<typename T>
-inline std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite, bool _bInteractable)
+inline std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable)
 {
 	static_assert(std::is_base_of<UIComponent, T>::value, "T must inherit from the UIComponent.");
 	

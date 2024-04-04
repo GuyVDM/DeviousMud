@@ -5,6 +5,8 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
+#include "Shared/Utilities/EventListener.h"
+
 namespace Graphics 
 {
 	enum class SpriteType : uint16_t
@@ -27,6 +29,8 @@ namespace Graphics
 	typedef class _Sprite 
 	{
 	public:
+		EventListener<uint64_t> on_destroyed;
+
 		SDL_Color color = {255, 255, 255, 255};
 		uint32_t  frame = 0;
 
@@ -46,11 +50,14 @@ namespace Graphics
 
 		_Sprite();
 
+		~_Sprite();
+
+		bool bIsFlipped = false;
 	private:
 		DEVIOUSMUD::RANDOM::UUID uuid;
 		SpriteType		spriteType = SpriteType::NONE;
 		uint32_t		frameCount = 0;
-		Utilities::vec2 size;
+		Utilities::vec2 dimension;
 
 		friend class Renderer;
 

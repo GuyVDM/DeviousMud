@@ -10,10 +10,14 @@
 
 #include "Core/Global/C_Globals.h"
 
+#include "Core/Rendering/Animation/Animator/Animator.h"
+
 using Config = DEVIOUSMUD::CLIENT::Config;
 
 using namespace DEVIOUSMUD;
 using namespace PATH;
+
+using namespace Graphics::Animation;
 
 PlayerHandler::PlayerHandler()
 {
@@ -40,8 +44,22 @@ void PlayerHandler::create_player(const uint64_t& _playerhandle, PlayerDetails& 
 		players[_playerhandle] =
 		{
 			PlayerDetails(_details),
-			SimPosition(Utilities::to_vec2(_details.position))
+			SimPosition(Utilities::to_vec2(_details.position)),
+			g_globals.renderer.lock()->get_sprite(Graphics::SpriteType::PLAYER)
 		};
+		
+		PlayerData& data = players[_playerhandle];
+		auto stop_walk_anim = [&data]()
+		{
+			Animator::stop_current_animation(data.sprite);
+		};
+
+		data.simPos.on_reached_dest.add_listener
+		(
+			stop_walk_anim
+		);
+
+		Animator::set_default_animation(players[_playerhandle].sprite, e_AnimationType::PLAYER_IDLE, 8.5f);
 
 		on_player_created.invoke(_playerhandle);
 		return;
@@ -90,6 +108,10 @@ void _PlayerData::set_position_from_server(const Utilities::ivec2 _position)
 {
 	details.position = _position;
 	simPos.set_target(Utilities::to_vec2(_position));
+
+	sprite.bIsFlipped = simPos.get_position().x > details.position.x;
+
+	Animator::play_animation(sprite, e_AnimationType::PLAYER_WALKING, true, 10.0f);
 }
 
 void SimPosition::set_target(const Utilities::vec2& _target)
@@ -141,6 +163,7 @@ void SimPosition::update()
 	if(timeline == MAX_TIMELINE) 
 	{
 		bIsDirty = false;
+		on_reached_dest.invoke();
 	}
 }
 

@@ -54,7 +54,7 @@ void Application::load_sprites()
 
 	// Miscelaneous sprites
 	{
-		renderer->load_and_bind_surface("Kirby.png", Graphics::SpriteType::PLAYER);
+		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
 		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
 		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
 	}

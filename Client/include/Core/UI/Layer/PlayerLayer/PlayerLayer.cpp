@@ -14,6 +14,11 @@
 
 void Graphics::UI::PlayerLayer::init()
 {
+	//Set player size.
+	{
+		playerSize = Utilities::vec2(128.0f);
+	}
+
 	//Set the player camera as the main camera within the renderer
 	{
 		renderer = g_globals.renderer.lock();
@@ -24,7 +29,6 @@ void Graphics::UI::PlayerLayer::init()
 	//Grab the player sprite from the renderer and cache it for rendering.
 	{
 		playerHandler = g_globals.playerHandler.lock();
-		playerSprite = renderer->get_sprite(SpriteType::PLAYER);
 	}
 
 	//Bind listeners
@@ -53,9 +57,8 @@ void Graphics::UI::PlayerLayer::update()
 	//Render all player sprites.
 	for (const uint64_t playerHandle : playerHandles)
 	{
-		const Utilities::vec2 size{ 32.0f, 32.0f };
-
-		SimPosition& simPos = playerHandler->get_data(playerHandle).simPos;
+		PlayerData& playerData = playerHandler->get_data(playerHandle);
+		SimPosition& simPos = playerData.simPos;
 
 		//Update the simulated player position.
 		if (simPos.is_dirty())
@@ -63,7 +66,8 @@ void Graphics::UI::PlayerLayer::update()
 			simPos.update();
 		}
 
-		renderer->plot_frame(playerSprite, simPos.get_position(), size);
+		const Utilities::vec2 tileCenterOffset = (((playerSize * 0.5f) / 64.0f) - Utilities::vec2(0.25f, 0.15f));
+		renderer->plot_frame(playerData.sprite, simPos.get_position() - tileCenterOffset, playerSize);
 	}
 
 	if (bHasLocalPlayer)

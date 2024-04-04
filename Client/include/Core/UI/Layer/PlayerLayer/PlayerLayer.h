@@ -38,6 +38,8 @@ namespace Graphics
 		private:
 			bool bHasLocalPlayer = false;
 
+			Utilities::vec2 playerSize = Utilities::vec2(64.0f);
+
 			std::shared_ptr<Camera>		        playerCamera;
 
 			std::shared_ptr<PlayerHandler>      playerHandler;
@@ -45,9 +47,6 @@ namespace Graphics
 			std::shared_ptr<Graphics::Renderer> renderer;
 
 			std::vector<uint64_t>               playerHandles;
-
-			Graphics::Sprite                    playerSprite;
-
 		};
 	}
 }

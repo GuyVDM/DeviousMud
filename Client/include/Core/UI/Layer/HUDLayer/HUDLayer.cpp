@@ -12,7 +12,7 @@ using namespace Utilities;
 using namespace Graphics;
 using namespace UI;
 
-e_UIInteractionType HUDLayer::sInteractionType = e_UIInteractionType::DEFAULT;
+e_UIInteractionType HUDLayer::sInteractionType = e_UIInteractionType::INTERACT;
 
 e_UIInteractionType HUDLayer::get_interaction_type()
 {
@@ -76,7 +76,9 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 
 	/// Set the interaction type to moving if both buttons are pressed.
 	/// Moving state makes it so that any hovered on UI elements follows the mouse.
-	sInteractionType = (altDown && leftMouseDown) ? e_UIInteractionType::MOVING : e_UIInteractionType::DEFAULT;
+	sInteractionType = altDown && leftMouseDown ? e_UIInteractionType::MOVE    :
+		                                altDown ? e_UIInteractionType::DISPLAY :
+		                                          e_UIInteractionType::INTERACT;
 
 	return canvas->handle_event(event);
 }
@@ -94,15 +96,18 @@ void HUDLayer::create_hud()
 
 		component = UIComponent::create_component<HUDTabMenu>
 		(
-			UIComponent::Position(0.0f, 0.0f),
-			UIComponent::Size(336.0f, 504.0f),
+			UIComponent::Position(0.0f),
+			UIComponent::Size(336.0f * 0.625f, 504.0f * 0.625f),
 			SpriteType::HUD_BACKDROP,
 			true
 		);
 
-		Utilities::vec2 position = Utilities::to_vec2(viewportSize) - component->get_size();
+		const Rect boundingRect = component->get_bounding_rect();
+		const Utilities::vec2 size = boundingRect.get_size();
+		const Utilities::vec2 offset = component->get_position() - Utilities::vec2(boundingRect.minPos.x, boundingRect.minPos.y);
+		const Utilities::vec2 position = Utilities::to_vec2(viewportSize) - size + offset;
 		component->set_position(position);
-		component->set_anchor(e_AnchorPreset::TOP_RIGHT);
+		component->set_anchor(e_AnchorPreset::BOTTOM_RIGHT);
 		canvas->add_child(component);
 	}
 }

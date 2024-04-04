@@ -22,26 +22,31 @@ const DEVIOUSMUD::RANDOM::UUID Graphics::_Sprite::get_uuid() const
 
 const float& Graphics::_Sprite::get_width() const
 {
-	return size.x;
+	return dimension.x;
 }
 
 const float& Graphics::_Sprite::get_height() const
 {
-	return size.y;
+	return dimension.y;
 }
 
 const Utilities::vec2& Graphics::_Sprite::get_dimensions() const
 {
-	return size;
+	return dimension;
 }
 
 Graphics::_Sprite::_Sprite() : 
-	spriteType(SpriteType::NONE), frameCount(-1), color({255, 255, 255, 255}), uuid(UUID::generate()), size(0)
+	spriteType(SpriteType::NONE), frameCount(-1), color({255, 255, 255, 255}), uuid(UUID::generate()), dimension(0)
 {
+}
+
+Graphics::_Sprite::~_Sprite()
+{
+	on_destroyed.invoke(uuid);
 }
 
 Graphics::_Sprite::_Sprite(const _Sprite& _other) :
 	spriteType(_other.spriteType), frameCount(_other.frameCount), color(_other.color), 
-	uuid(UUID::generate()), size(_other.size)
+	uuid(UUID::generate()), dimension(_other.dimension)
 {
 }

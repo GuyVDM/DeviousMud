@@ -25,6 +25,7 @@ class EventListener;
 class SimPosition 
 {
 public:
+	EventListener<void> on_reached_dest;
 
 	void update();
 
@@ -59,8 +60,9 @@ private:
 /// </summary>
 typedef struct _PlayerData 
 { 
-	PlayerDetails details;
-	SimPosition   simPos;
+	PlayerDetails    details;
+	SimPosition      simPos;
+	Graphics::Sprite sprite;
 
 	void set_position_from_server(const Utilities::ivec2 _position);
 
