@@ -106,12 +106,14 @@ void PlayerHandler::register_local_player(uint64_t _localPlayerId)
 
 void _PlayerData::set_position_from_server(const Utilities::ivec2 _position)
 {
-	details.position = _position;
-	simPos.set_target(Utilities::to_vec2(_position));
+	if (details.position != _position)
+	{
+		details.position = _position;
+		simPos.set_target(Utilities::to_vec2(_position));
+		sprite.bIsFlipped = simPos.get_position().x > details.position.x;
 
-	sprite.bIsFlipped = simPos.get_position().x > details.position.x;
-
-	Animator::play_animation(sprite, e_AnimationType::PLAYER_WALKING, true, 10.0f);
+		Animator::play_animation(sprite, e_AnimationType::PLAYER_WALKING, true, 10.0f);
+	}
 }
 
 void SimPosition::set_target(const Utilities::vec2& _target)
