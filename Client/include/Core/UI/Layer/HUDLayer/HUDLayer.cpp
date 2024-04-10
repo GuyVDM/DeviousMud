@@ -42,9 +42,16 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 		break;
 
 		case SDL_MOUSEBUTTONDOWN:
-		if (event->button.button == SDL_BUTTON_LEFT)
 		{
-			leftMouseDown = event->button.button == SDL_BUTTON_LEFT;
+			if (event->button.button == SDL_BUTTON_LEFT)
+			{
+				leftMouseDown = event->button.button == SDL_BUTTON_LEFT;
+			}
+
+			if (event->button.button == SDL_BUTTON_RIGHT)
+			{
+				OptionsTab::open_option_menu();
+			}
 		}
 		break;
 
@@ -119,7 +126,8 @@ void HUDLayer::create_hud()
 			(
 				UIComponent::Position(100.0f, 100.0f),
 				UIComponent::Size(100.0f, 50.0f),
-				SpriteType::HUD_OPTIONS_BOX
+				SpriteType::HUD_OPTIONS_BOX,
+				true
 			);
 	}   canvas->add_child(component);
 }
@@ -132,5 +140,10 @@ void HUDLayer::update()
 	{	
 		base->render(renderer);
 	}
+}
+
+Graphics::UI::HUDLayer::~HUDLayer()
+{
+	UIComponent::sDraggedComponent = nullptr;
 }
 

@@ -8,14 +8,14 @@ public:
 
 	void set_icon(Graphics::SpriteType _sprite, Utilities::vec2 _iconSize);
 
-	virtual void render(std::shared_ptr<Graphics::Renderer> _renderer) override;
-
+protected:
 	virtual void on_left_click() override;
+	
+	virtual void init() override;
 
 private:
-	virtual void init();
+	void renderBG(std::shared_ptr<Graphics::Renderer> _renderer) ;
 
-private:
 	using UIComponent::UIComponent;
 
 private:

@@ -89,19 +89,19 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 		{
 			case PACKET_MOVE_PLAYER:
 			{
-				const PlayerUUID playerId = _client->playerId;
+				const PlayerUUID fromPlayerId = _client->fromPlayerId;
 
 				auto pMovement = transform_packet<Packets::s_PlayerMovement>(std::move(packet));
-				bool reachedDest = g_globals.playerHandler->move_player_towards(playerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
+				bool reachedDest = g_globals.playerHandler->move_player_towards(fromPlayerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
 
 				// Send updated player position back to the clients.
 				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that's invalid.
 				{
-					ivec2 playerPos = g_globals.playerHandler->get_player_position(playerId);
+					ivec2 playerPos = g_globals.playerHandler->get_player_position(fromPlayerId);
 
 					Packets::s_PlayerMovement packet;
 					packet.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
-					packet.playerId = playerId;
+					packet.fromPlayerId = fromPlayerId;
 					packet.x = playerPos.x;
 					packet.y = playerPos.y;
 
@@ -113,7 +113,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				{
 					//Retrieve the current position after having moved the player.
 					Packets::s_PlayerMovement position;
-					position.playerId = _client->playerId;
+					position.fromPlayerId = _client->fromPlayerId;
 					position.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
 					position.x = pMovement->x;
 					position.y = pMovement->y;

@@ -5,113 +5,241 @@
 
 #include "Core/UI/UIComponent/TextComponent/TextComponent.h"
 
+#include "Core/Rendering/Renderer.h"
+
 using namespace Graphics;
 
 EventListener<OptionArgs> OptionsTab::on_option_added;
+EventListener<void>       OptionsTab::on_options_show;
 
 void OptionsTab::add_option(std::string _actionStr, std::string _subjectStr, const DM::Actions::Action& _action)
 {
 	OptionArgs args;
-	args.action = _action;
+	args.actionType = _action;
 	args.actionStr = _actionStr;
 	args.subjectStr = _subjectStr;
 
 	on_option_added.invoke(args);
 }
 
+void OptionsTab::open_option_menu()
+{
+	on_options_show.invoke();
+}
+
 void OptionsTab::init()
 {
-	//Bind callback
-	on_option_added.add_listener
-	(
-		std::bind(&OptionsTab::create_option, this, std::placeholders::_1)
-	);
-
-	//Create visuals
+	//Set up callbacks
 	{
+		on_render_call.add_listener
+		(
+			std::bind(&OptionsTab::renderOutlines, this, std::placeholders::_1)
+		);
+
+		on_option_added.add_listener
+		(
+			std::bind(&OptionsTab::create_option, this, std::placeholders::_1)
+		);
+
+		on_options_show.add_listener
+		(
+			std::bind(&OptionsTab::show, this)
+		);
+	}
+
+	//Set up visuals
+	{
+		sprite.color = { 0, 0, 0, 0 };
 		std::shared_ptr<UIComponent> component;
 		//Create options header 
 		{
 			TextArgs args;
-			args.color = { 131, 133, 134 , 255 };
-			args.font = e_FontType::RUNESCAPE_UF;
-			args.size = 25;
-			component = TextComponent::create_text("Choose Option:", get_position() + Utilities::vec2(10.0f, 2.5f), args);
-		}	add_child(component);
+			{
+				args.color = { 93, 84, 71 , 255 };
+				args.font = e_FontType::RUNESCAPE_UF;
+				args.size = 25;
+			}
 
-		set_size(component->get_size() + Utilities::vec2(20.0f, 5.0f));
+			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), args);
+			add_child(component);
+			set_size(component->get_size() + Utilities::vec2(20.0f, 5.0f));
+			component->set_anchor(e_AnchorPreset::CENTER_LEFT);
+		}
+	}
 
-		bIsMovable = true;
+	close();
+}
 
-		DM::Actions::Action action;
-		action.action = DM::Actions::e_ActionType::ATTACK;
-		action.playerId = DM::Utils::UUID::generate();
-		action.subjectId = DM::Utils::UUID::generate();
-		action.subject = DM::Actions::e_SubjectType::PLAYER;
-
-		OptionArgs args;
-		args.action = action;
-		args.actionStr = "Attack";
-		args.subjectStr = "Test";
-
-		create_option(args);
-
-		create_option(args);
+void OptionsTab::on_hover_end()
+{
+	if(bIsActive) 
+	{
+		close();
 	}
 }
 
 void OptionsTab::create_option(OptionArgs _args)
 {
-	Utilities::vec2 size = get_size();
+	const Utilities::vec2 size = get_size();
 
 	std::shared_ptr<Option> option = UIComponent::create_component<Option>	
 	(
 		get_position(),
 		get_size(),
-		SpriteType::HUD_OPTIONS_BOX
-	);
-	add_child(option);
+		SpriteType::HUD_OPTIONS_BOX,
+		true
+	);  add_child(option);
 
+	option->on_clicked.add_listener
+	(
+		std::bind(&OptionsTab::close, this)
+	);
+
+	//Register the option
 	option->set_option(_args);
+
+	//Move the option to the latest dropdown slot.
+	const Utilities::vec2 position = get_position() + Utilities::vec2(0.0f, 4.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
+	option->set_position(position);
+
+	regenerate_option_bounding_rect();
+}
+
+void OptionsTab::regenerate_option_bounding_rect()
+{
+	Rect biggestRect { get_position(), get_position() };
+	const float pxEdgeOffset = 5.0f;
+
+	//We start at 1 since the header text element takes slot 0 always.
+	for (int i = 1; i < children.size(); i++) 
+	{
+		if (children[i]) 
+		{
+			biggestRect.minPos.x = std::min(biggestRect.minPos.x, children[i]->get_bounding_rect().minPos.x);
+			biggestRect.minPos.y = std::min(biggestRect.minPos.y, children[i]->get_bounding_rect().minPos.y);
+			biggestRect.maxPos.x = std::max(biggestRect.maxPos.x, children[i]->get_bounding_rect().maxPos.x);
+			biggestRect.maxPos.y = std::max(biggestRect.maxPos.y, children[i]->get_bounding_rect().maxPos.y);
+		}
+	}	
+
+	biggestRect.maxPos.x += pxEdgeOffset;
+	boundingRectOptions = biggestRect;
+
+	//Scale all UI elements horizontally to match the biggest item.
+	for (int i = 1; i < children.size(); i++)
+	{
+		const Utilities::vec2 childSizeOld = children[i]->get_size();
+		children[i]->set_size(Utilities::vec2(biggestRect.get_size().x, childSizeOld.y));
+	}   
+	
+	set_size(Utilities::vec2(biggestRect.get_size().x, get_size().y));
+}
+
+void OptionsTab::show()
+{
+	if (!bIsActive) 
+	{
+		Utilities::ivec2 mousePos;
+		SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+		bIsActive = true;
+		set_position(Utilities::to_vec2(mousePos));
+	}
+}
+
+void OptionsTab::close()
+{
+	const auto& startOptions = children.begin() + 1;
+
+	children.erase(startOptions, children.end());
+	children.resize(1);
+
+	bIsActive = false;
+}
+
+void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
+{
+	const float pxOutline = 2;
+	const SDL_Color outlineColor = { 93, 84, 71, 255 };
+	const SDL_Color optionsOutlineColor = { 0, 0, 0, 255 };
+
+	//Outline around entire options tab.
+	_renderer->draw_outline(get_position(), get_bounding_rect().get_size(), pxOutline, outlineColor);
+
+	//Render bounding rectangle around the options specifically.
+	_renderer->draw_outline(boundingRectOptions.minPos, boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
+
+	//Render outline around the options header.
+	_renderer->draw_outline(get_position(), get_local_rect().get_size(), pxOutline, outlineColor);
 }
 
 void Option::on_hover()
 {
-	sprite.color = { 255, 255, 255, 255 };
+	sprite.color = { 103, 94, 81, 255 };
 }
 
 void Option::on_hover_end()
 {
-	sprite.color = { 200, 200, 200, 255 };
+	sprite.color = { 93, 84, 71, 255 };
+}
+
+void Option::on_left_click()
+{
+	on_clicked.invoke();
+	//TODO: Send Packet with the option args.
+	DEVIOUS_EVENT("Selected Option.")
 }
 
 void Option::init()
 {
-	sprite.color = { 200, 200, 200, 255 };
+	sprite.color = { 93, 84, 71, 255 };
 }
 
 void Option::set_option(OptionArgs _args)
 {
 	args = _args;
 
+	//Define Text
+	TextArgs args;
+	{
+		args.color = { 255, 255, 0 , 255 };
+		args.font = e_FontType::RUNESCAPE_UF;
+		args.size = 25;
+		args.bDropShadow = true;
+	}
+
 	//Create visuals
 	{
-		TextArgs args;
-		args.color = { 131, 133, 134 , 255 };
-		args.font = e_FontType::RUNESCAPE_UF;
-		args.size = 15;
+		const float pxWhiteSpacing = 5.0f;
+		const float textSpacing = 10.0f;
 
-		std::shared_ptr<UIComponent> component;
-		//Create options header 
+		std::shared_ptr<TextComponent> textComponent;
+
+		float prevHorTextSize = 0.0f;
+		//Create Action Text
 		{
-			Utilities::vec2 position = parent->get_position() + Utilities::vec2(0.0f, parent->get_size().y);
-			position += Utilities::vec2(0.0f, get_size().y) * parent->get_child_count() - 1;
-			set_position(position);
+			textComponent = TextComponent::create_text(_args.actionStr.c_str(), get_position(), args);
+			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
-			//Create text
-			component = TextComponent::create_text(_args.actionStr.c_str(), get_position() + Utilities::vec2(10.0f, 2.5f), args);
-			set_size(component->get_size() + Utilities::vec2(20.0f, (float)args.size / 2.0f));
+			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
+			const Utilities::vec2 position = textComponent->get_position();
+			textComponent->set_position(position + Utilities::vec2(pxWhiteSpacing, ySizeDiff / 2.0f));
 
-		}	add_child(component);
+			prevHorTextSize = textComponent->get_size().x + textSpacing;
+
+		}	add_child(textComponent);
+
+		//Create Subject Text
+		{
+			args.color = { 255, 0, 0, 255 };
+
+			textComponent = TextComponent::create_text(_args.subjectStr.c_str(), get_position(), args);
+			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
+
+			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
+			const Utilities::vec2 position = textComponent->get_position();
+			textComponent->set_position(position + Utilities::vec2(prevHorTextSize, ySizeDiff / 2.0f));
+
+		}	add_child(textComponent);
 	}
 }

@@ -47,13 +47,13 @@ namespace Packets
 		/// <summary>
 		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
 		/// </summary>
-		uint64_t playerId = -1;
+		uint64_t fromPlayerId = -1;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
-			ar(playerId);
+			ar(fromPlayerId);
 		}
 	};
 

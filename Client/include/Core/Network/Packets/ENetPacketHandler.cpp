@@ -66,7 +66,7 @@ void ENetPacketHandler::process_packet()
 			Packets::s_PlayerMovement playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &event);
 
-			playerHandler->get_data(playerData.playerId).set_position_from_server
+			playerHandler->get_data(playerData.fromPlayerId).set_position_from_server
 			(
 				Utilities::ivec2(playerData.x, playerData.y)
 			);
@@ -93,7 +93,7 @@ void ENetPacketHandler::process_packet()
 			details.position.x = player.x;
 			details.position.y = player.y;
 
-			playerHandler->create_player(player.playerId, details);
+			playerHandler->create_player(player.fromPlayerId, details);
 		}
 		break;
 
@@ -101,7 +101,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Player player;
 			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &event);
-			playerHandler->on_local_player_assigned.invoke(player.playerId);
+			playerHandler->on_local_player_assigned.invoke(player.fromPlayerId);
 		}
 		break;
 
@@ -109,7 +109,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Player playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &event);
-			playerHandler->remove_player(playerData.playerId);
+			playerHandler->remove_player(playerData.fromPlayerId);
 		}
 		break;
 

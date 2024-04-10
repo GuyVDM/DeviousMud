@@ -9,15 +9,22 @@ struct OptionArgs
 {
 	std::string actionStr;
 	std::string subjectStr;
-	DM::Actions::Action action;
+	DM::Actions::Action actionType;
 };
 
+/// <summary>
+/// An entry to the option menu.
+/// </summary>
 class Option : public UIComponent
 {
 public:
+	EventListener<void> on_clicked;
+
 	virtual void on_hover() override;
 
 	virtual void on_hover_end() override;
+
+	virtual void on_left_click() override;
 
 	virtual ~Option() = default;
 
@@ -29,7 +36,6 @@ private:
 	void set_option(OptionArgs _args);
 
 private:
-
 	OptionArgs args;
 
 	friend class OptionsTab;
@@ -40,24 +46,59 @@ private:
 /// </summary>
 class OptionsTab : public UIComponent
 {
-public:
 	/// <summary>
 	/// Adds an entry to the options menu, if clicked it will send a packet to the server using the Action.
 	/// </summary>
 	/// <param name="_actionStr"></param>
 	/// <param name="_subjectStr"></param>
 	/// <param name="_action"></param>
-	static void add_option(std::string _actionStr, std::string _subjectStr, const DM::Actions::Action& _action);
+	public: static void add_option(std::string _actionStr, std::string _subjectStr, const DM::Actions::Action& _action);
+	
+	/// <summary>
+	/// Opens up the options menu.
+	/// </summary>
+	public: static void open_option_menu();
+	
+	/// <summary>
+	/// Callback to whenever the option menu opens.
+	/// </summary>
+	private: static EventListener<void> on_options_show;
+
+	/// <summary>
+	/// A query of all options registered.
+	/// </summary>
+	private: static EventListener<OptionArgs> on_option_added;
+
+public:
+
+
+	void show();
+
+	void close();
 
 	virtual ~OptionsTab() = default;
 
 	using UIComponent::UIComponent;
 
+protected:
+	virtual void init() override;
+
+	virtual void on_hover_end() override;
+
+	void renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer);
+
 private:
-	static EventListener<OptionArgs> on_option_added;
-
-	virtual void init();
-
+	/// <summary>
+	/// Callback that's subscribed to the 'on_option_added' event.
+	/// </summary>
+	/// <param name="_args"></param>
 	void create_option(OptionArgs _args);
 
+	/// <summary>
+	/// Rescale the option menu to match to the biggest child element.
+	/// </summary>
+	void regenerate_option_bounding_rect();
+
+private:
+	Rect boundingRectOptions;
 };

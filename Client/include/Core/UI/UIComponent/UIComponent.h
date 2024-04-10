@@ -111,38 +111,6 @@ public:
 	/// <returns></returns>
 	const int32_t get_child_count() const;
 
-	virtual ~UIComponent() = default;
-	UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite);
-
-protected:
-	/// <summary>
-	/// Initialise the component.
-	/// </summary>
-	virtual void init();
-	
-	/// <summary>
-	/// Makes the transform of this object relative to the parent.
-	/// </summary>
-	/// <param name="_parent"></param>
-	void set_parent(UIComponent* _parent);
-
-	/// <summary>
-	/// Returns the rectangular surface area that's occupied by this element specifically
-	/// </summary>
-	/// <returns></returns>
-	const Rect get_local_rect() const;
-
-	/// <summary>
-	/// Returns the complete rectangular surface area that's occupied by the ui element and its children.
-	/// </summary>
-	/// <returns></returns>
-	const Rect get_bounding_rect() const;
-
-	/// <summary>
-	/// Renders the UI element.
-	/// </summary>
-	virtual void render(std::shared_ptr<Graphics::Renderer> _renderer);
-
 	/// <summary>
 	/// Changes the position of the UI element.
 	/// Updates the parent & the children accordingly.
@@ -157,7 +125,50 @@ protected:
 	/// <param name="_size"></param>
 	virtual void set_size(Utilities::vec2 _size) final override;
 
+	/// <summary>
+	/// Returns the rectangular surface area that's occupied by this element specifically
+	/// </summary>
+	/// <returns></returns>
+	const Rect get_local_rect() const;
+
+	/// <summary>
+	/// Returns the complete rectangular surface area that's occupied by the ui element and its children.
+	/// </summary>
+	/// <returns></returns>
+	const Rect get_bounding_rect() const;
+
+	/// <summary>
+	/// Whether is UIElement should be executed and displayed.
+	/// </summary>
+	/// <param name="_bIsActive"></param>
+	void set_active(bool _bIsActive);
+
+	virtual ~UIComponent() = default;
+	UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite);
+
+protected:
+	/// <summary>
+	/// Eventlistener to bind any additional rendering related calls to.
+	/// </summary>
+	EventListener<std::shared_ptr<Graphics::Renderer>> on_render_call;
+
+	/// <summary>
+	/// Initialise the component.
+	/// </summary>
+	virtual void init();
+	
+	/// <summary>
+	/// Makes the transform of this object relative to the parent.
+	/// </summary>
+	/// <param name="_parent"></param>
+	void set_parent(UIComponent* _parent);
+
 private:
+	/// <summary>
+	/// Renders the UI element.
+	/// </summary>
+	void render(std::shared_ptr<Graphics::Renderer> _renderer);
+
 	/// <summary>
 	/// Reference to UI component that's getting moved.
 	/// </summary>
@@ -182,6 +193,7 @@ private:
 	friend std::shared_ptr<UIComponent>;
 
 protected:
+	bool                                       bIsActive     = true;
 	bool                                       bIsMovable    = false;
 	bool									   bInteractable = true;
 	UIComponent*                               parent;

@@ -21,10 +21,10 @@ namespace DM
 
 		struct Action
 		{
-			DM::Utils::UUID playerId;
-			DM::Utils::UUID subjectId;
-			e_SubjectType   subject;
-			e_ActionType    action;
+			DM::Utils::UUID fromPlayerId;
+			DM::Utils::UUID toTargetId;
+			e_SubjectType   subjectType;
+			e_ActionType    actionType;
 		};
 	}
 }

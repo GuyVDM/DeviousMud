@@ -8,6 +8,8 @@
 
 #include "Core/Global/C_Globals.h"
 
+#include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
+
 WorldTile::~WorldTile()
 {
 }
@@ -45,6 +47,29 @@ void WorldTile::on_left_click()
 
 	auto packetHandler = g_globals.packetHandler.lock();
 	packetHandler->send_packet<Packets::s_PlayerMovement>(&pos, 0, 0);
+}
+
+bool WorldTile::handle_event(const SDL_Event* _event)
+{
+	switch(_event->type) 
+	{
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			if(_event->button.button == SDL_BUTTON_RIGHT) 
+			{
+				DM::Actions::Action action;
+				action.actionType = DM::Actions::e_ActionType::ATTACK;
+				action.subjectType = DM::Actions::e_SubjectType::NPC;
+				action.fromPlayerId = 0;
+				action.toTargetId = 0;
+
+				OptionsTab::add_option("Walk here", "", action);
+			}
+		}
+		break;
+	}
+
+	return false;
 }
 
 void WorldTile::on_hover()

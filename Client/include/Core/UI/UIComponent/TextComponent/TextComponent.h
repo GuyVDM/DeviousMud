@@ -3,48 +3,21 @@
 
 #include "Core/Rendering/Fonts/FontsConfig.h"
 
-//void Graphics::Renderer::render_text(std::string _contents, Utilities::vec2 _pos, TextArgs _args)
-//{
-//std::string fontPath = assetsPath;
-//fontPath.append("/fonts/");
-//fontPath.append(Fonts::FontMap().at(_args.font));
-//
-//TTF_Font* font = TTF_OpenFont(fontPath.c_str(), _args.size);
-//if (font == NULL)
-//{
-//	DEVIOUS_ERR("Failed to load font! SDL_ttf Error: " << TTF_GetError());
-//	return;
-//}
-//
-//SDL_Surface* textSurface = TTF_RenderText_Solid(font, _contents.c_str(), _args.color);
-//
-//if (textSurface == NULL)
-//{
-//	DEVIOUS_ERR("Unable to render text surface! SDL_ttf Error: " << TTF_GetError());
-//	TTF_CloseFont(font);
-//	return;
-//}
-//
-//SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-//if (texture == NULL)
-//{
-//	DEVIOUS_ERR("Unable to create texture from rendered text! SDL Error: " << SDL_GetError());
-//	SDL_FreeSurface(textSurface);
-//	TTF_CloseFont(font);
-//	return;
-//}
-//
-//SDL_FreeSurface(textSurface);
-//TTF_CloseFont(font);
-////}
-
-struct SDL_Texture;
 
 struct TextArgs
 {
 	SDL_Color  color;
 	int        size;
 	e_FontType font;
+	bool	   bDropShadow;
+
+	TextArgs() 
+	{
+		color = { 255 ,255, 255, 255 };
+		size = 10;
+		font = e_FontType::RUNESCAPE_UF;
+		bDropShadow = false;
+	}
 
 	const static TextArgs Default()
 	{
@@ -52,10 +25,12 @@ struct TextArgs
 		args.color = { 255, 255, 255, 255 };
 		args.size = 10;
 		args.font = e_FontType::RUNESCAPE_UF;
+		args.bDropShadow = false;
 		return args;
 	}
 };
 
+struct SDL_Texture;
 namespace Graphics
 {
 	class TextComponent final : public UIComponent
@@ -65,12 +40,16 @@ namespace Graphics
 
 		virtual ~TextComponent();
 
+	protected:
+		virtual void init() override;
+
 	private:
 		using UIComponent::UIComponent;
 
 		SDL_Texture* textTexture;
+		TextArgs     args;
 
-		virtual void render(std::shared_ptr<Graphics::Renderer> _renderer) override;
+	    void renderText(std::shared_ptr<Graphics::Renderer> _renderer);
 
 		friend class TextComponent;
 		friend class std::shared_ptr<TextComponent>;

@@ -29,7 +29,7 @@ namespace Graphics
 
 		public:
 			using Layer::Layer;
-			virtual ~HUDLayer() = default;
+			virtual ~HUDLayer();
 
 		private:
 			/// <summary>

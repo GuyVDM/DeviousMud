@@ -15,6 +15,7 @@ public:
 
 	virtual void on_left_click();
 
+	virtual bool handle_event(const SDL_Event* _event) override;
 
 public:
 	using Clickable::Clickable;

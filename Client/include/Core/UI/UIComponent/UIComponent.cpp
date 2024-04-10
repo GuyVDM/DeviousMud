@@ -16,6 +16,12 @@ const int32_t UIComponent::get_child_count() const
     return children.size();
 }
 
+
+void UIComponent::set_active(bool _bIsActive)
+{
+    bIsActive = _bIsActive;
+}
+
 UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
     Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
 {
@@ -179,72 +185,83 @@ const Rect UIComponent::get_local_rect() const
 
 void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-    const bool renderOutline =  (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::DISPLAY ||
-                                 Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) && bIsMovable;
-
-    if (renderOutline)
+    if (bIsActive) 
     {
-        const int outlineSizePx = 3;
-        const SDL_Color yellow = { 255, 255, 0, 255 };
-        const Rect boundingRect = get_bounding_rect();
-        const Utilities::vec2 pos = boundingRect.minPos;
-        const Utilities::vec2 size = boundingRect.maxPos - boundingRect.minPos;
+        const bool renderOutline = (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::DISPLAY ||
+            Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) && bIsMovable;
 
-        _renderer->draw_outline(pos, size, outlineSizePx, yellow);
-    }
+        if (renderOutline)
+        {
+            const int outlineSizePx = 3;
+            const SDL_Color yellow = { 255, 255, 0, 255 };
+            const Rect boundingRect = get_bounding_rect();
+            const Utilities::vec2 pos = boundingRect.minPos;
+            const Utilities::vec2 size = boundingRect.maxPos - boundingRect.minPos;
 
-    // Render UIComponent Sprite
-    _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
+            _renderer->draw_outline(pos, size, outlineSizePx, yellow);
+        }
 
-    for (auto child : children)
-    {
-        child->render(_renderer);
+        // Render UIComponent Sprite
+        _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
+        
+
+        for (auto child : children)
+        {
+            child->render(_renderer);
+        }
+
+        /// If you want to do additional rendering.
+        /// Bind any external rendering function to this within the derived classes.
+        /// ------------------------------------------------------------------------
+        on_render_call.invoke(_renderer);
     }
 }
 
 bool UIComponent::handle_event(const SDL_Event* _event)
 {
-    if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE)
+    if (bIsActive)
     {
-        if (bIsMovable)
+        if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE)
         {
-            if (!UIComponent::sDraggedComponent)
+            if (bIsMovable)
             {
-                Utilities::ivec2 mousePos;
-                SDL_GetMouseState(&mousePos.x, &mousePos.y);
-
-                //If the mouse overlaps anywhere of the entirety of this UI element.
-                if (get_bounding_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
+                if (!UIComponent::sDraggedComponent)
                 {
-                    UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
-                    UIComponent::sDraggedComponent = this;
-                    return true;
+                    Utilities::ivec2 mousePos;
+                    SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
+                    //If the mouse overlaps anywhere of the entirety of this UI element.
+                    if (get_bounding_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
+                    {
+                        UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
+                        UIComponent::sDraggedComponent = this;
+                        return true;
+                    }
                 }
             }
         }
-    }
-    else 
-    if (UIComponent::sDraggedComponent == this)
-    {
-        UIComponent::sDragOffset = Utilities::vec2(0.0f);
-        UIComponent::sDraggedComponent = nullptr;
-    }
+        else
+            if (UIComponent::sDraggedComponent == this)
+            {
+                UIComponent::sDragOffset = Utilities::vec2(0.0f);
+                UIComponent::sDraggedComponent = nullptr;
+            }
 
-    //Check if any of the children handle it first.
-    for (const auto& child : children)
-    {
-        if(child->handle_event(_event))
+        //Check if any of the children handle it first.
+        for (const auto& child : children)
         {
-            return true;
+            if (child->handle_event(_event))
+            {
+                return true;
+            }
         }
-    }
 
-    //If children didn't handle the event, check if we can handle it ourselves.
-    //IF this an interactable ui.
-    if (bInteractable) 
-    {
-        return Clickable::handle_event(_event);
+        //If children didn't handle the event, check if we can handle it ourselves.
+        //IF this an interactable ui.
+        if (bInteractable)
+        {
+            return Clickable::handle_event(_event);
+        }
     }
 
     return false;

@@ -749,7 +749,7 @@ typedef enum
  * \sa SDL_PushEvent
  */
 extern DECLSPEC int SDLCALL SDL_PeepEvents(SDL_Event * events, int numevents,
-                                           SDL_eventaction action,
+                                           SDL_eventaction actionType,
                                            Uint32 minType, Uint32 maxType);
 /* @} */
 

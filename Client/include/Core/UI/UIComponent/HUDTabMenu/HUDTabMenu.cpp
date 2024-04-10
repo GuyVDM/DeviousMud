@@ -11,6 +11,11 @@ using namespace Graphics;
 
 void HUDTab::init()
 {
+	on_render_call.add_listener
+	(
+		std::bind(&HUDTab::renderBG, this, std::placeholders::_1)
+	);
+
 	set_icon(SpriteType::NONE, vec2(0.0f));
 }
 
@@ -21,10 +26,8 @@ void HUDTab::set_icon(SpriteType _sprite, vec2 _iconSize)
 	iconSize = _iconSize;
 }
 
-void HUDTab::render(std::shared_ptr<Renderer> _renderer)
+void HUDTab::renderBG(std::shared_ptr<Renderer> _renderer)
 {
-	UIComponent::render(_renderer);
-
 	const Utilities::vec2 position; 
 
 	_renderer->plot_raw_frame(icon, get_position() + (iconSize / 2.0f), iconSize);
