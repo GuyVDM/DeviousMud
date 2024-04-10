@@ -1,6 +1,6 @@
 #pragma once
 
-namespace DEVIOUSMUD 
+namespace DM 
 {
 	namespace SKILLS
 	{

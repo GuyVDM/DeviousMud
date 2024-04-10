@@ -2,8 +2,8 @@
 
 #include "Core/Rendering/Sprite/Sprite.h"
 
-using namespace DEVIOUSMUD;
-using namespace RANDOM;
+using namespace DM;
+using namespace Utils;
 
 const Graphics::SpriteType Graphics::_Sprite::get_sprite_type() const
 {
@@ -15,7 +15,7 @@ const uint32_t Graphics::_Sprite::get_framecount() const
 	return frameCount;
 }
 
-const DEVIOUSMUD::RANDOM::UUID Graphics::_Sprite::get_uuid() const
+const DM::Utils::UUID Graphics::_Sprite::get_uuid() const
 {
 	return uuid;
 }

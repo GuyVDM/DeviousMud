@@ -51,6 +51,6 @@ void WorldTile::on_hover()
 {
 }
 
-void WorldTile::on_stop_hover()
+void WorldTile::on_hover_end()
 {
 }

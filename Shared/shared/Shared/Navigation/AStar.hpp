@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "Shared/Utilities/vec2.hpp"
 
-namespace DEVIOUSMUD 
+namespace DM 
 {
 	namespace PATH 
 	{
@@ -49,7 +49,7 @@ namespace DEVIOUSMUD
 
 #pragma region IMPLEMENTATION_DETAILS
 
-using namespace DEVIOUSMUD;
+using namespace DM;
 using namespace PATH;
 
 inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, std::vector<Utilities::ivec2> _nodes)
@@ -63,7 +63,7 @@ inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, s
 	return false;
 }
 
-inline int DEVIOUSMUD::PATH::AStar::get_cost(const Utilities::ivec2& _pos, const Utilities::ivec2& _end)
+inline int DM::PATH::AStar::get_cost(const Utilities::ivec2& _pos, const Utilities::ivec2& _end)
 {
 	return abs(_pos.x - _end.x) + abs(_pos.y - _end.y);
 }

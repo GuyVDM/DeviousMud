@@ -68,8 +68,8 @@ void NetworkHandler::start_ticking()
 
 	while(is_running)
 	{
-		DEVIOUSMUD::SERVER::Config::update_deltaTime();
-		ticktimer += DEVIOUSMUD::SERVER::Config::get_deltaTime();
+		DM::SERVER::Config::update_deltaTime();
+		ticktimer += DM::SERVER::Config::get_deltaTime();
 
 		ENetEvent e;
 

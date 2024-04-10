@@ -13,7 +13,7 @@ namespace Graphics
 		{
 			struct AnimationController
 			{
-				DEVIOUSMUD::RANDOM::UUID uuid;
+				DM::Utils::UUID uuid;
 				Sprite*                  sprite;
 				bool                     bPaused;
 				e_AnimationType          currentAnimation;
@@ -81,7 +81,7 @@ namespace Graphics
 		private:
 			static void destroy(const uint64_t _uuid);
 
-			static std::unordered_map<DEVIOUSMUD::RANDOM::UUID, AnimationController> animators;
+			static std::unordered_map<DM::Utils::UUID, AnimationController> animators;
 		};
 	}
 }

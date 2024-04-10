@@ -12,9 +12,9 @@
 
 #include "Core/Rendering/Animation/Animator/Animator.h"
 
-using Config = DEVIOUSMUD::CLIENT::Config;
+using Config = DM::CLIENT::Config;
 
-using namespace DEVIOUSMUD;
+using namespace DM;
 using namespace PATH;
 
 using namespace Graphics::Animation;
@@ -142,24 +142,23 @@ void SimPosition::update()
 	const float MAX_TIMELINE = 1.0f;
 	const float DURATION_TO_TILE = 1.0f / path.size();
 
-	elapsedTime += DEVIOUSMUD::CLIENT::Config::get_deltaTime();
+	elapsedTime += DM::CLIENT::Config::get_deltaTime();
 
 	float timeline = CLAMP(elapsedTime, 0.0f, 1.0f);
 
 	//Calculate which tile we're walking towards.
-	uint32_t targetTile = (uint32_t)ceilf(timeline / (1.0f / path.size())) - 1;
+	uint32_t targetTileIndex = (uint32_t)ceilf(timeline / (1.0f / path.size())) - 1;
 
 	// Calculate the current position.
 	{
 		//Check whether we already passed by one of the tiles, if not, use the start position.
-		const Utilities::vec2 TILE_START = targetTile == 0 ? startPos : Utilities::to_vec2(path[targetTile - 1]);
+		const Utilities::vec2 START_TILE = targetTileIndex == 0 ? startPos : Utilities::to_vec2(path[targetTileIndex - 1]);
 
-		const Utilities::vec2 TILE_END = Utilities::to_vec2(path[targetTile]);
+		const Utilities::vec2 END_TILE = Utilities::to_vec2(path[targetTileIndex]);
 
-		const float LOCAL_TIMELINE = (timeline - (targetTile * DURATION_TO_TILE)) / DURATION_TO_TILE;
+		const float LOCAL_TIMELINE = (timeline - (targetTileIndex * DURATION_TO_TILE)) / DURATION_TO_TILE;
 
-		//const Utilities::vec2 offset = Utilities::vec2(0.25f);
-		currentPos = Utilities::vec2::lerp(TILE_START, TILE_END, LOCAL_TIMELINE);
+		currentPos = Utilities::vec2::lerp(START_TILE, END_TILE, LOCAL_TIMELINE);
 	}
 
 	if(timeline == MAX_TIMELINE) 
@@ -174,6 +173,7 @@ const bool& SimPosition::is_dirty() const
 	return bIsDirty;
 }
 
+//TODO: Remove the offset and base it all on the way it's rendered.
 const Utilities::vec2 SimPosition::get_position() const
 {
 	const Utilities::vec2 offset = Utilities::vec2(0.25f);

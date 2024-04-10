@@ -35,5 +35,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Math.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Navigation\AStar.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Actions.h" />
   </ItemGroup>
 </Project>

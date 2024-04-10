@@ -9,12 +9,12 @@
 using namespace Graphics;
 using namespace Animation;
 
-using namespace DEVIOUSMUD;
+using namespace DM;
 using namespace CLIENT;
-using namespace RANDOM;
+using namespace Utils;
 
 // All registered controllers.
-std::unordered_map<DEVIOUSMUD::RANDOM::UUID, Animator::AnimationController> Animator::animators;
+std::unordered_map<DM::Utils::UUID, Animator::AnimationController> Animator::animators;
 
 void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animationType, const bool& _bIsLooping, const float& _playbackSpeed)
 {

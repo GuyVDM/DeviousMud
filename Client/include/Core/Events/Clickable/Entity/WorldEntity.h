@@ -6,7 +6,7 @@ class WorldEntity : public Clickable
 public:
 	virtual void on_hover();
 
-	virtual void on_stop_hover();
+	virtual void on_hover_end();
 
 	virtual void on_left_click();
 

@@ -98,7 +98,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	auto newClient = std::make_shared<ClientInfo>();
 	newClient->peer          = _peer;
 	newClient->clientId      = clientId;
-	newClient->playerId      = DEVIOUSMUD::RANDOM::UUID::generate();
+	newClient->playerId      = DM::Utils::UUID::generate();
 	newClient->bAwaitingPing = false;
 	newClient->idleticks     = 0;
 	newClient->packetquery   = new EventQuery();
@@ -168,7 +168,14 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	Packets::s_Player playerData;
 	playerData.interpreter = e_PacketInterpreter::PACKET_DISCONNECT_PLAYER;
 	playerData.playerId = client_info[_clienthandle]->playerId;
-	PacketHandler::send_packet_multicast(&playerData, g_globals.networkHandler->get_server_host(), 0, ENET_PACKET_FLAG_RELIABLE);
+	
+	PacketHandler::send_packet_multicast<Packets::s_Player>
+	(
+		&playerData, 
+		g_globals.networkHandler->get_server_host(), 
+		0,
+		ENET_PACKET_FLAG_RELIABLE
+	);
 
 	//Find and remove the clienthandle of the client that we're disconnecting.
 	auto it = std::find_if(client_handles.begin(), client_handles.end(), [&_clienthandle](const enet_uint32& _handle)
@@ -184,17 +191,11 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	//Remove client entry
 	client_info.erase(_clienthandle);
 	DEVIOUS_LOG("Cleared client data: " << _clienthandle << ".");
-
 }
 
 RefClientInfo Server::ConnectionHandler::get_client_info(const enet_uint32& _clienthandle)
 {
-	if(client_info.find(_clienthandle) == client_info.end()) 
-	{
-		return nullptr;
-	}
-
-	return client_info[_clienthandle];
+	return client_info.find(_clienthandle) == client_info.end() ? nullptr : client_info[_clienthandle];
 }
 
 const std::vector<enet_uint32>& Server::ConnectionHandler::get_client_handles() const

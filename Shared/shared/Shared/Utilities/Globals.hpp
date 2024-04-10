@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 
-namespace DEVIOUSMUD
+namespace DM
 {
 #include <cmath>
 	namespace GLOBALS

@@ -5,7 +5,7 @@ void WorldEntity::on_hover()
 {
 }
 
-void WorldEntity::on_stop_hover()
+void WorldEntity::on_hover_end()
 {
 }
 

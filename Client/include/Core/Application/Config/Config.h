@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-namespace DEVIOUSMUD 
+namespace DM 
 {
 	namespace CLIENT 
 	{

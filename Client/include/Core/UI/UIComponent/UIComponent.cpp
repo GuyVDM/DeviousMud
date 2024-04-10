@@ -11,6 +11,11 @@
 UIComponent*    UIComponent::sDraggedComponent = nullptr;
 Utilities::vec2 UIComponent::sDragOffset       = Utilities::vec2(0.0f);
 
+const int32_t UIComponent::get_child_count() const
+{
+    return children.size();
+}
+
 UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
     Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
 {
@@ -213,13 +218,13 @@ bool UIComponent::handle_event(const SDL_Event* _event)
                 {
                     UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
                     UIComponent::sDraggedComponent = this;
+                    return true;
+
                 }
             }
-
-            return true;
         }
     }
-     
+    else 
     if (UIComponent::sDraggedComponent == this)
     {
         UIComponent::sDragOffset = Utilities::vec2(0.0f);

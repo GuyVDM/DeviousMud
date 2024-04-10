@@ -4,7 +4,7 @@
 #include <string>
 #include <array>
 
-using Skills = std::array<DEVIOUSMUD::SKILLS::skill, DEVIOUSMUD::SKILLS::SKILL_COUNT>;
+using Skills = std::array<DM::SKILLS::skill, DM::SKILLS::SKILL_COUNT>;
 
 typedef struct _EntityDetails
 {

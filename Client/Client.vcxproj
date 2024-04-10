@@ -148,7 +148,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>enet64.lib;ws2_32.lib;winmm.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>enet64.lib;ws2_32.lib;winmm.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -171,7 +171,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>enet64.lib;ws2_32.lib;winmm.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>enet64.lib;ws2_32.lib;winmm.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -192,11 +192,13 @@
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
     <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
     <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
     <ClCompile Include="include\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -221,14 +223,17 @@
     <ClInclude Include="include\Core\Rendering\Animation\Animations.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
+    <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h" />
     <ClInclude Include="include\Core\Rendering\Renderer.h" />
     <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
     <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h" />
     <ClInclude Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.h" />
     <ClInclude Include="include\Core\UI\Layer\Layer.h" />
     <ClInclude Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.h" />
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h" />
     <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
     <ClInclude Include="include\precomp.h" />
   </ItemGroup>

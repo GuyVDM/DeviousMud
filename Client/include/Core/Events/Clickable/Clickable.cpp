@@ -47,7 +47,7 @@ bool Clickable::handle_event(const SDL_Event* _event)
             if(bIsHovered) //If hovering before, but not anymore, stop hovering
             {
                 bIsHovered = false;
-                on_stop_hover();
+                on_hover_end();
                 return false;
             }
         }
@@ -114,7 +114,7 @@ void Clickable::on_hover()
 {
 }
 
-void Clickable::on_stop_hover()
+void Clickable::on_hover_end()
 {
 }
 

@@ -4,13 +4,13 @@
 #include <cmath>
 
 //Declaration of static variable deltatime.
-float DEVIOUSMUD::CLIENT::Config::deltaTime;
+float DM::CLIENT::Config::deltaTime;
 
 //Decleration of last time tracked.
-std::chrono::time_point<std::chrono::high_resolution_clock> DEVIOUSMUD::CLIENT::Config::last_time;
+std::chrono::time_point<std::chrono::high_resolution_clock> DM::CLIENT::Config::last_time;
 
 //Return the last updated deltatime.
-float DEVIOUSMUD::CLIENT::Config::get_deltaTime()
+float DM::CLIENT::Config::get_deltaTime()
 {
 	return deltaTime;
 }
@@ -19,7 +19,7 @@ float DEVIOUSMUD::CLIENT::Config::get_deltaTime()
 /// Update the deltatime to represent the duration between the previous and current frame.
 /// Only call this once per start of the frame.
 /// </summary>
-void DEVIOUSMUD::CLIENT::Config::update_deltaTime()
+void DM::CLIENT::Config::update_deltaTime()
 {
 	const float MAX_DELTATIME = 0.1f;
 

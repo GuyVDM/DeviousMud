@@ -2,7 +2,7 @@
 
 #include "ClientWrapper.h"
 
-#include "Core/Global/C_Globals.h" //Client specific global references
+#include "Core/Global/C_Globals.h"
 
 #include "Core/Application/Application.h"
 
@@ -32,20 +32,20 @@ Client::Client(ENetHost* c)
 	peer = nullptr;
 }
 
-Client Client::connect_localhost(bool& succeeded)
+Client Client::connect_localhost(bool& _succeeded)
 {
 	const char* ip = "127.0.0.1";
 	int32_t	port = 1234;
-	return connect_host(succeeded, ip, port);
+	return connect_host(_succeeded, ip, port);
 }
 
-Client Client::connect_host(bool& succeeded, const char* ip, int32_t port)
+Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 {
 	const enet_uint32 CONNECTION_TIME_MS = 5000;
 
 	ENetHost* host;
 	ENetAddress address;
-	succeeded = false;
+	_succeeded = false;
 
 	host = enet_host_create(NULL,
 		1,
@@ -61,8 +61,8 @@ Client Client::connect_host(bool& succeeded, const char* ip, int32_t port)
 		exit(EXIT_FAILURE);
 	}
 
-	enet_address_set_host(&address,ip);
-	address.port = port;
+	enet_address_set_host(&address,_ip);
+	address.port = _port;
 
 	c.peer = enet_host_connect(host, &address, 2, 0);
 
@@ -76,7 +76,7 @@ Client Client::connect_host(bool& succeeded, const char* ip, int32_t port)
 	ENetEvent e;
 	if (enet_host_service(host, &e, CONNECTION_TIME_MS) > 0 && e.type == ENET_EVENT_TYPE_CONNECT)
 	{
-		succeeded = true;
+		_succeeded = true;
 		puts("Connection to 127.0.0.1:1234 succeeded.\n");
 		c.init();
 	}
@@ -97,6 +97,7 @@ void Client::init()
 	//Initialise SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
+	TTF_Init();
 }
 
 void Client::quit()
@@ -107,6 +108,7 @@ void Client::quit()
 	enet_host_destroy(host);
 
 	//Clear up SDL
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 
@@ -122,7 +124,7 @@ void Client::start_ticking()
 	auto playerHandler = std::make_shared<PlayerHandler>();
 
 	//Renderer creation
-	const std::string texture_path = "assets/sprites/";
+	const std::string texture_path = "assets";
 	const Utilities::ivec2 window_size = Utilities::ivec2(1000, 1000);
 
 	auto renderer = std::shared_ptr<Graphics::Renderer>
@@ -131,9 +133,11 @@ void Client::start_ticking()
 	);
 
 	//Setup globals
-	g_globals.renderer = renderer;
-	g_globals.packetHandler = packetHandler;
-	g_globals.playerHandler = playerHandler;
+	{
+		g_globals.renderer = renderer;
+		g_globals.packetHandler = packetHandler;
+		g_globals.playerHandler = playerHandler;
+	}
 
 	//Create application
 	auto application = std::make_shared<Application>();
@@ -141,7 +145,7 @@ void Client::start_ticking()
 
 	while (application->is_running())
 	{
-		DEVIOUSMUD::CLIENT::Config::update_deltaTime();
+		DM::CLIENT::Config::update_deltaTime();
 
 		renderer->start_frame();
 

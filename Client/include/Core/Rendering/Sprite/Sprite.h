@@ -19,11 +19,12 @@ namespace Graphics
 		// HUD
 		HUD_BACKDROP = 4,
 		HUD_TAB      = 5,
-		HUD_FRAME   =  6,
+		HUD_FRAME    = 6,
+		HUD_OPTIONS_BOX = 7,
 
 		// HUD ICONS
-		HUD_ICON_PLACEHOLDER = 7,
-		HUD_ICON_SKILLS      = 8
+		HUD_ICON_PLACEHOLDER = 8,
+		HUD_ICON_SKILLS      = 9
 	}; 
 
 	typedef class _Sprite 
@@ -38,7 +39,7 @@ namespace Graphics
 
 		const uint32_t   get_framecount() const;
 
-		const DEVIOUSMUD::RANDOM::UUID get_uuid() const;
+		const DM::Utils::UUID get_uuid() const;
 
 		const float& get_width() const;
 
@@ -54,7 +55,7 @@ namespace Graphics
 
 		bool bIsFlipped = false;
 	private:
-		DEVIOUSMUD::RANDOM::UUID uuid;
+		DM::Utils::UUID uuid;
 		SpriteType		spriteType = SpriteType::NONE;
 		uint32_t		frameCount = 0;
 		Utilities::vec2 dimension;

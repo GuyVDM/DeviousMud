@@ -20,3 +20,4 @@
 #include "../vendor/SDL2/SDL.h"
 #include "../vendor/SDL2/SDL_events.h"
 #include "../vendor/SDL2/SDL_image.h"
+#include "../vendor/SDL2/SDL_ttf.h"

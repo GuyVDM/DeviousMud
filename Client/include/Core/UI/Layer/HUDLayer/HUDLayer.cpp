@@ -8,6 +8,8 @@
 
 #include "Core/UI/UIComponent/HUDTabMenu/HUDTabMenu.h"
 
+#include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
+
 using namespace Utilities;
 using namespace Graphics;
 using namespace UI;
@@ -88,7 +90,7 @@ void HUDLayer::create_hud()
 	canvas = Canvas::create_canvas();
 
 	std::shared_ptr<UIComponent> component;
-	
+
 	// HUD Tab Menu
 	{
 		Utilities::ivec2 viewportSize = Utilities::ivec2(0); 
@@ -110,6 +112,16 @@ void HUDLayer::create_hud()
 		component->set_anchor(e_AnchorPreset::BOTTOM_RIGHT);
 		canvas->add_child(component);
 	}
+
+	//// Options Menu
+	{
+		component = UIComponent::create_component<OptionsTab>
+			(
+				UIComponent::Position(100.0f, 100.0f),
+				UIComponent::Size(100.0f, 50.0f),
+				SpriteType::HUD_OPTIONS_BOX
+			);
+	}   canvas->add_child(component);
 }
 
 void HUDLayer::update()

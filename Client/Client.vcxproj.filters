@@ -35,6 +35,8 @@
     <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -110,6 +112,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

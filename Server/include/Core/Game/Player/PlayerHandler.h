@@ -14,9 +14,9 @@ typedef unsigned int enet_uint32;
 
 #pragma endregion
 
-using PlayerUUID = DEVIOUSMUD::RANDOM::UUID;
+using PlayerUUID = DM::Utils::UUID;
 
-using namespace DEVIOUSMUD;
+using namespace DM;
 using namespace SKILLS;
 
 namespace Server 

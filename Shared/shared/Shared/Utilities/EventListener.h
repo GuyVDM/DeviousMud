@@ -10,14 +10,14 @@
 /// </summary>
 /// <typeparam name="Parameter"></typeparam>
 template<typename Parameter>
-class EventListener 
+class EventListener
 {
 	using Listener = std::function<void(Parameter)>;
 
 public:
 	void add_listener(Listener _listener);
 
-	void invoke(Parameter _param);
+	virtual void invoke(Parameter _param);
 
 	void clear();
 

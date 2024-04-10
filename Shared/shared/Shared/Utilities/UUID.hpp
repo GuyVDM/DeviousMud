@@ -3,9 +3,9 @@
 #include <chrono>
 #include <limits>
 
-namespace DEVIOUSMUD 
+namespace DM 
 {
-    namespace RANDOM 
+    namespace Utils 
     {
         /// <summary>
         /// Universal unique identifyer. Generates a unsigned 64 bit unique handle. 
@@ -80,9 +80,9 @@ namespace DEVIOUSMUD
 namespace std
 {
     template <>
-    struct hash<DEVIOUSMUD::RANDOM::UUID>
+    struct hash<DM::Utils::UUID>
     {
-        size_t operator()(const DEVIOUSMUD::RANDOM::UUID& uuid) const
+        size_t operator()(const DM::Utils::UUID& uuid) const
         {
             // Use the value of the UUID as the hash
             return hash<uint64_t>()(uuid.identifyer);

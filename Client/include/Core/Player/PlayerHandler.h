@@ -99,6 +99,6 @@ private:
 	void register_local_player(uint64_t _localPlayerId);
 
 private:
-	std::unordered_map<DEVIOUSMUD::RANDOM::UUID, PlayerData> players;
+	std::unordered_map<DM::Utils::UUID, PlayerData> players;
 	uint64_t localPlayerId;
 };

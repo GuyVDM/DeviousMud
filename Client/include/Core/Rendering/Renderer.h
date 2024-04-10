@@ -5,6 +5,7 @@
 
 #include "Core/Rendering/Sprite/Sprite.h"
 
+#include "Core/Rendering/Fonts/FontsConfig.h"
 
 #include <string>
 
@@ -47,11 +48,10 @@ namespace Graphics
 
 			SDL_Texture* get_texture();
 
-
 		private:
 			uint32_t     framecount;
 			SDL_Surface* surface;
-			SDL_Texture* texture;
+			SDL_Texture* textTexture;
 		};
 
 	public:
@@ -100,14 +100,14 @@ namespace Graphics
 	private:
 		std::shared_ptr<Camera> camera;
 
-		std::string texturepath;
+		std::string assetsPath;
 
 		std::unordered_map<SpriteType, SDL_SpriteDetails*> sprites;
 
 		SDL_Window* window;
 
 		SDL_Renderer* renderer;
+
+		friend class TextComponent;
 	};
-
-
 };

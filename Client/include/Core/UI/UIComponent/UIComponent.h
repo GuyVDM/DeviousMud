@@ -105,6 +105,12 @@ public:
 	/// <returns></returns>
 	virtual bool handle_event(const SDL_Event* _event) override final;
 
+	/// <summary>
+	/// Return the number of children.
+	/// </summary>
+	/// <returns></returns>
+	const int32_t get_child_count() const;
+
 	virtual ~UIComponent() = default;
 	UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite);
 
@@ -173,6 +179,7 @@ private:
 	friend UIComponent;
 
 	friend Graphics::UI::HUDLayer;
+	friend std::shared_ptr<UIComponent>;
 
 protected:
 	bool                                       bIsMovable    = false;
@@ -181,7 +188,7 @@ protected:
 	std::vector<std::shared_ptr<UIComponent>>  children;
 	
 private:
-	e_AnchorPreset                             anchor;
+	e_AnchorPreset                             anchor = e_AnchorPreset::TOP_LEFT;
 };
 
 template<typename T>
