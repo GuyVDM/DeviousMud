@@ -24,8 +24,7 @@ std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& positio
 	);
 
 	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
-
-	Graphics::Sprite sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
+	const Graphics::Sprite sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
 
 	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(position, scale, sprite);
 	return tile;
@@ -51,25 +50,28 @@ void WorldTile::on_left_click()
 
 bool WorldTile::handle_event(const SDL_Event* _event)
 {
-	switch(_event->type) 
+	if (is_hovered())
 	{
-		case SDL_MOUSEBUTTONDOWN:
+		switch (_event->type)
 		{
-			if(_event->button.button == SDL_BUTTON_RIGHT) 
+			case SDL_MOUSEBUTTONDOWN:
 			{
-				DM::Actions::Action action;
-				action.actionType = DM::Actions::e_ActionType::ATTACK;
-				action.subjectType = DM::Actions::e_SubjectType::NPC;
-				action.fromPlayerId = 0;
-				action.toTargetId = 0;
+				if (_event->button.button == SDL_BUTTON_RIGHT)
+				{
+					DM::Actions::Action action;
+					action.actionType = DM::Actions::e_ActionType::ATTACK;
+					action.subjectType = DM::Actions::e_SubjectType::NPC;
+					action.fromPlayerId = 0;
+					action.toTargetId = 0;
 
-				OptionsTab::add_option("Walk here", "", action);
+					OptionsTab::add_option("Walk here", "", action);
+				}
 			}
+			break;
 		}
-		break;
 	}
 
-	return false;
+	return Clickable::handle_event(_event);
 }
 
 void WorldTile::on_hover()
