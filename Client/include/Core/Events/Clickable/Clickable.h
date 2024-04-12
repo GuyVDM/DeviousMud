@@ -33,6 +33,8 @@ protected:
 
 	virtual void on_right_click();
 
+	const bool is_hovered() const;
+
 protected:
 	Graphics::Sprite  sprite;
 

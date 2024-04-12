@@ -122,6 +122,11 @@ void Clickable::on_right_click()
 {
 }
 
+const bool Clickable::is_hovered() const
+{
+    return bIsHovered;
+}
+
 const Graphics::Sprite& Clickable::get_sprite() const
 {
     return sprite;
