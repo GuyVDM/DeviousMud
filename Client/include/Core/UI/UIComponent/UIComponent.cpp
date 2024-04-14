@@ -34,26 +34,20 @@ void UIComponent::init()
 
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
 {
-    const Utilities::vec2 size = get_size();
-    const Utilities::vec2 pos  = get_position();
+    const Utilities::ivec2 halfExtends = Utilities::to_ivec2(Utilities::vec2(get_size() / 2.0f));
+    const Utilities::ivec2 pos         = Utilities::to_ivec2(get_position());
 
-    // Calculate sprite's screen coordinates
-    int32_t halfExtendsWidth  = static_cast<int32_t>(size.x / 2.0f);
-    int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
-
-    Utilities::ivec2 transformedPos;
-    transformedPos.x = static_cast<int32_t>(pos.x);
-    transformedPos.y = static_cast<int32_t>(pos.y);
-    transformedPos.x += halfExtendsWidth;
-    transformedPos.y += halfExtendsHeight;
-
-    transformedPos = transformedPos;
+    const Utilities::ivec2 transformedPos
+    {
+        pos.x + halfExtends.x,
+        pos.y + halfExtends.y
+    };
 
     // Calculate sprite's bounding box
-    const int32_t left = transformedPos.x - halfExtendsWidth;
-    const int32_t right = transformedPos.x + halfExtendsWidth;
-    const int32_t top = transformedPos.y - halfExtendsHeight;
-    const int32_t bottom = transformedPos.y + halfExtendsHeight;
+    const int32_t left   = transformedPos.x - halfExtends.x;
+    const int32_t right  = transformedPos.x + halfExtends.x;
+    const int32_t top    = transformedPos.y - halfExtends.y;
+    const int32_t bottom = transformedPos.y + halfExtends.y;
 
     return (_x > left && _x < right && _y > top && _y < bottom);
 }

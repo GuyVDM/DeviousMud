@@ -28,9 +28,10 @@ void HUDLayer::init()
 
 bool HUDLayer::handle_event(const SDL_Event* event)
 {
-	//TODO: MOVE THIS DISGUSTING SHIT TO A INPUT CLASS AT SOME POINT.
+	//TODO: MOVE THIS DISGUSTING STUFF TO A INPUT CLASS AT SOME POINT.
 	static bool altDown = false;
 	static bool leftMouseDown = false;
+	static bool shouldOpenoptionsMenu = false;
 
 	switch (event->type)
 	{

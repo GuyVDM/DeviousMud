@@ -70,8 +70,6 @@ class OptionsTab : public UIComponent
 	private: static EventListener<OptionArgs> on_option_added;
 
 public:
-
-
 	void show();
 
 	void close();
@@ -97,8 +95,9 @@ private:
 	/// <summary>
 	/// Rescale the option menu to match to the biggest child element.
 	/// </summary>
-	void regenerate_option_bounding_rect();
-
+	void regenerate_option_box();
+	
+	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 private:
 	Rect boundingRectOptions;
 };

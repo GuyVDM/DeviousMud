@@ -99,15 +99,15 @@ void OptionsTab::create_option(OptionArgs _args)
 	option->set_option(_args);
 
 	//Move the option to the latest dropdown slot.
-	const Utilities::vec2 position = get_position() + Utilities::vec2(0.0f, 4.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
+	const Utilities::vec2 position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
 	option->set_position(position);
 
-	regenerate_option_bounding_rect();
+	regenerate_option_box();
 }
 
-void OptionsTab::regenerate_option_bounding_rect()
+void OptionsTab::regenerate_option_box()
 {
-	Rect biggestRect { get_position(), get_position() };
+	Rect biggestRect { Utilities::vec2(FLT_MAX), get_position() };
 	const float pxEdgeOffset = 5.0f;
 
 	//We start at 1 since the header text element takes slot 0 always.
@@ -135,15 +135,45 @@ void OptionsTab::regenerate_option_bounding_rect()
 	set_size(Utilities::vec2(biggestRect.get_size().x, get_size().y));
 }
 
+const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
+{
+	const Rect boundingRect = get_bounding_rect();
+
+	const Utilities::vec2 pos = boundingRect.minPos;
+	const Utilities::vec2 size = boundingRect.get_size();
+
+	// Calculate sprite's screen coordinates
+	int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);
+	int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
+
+	Utilities::ivec2 transformedPos;
+	transformedPos.x = static_cast<int32_t>(pos.x);
+	transformedPos.y = static_cast<int32_t>(pos.y);
+	transformedPos.x += halfExtendsWidth;
+	transformedPos.y += halfExtendsHeight;
+
+	// Calculate sprite's bounding box
+	const int32_t left = transformedPos.x - halfExtendsWidth;
+	const int32_t right = transformedPos.x + halfExtendsWidth;
+	const int32_t top = transformedPos.y - halfExtendsHeight;
+	const int32_t bottom = transformedPos.y + halfExtendsHeight;
+
+	return (_x > left && _x < right && _y > top && _y < bottom);
+}
+
 void OptionsTab::show()
 {
+	close();
+
 	if (!bIsActive) 
 	{
+		const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 0.0f);
+
 		Utilities::ivec2 mousePos;
 		SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
 		bIsActive = true;
-		set_position(Utilities::to_vec2(mousePos));
+		set_position(Utilities::to_vec2(mousePos) - offset);
 	}
 }
 
@@ -166,11 +196,14 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	//Outline around entire options tab.
 	_renderer->draw_outline(get_position(), get_bounding_rect().get_size(), pxOutline, outlineColor);
 
-	//Render bounding rectangle around the options specifically.
-	_renderer->draw_outline(boundingRectOptions.minPos, boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
-
 	//Render outline around the options header.
 	_renderer->draw_outline(get_position(), get_local_rect().get_size(), pxOutline, outlineColor);
+	
+	if (get_child_count() > 1)
+	{
+		//Render bounding rectangle around the options specifically.
+		_renderer->draw_outline(children[1]->get_position(), boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
+	}
 }
 
 void Option::on_hover()

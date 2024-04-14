@@ -67,14 +67,6 @@ public:
 	static Utilities::vec2 get_anchor_position(e_AnchorPreset _preset, Rect _rect);
 
 	/// <summary>
-	/// Overlap rect is transformed to detect screenspace only.
-	/// </summary>
-	/// <param name="_x"></param>
-	/// <param name="_y"></param>
-	/// <returns></returns>
-	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
-
-	/// <summary>
 	/// Returns the top object in the hierarchy.
 	/// </summary>
 	/// <returns></returns>
@@ -103,7 +95,7 @@ public:
 	/// </summary>
 	/// <param name="_event"></param>
 	/// <returns></returns>
-	virtual bool handle_event(const SDL_Event* _event) override final;
+	virtual bool handle_event(const SDL_Event* _event) override;
 
 	/// <summary>
 	/// Return the number of children.
@@ -183,6 +175,14 @@ private:
 	/// Make children adjust to any potential changes. Call when a change related to the position or scale has been made.
 	/// </summary>
 	void update_children(Rect _oldRect);
+
+	/// <summary>
+	/// Overlap rect is transformed to detect screenspace only.
+	/// </summary>
+	/// <param name="_x"></param>
+	/// <param name="_y"></param>
+	/// <returns></returns>
+	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 
 	template<typename T>
 	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable);
