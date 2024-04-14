@@ -202,7 +202,7 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	if (get_child_count() > 1)
 	{
 		//Render bounding rectangle around the options specifically.
-		_renderer->draw_outline(children[1]->get_position(), boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
+		_renderer->draw_outline(boundingRectOptions.minPos, boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
 	}
 }
 
