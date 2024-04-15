@@ -23,7 +23,6 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 			fontPath.append("/fonts/");
 			fontPath.append(Fonts::FontMap().at(_args.font));
 		}
-		DEVIOUS_LOG(fontPath.c_str());
 
 		//Load font
 		TTF_Font* font = TTF_OpenFont(fontPath.c_str(), _args.size);

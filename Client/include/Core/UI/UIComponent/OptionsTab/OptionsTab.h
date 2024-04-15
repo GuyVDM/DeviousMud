@@ -9,7 +9,7 @@ struct OptionArgs
 {
 	std::string actionStr;
 	std::string subjectStr;
-	DM::Actions::Action actionType;
+	std::function<void()> function;
 };
 
 /// <summary>
@@ -52,7 +52,7 @@ class OptionsTab : public UIComponent
 	/// <param name="_actionStr"></param>
 	/// <param name="_subjectStr"></param>
 	/// <param name="_action"></param>
-	public: static void add_option(std::string _actionStr, std::string _subjectStr, const DM::Actions::Action& _action);
+	public: static void add_option(OptionArgs _args);
 	
 	/// <summary>
 	/// Opens up the options menu.
@@ -99,5 +99,6 @@ private:
 	
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 private:
+	Utilities::vec2 initialSize;
 	Rect boundingRectOptions;
 };

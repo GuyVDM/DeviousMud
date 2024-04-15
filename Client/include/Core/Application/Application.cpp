@@ -18,6 +18,8 @@
 
 #include "Core/Rendering/Animation/Animator/Animator.h"
 
+#include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
+
 Application::Application() 
 {
 	bIsrunning = true;
@@ -121,6 +123,15 @@ void Application::update()
 
 		switch(e.type) 
 		{
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			if (e.button.button == SDL_BUTTON_RIGHT)
+			{
+				OptionsTab::open_option_menu();
+			}
+		}
+		break;
+
 		case SDL_WINDOWEVENT:
 			//Handle viewport resizing.
 			if(e.window.event == SDL_WINDOWEVENT_RESIZED) 

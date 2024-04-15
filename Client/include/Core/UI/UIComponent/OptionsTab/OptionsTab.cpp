@@ -12,14 +12,9 @@ using namespace Graphics;
 EventListener<OptionArgs> OptionsTab::on_option_added;
 EventListener<void>       OptionsTab::on_options_show;
 
-void OptionsTab::add_option(std::string _actionStr, std::string _subjectStr, const DM::Actions::Action& _action)
+void OptionsTab::add_option(OptionArgs _args)
 {
-	OptionArgs args;
-	args.actionType = _action;
-	args.actionStr = _actionStr;
-	args.subjectStr = _subjectStr;
-
-	on_option_added.invoke(args);
+	on_option_added.invoke(_args);
 }
 
 void OptionsTab::open_option_menu()
@@ -29,6 +24,9 @@ void OptionsTab::open_option_menu()
 
 void OptionsTab::init()
 {
+	// Cache initial size.
+	initialSize = get_size();
+
 	//Set up callbacks
 	{
 		on_render_call.add_listener
@@ -62,7 +60,8 @@ void OptionsTab::init()
 
 			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), args);
 			add_child(component);
-			set_size(component->get_size() + Utilities::vec2(20.0f, 5.0f));
+			initialSize = component->get_size() + Utilities::vec2(20.0f, 5.0f);
+			set_size(initialSize);
 			component->set_anchor(e_AnchorPreset::CENTER_LEFT);
 		}
 	}
@@ -97,42 +96,49 @@ void OptionsTab::create_option(OptionArgs _args)
 
 	//Register the option
 	option->set_option(_args);
+	option->set_anchor(e_AnchorPreset::TOP_LEFT);
 
 	//Move the option to the latest dropdown slot.
 	const Utilities::vec2 position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
 	option->set_position(position);
-
-	regenerate_option_box();
 }
 
 void OptionsTab::regenerate_option_box()
 {
-	Rect biggestRect { Utilities::vec2(FLT_MAX), get_position() };
-	const float pxEdgeOffset = 5.0f;
+	Rect biggestRect;
 
-	//We start at 1 since the header text element takes slot 0 always.
-	for (int i = 1; i < children.size(); i++) 
+	if (get_child_count() > 1)
 	{
-		if (children[i]) 
+		biggestRect = { Utilities::vec2(FLT_MAX), get_position() };
+		const float pxEdgeOffset = 5.0f;
+
+		//We start at 1 since the header text element takes slot 0 always.
+		for (int i = 1; i < children.size(); i++)
 		{
-			biggestRect.minPos.x = std::min(biggestRect.minPos.x, children[i]->get_bounding_rect().minPos.x);
-			biggestRect.minPos.y = std::min(biggestRect.minPos.y, children[i]->get_bounding_rect().minPos.y);
-			biggestRect.maxPos.x = std::max(biggestRect.maxPos.x, children[i]->get_bounding_rect().maxPos.x);
-			biggestRect.maxPos.y = std::max(biggestRect.maxPos.y, children[i]->get_bounding_rect().maxPos.y);
+			if (children[i])
+			{
+				biggestRect.minPos.x = std::min(biggestRect.minPos.x, children[i]->get_bounding_rect().minPos.x);
+				biggestRect.minPos.y = std::min(biggestRect.minPos.y, children[i]->get_bounding_rect().minPos.y);
+				biggestRect.maxPos.x = std::max(biggestRect.maxPos.x, children[i]->get_bounding_rect().maxPos.x);
+				biggestRect.maxPos.y = std::max(biggestRect.maxPos.y, children[i]->get_bounding_rect().maxPos.y);
+			}
 		}
-	}	
 
-	biggestRect.maxPos.x += pxEdgeOffset;
-	boundingRectOptions = biggestRect;
+		//Scale all UI elements horizontally to match the biggest item.
+		for (int i = 1; i < children.size(); i++)
+		{
+			const Utilities::vec2 childSizeOld = children[i]->get_size();
+			children[i]->set_size(Utilities::vec2(biggestRect.get_size().x, childSizeOld.y));
+		}
 
-	//Scale all UI elements horizontally to match the biggest item.
-	for (int i = 1; i < children.size(); i++)
+		set_size(Utilities::vec2(biggestRect.get_size().x, get_size().y));
+	}
+	else
 	{
-		const Utilities::vec2 childSizeOld = children[i]->get_size();
-		children[i]->set_size(Utilities::vec2(biggestRect.get_size().x, childSizeOld.y));
-	}   
-	
-	set_size(Utilities::vec2(biggestRect.get_size().x, get_size().y));
+		biggestRect = { get_position(), get_position() + initialSize };
+	}
+
+	boundingRectOptions = biggestRect;
 }
 
 const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
@@ -163,17 +169,19 @@ const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
 
 void OptionsTab::show()
 {
-	close();
-
 	if (!bIsActive) 
 	{
-		const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 0.0f);
+		const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 10.0f);
 
 		Utilities::ivec2 mousePos;
-		SDL_GetMouseState(&mousePos.x, &mousePos.y);
+		{
+			SDL_GetMouseState(&mousePos.x, &mousePos.y);
+		}   set_position(Utilities::to_vec2(mousePos) - offset);
+		
+		regenerate_option_box();
 
 		bIsActive = true;
-		set_position(Utilities::to_vec2(mousePos) - offset);
+
 	}
 }
 
@@ -185,6 +193,8 @@ void OptionsTab::close()
 	children.resize(1);
 
 	bIsActive = false;
+
+	set_size(initialSize);
 }
 
 void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
@@ -199,6 +209,7 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	//Render outline around the options header.
 	_renderer->draw_outline(get_position(), get_local_rect().get_size(), pxOutline, outlineColor);
 	
+	//We only want to render when there are options available.
 	if (get_child_count() > 1)
 	{
 		//Render bounding rectangle around the options specifically.
@@ -219,7 +230,7 @@ void Option::on_hover_end()
 void Option::on_left_click()
 {
 	on_clicked.invoke();
-	//TODO: Send Packet with the option args.
+	args.function();
 	DEVIOUS_EVENT("Selected Option.")
 }
 

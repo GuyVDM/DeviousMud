@@ -48,11 +48,6 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 			{
 				leftMouseDown = event->button.button == SDL_BUTTON_LEFT;
 			}
-
-			if (event->button.button == SDL_BUTTON_RIGHT)
-			{
-				OptionsTab::open_option_menu();
-			}
 		}
 		break;
 
