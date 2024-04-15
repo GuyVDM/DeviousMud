@@ -8,7 +8,11 @@
 struct OptionArgs
 {
 	std::string actionStr;
+	SDL_Color   actionCol = { 255, 255, 0, 255 };
+
 	std::string subjectStr;
+	SDL_Color   subjectCol = { 255, 255, 255, 255 };
+
 	std::function<void()> function;
 };
 
@@ -36,7 +40,7 @@ private:
 	void set_option(OptionArgs _args);
 
 private:
-	OptionArgs args;
+	OptionArgs optionArgs;
 
 	friend class OptionsTab;
 };
@@ -86,6 +90,8 @@ protected:
 	void renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer);
 
 private:
+	void clampToViewport();
+
 	/// <summary>
 	/// Callback that's subscribed to the 'on_option_added' event.
 	/// </summary>

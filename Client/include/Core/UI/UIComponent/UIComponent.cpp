@@ -242,8 +242,10 @@ bool UIComponent::handle_event(const SDL_Event* _event)
             }
 
         //Check if any of the children handle it first.
-        for (const auto& child : children)
+        for (auto it = children.rbegin(); it != children.rend(); ++it)
         {
+            const auto& child = *it;
+
             if (child->handle_event(_event))
             {
                 return true;

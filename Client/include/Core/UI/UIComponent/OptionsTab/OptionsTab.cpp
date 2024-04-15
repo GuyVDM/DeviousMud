@@ -7,6 +7,8 @@
 
 #include "Core/Rendering/Renderer.h"
 
+#include "Core/Global/C_Globals.h"
+
 using namespace Graphics;
 
 EventListener<OptionArgs> OptionsTab::on_option_added;
@@ -51,14 +53,14 @@ void OptionsTab::init()
 		std::shared_ptr<UIComponent> component;
 		//Create options header 
 		{
-			TextArgs args;
+			TextArgs optionArgs;
 			{
-				args.color = { 93, 84, 71 , 255 };
-				args.font = e_FontType::RUNESCAPE_UF;
-				args.size = 25;
+				optionArgs.color = { 93, 84, 71 , 255 };
+				optionArgs.font = e_FontType::RUNESCAPE_UF;
+				optionArgs.size = 25;
 			}
 
-			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), args);
+			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), optionArgs);
 			add_child(component);
 			initialSize = component->get_size() + Utilities::vec2(20.0f, 5.0f);
 			set_size(initialSize);
@@ -169,19 +171,24 @@ const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
 
 void OptionsTab::show()
 {
-	if (!bIsActive) 
+	// We only want to render the options menu if we have any entries.
+	if (get_child_count() > 1) 
 	{
-		const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 10.0f);
-
-		Utilities::ivec2 mousePos;
+		if (!bIsActive)
 		{
-			SDL_GetMouseState(&mousePos.x, &mousePos.y);
-		}   set_position(Utilities::to_vec2(mousePos) - offset);
-		
-		regenerate_option_box();
+			const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 10.0f);
 
-		bIsActive = true;
+			Utilities::ivec2 mousePos;
+			{
+				SDL_GetMouseState(&mousePos.x, &mousePos.y);
+			}   set_position(Utilities::to_vec2(mousePos) - offset);
 
+			clampToViewport();
+
+			regenerate_option_box();
+
+			bIsActive = true;
+		}
 	}
 }
 
@@ -217,6 +224,26 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	}
 }
 
+void OptionsTab::clampToViewport()
+{
+	auto renderer = g_globals.renderer.lock();
+	Utilities::ivec2 vpSize;
+	renderer->get_viewport_size(&vpSize.x, &vpSize.y);
+
+	// Clamp position
+	const Utilities::vec2 size = get_bounding_rect().get_size();
+	const Utilities::vec2 pos = get_position();
+
+	set_position
+	(
+		Utilities::vec2
+		(
+			std::max(0.0f, std::min(pos.x, (float)vpSize.x - size.x)),
+			std::max(0.0f, std::min(pos.y, (float)vpSize.y - size.y))
+		)
+	);
+}
+
 void Option::on_hover()
 {
 	sprite.color = { 103, 94, 81, 255 };
@@ -229,9 +256,9 @@ void Option::on_hover_end()
 
 void Option::on_left_click()
 {
-	on_clicked.invoke();
-	args.function();
+	optionArgs.function();
 	DEVIOUS_EVENT("Selected Option.")
+	on_clicked.invoke();
 }
 
 void Option::init()
@@ -239,17 +266,16 @@ void Option::init()
 	sprite.color = { 93, 84, 71, 255 };
 }
 
-void Option::set_option(OptionArgs _args)
+void Option::set_option(OptionArgs _optionArgs)
 {
-	args = _args;
+	optionArgs = _optionArgs;
 
 	//Define Text
-	TextArgs args;
+	TextArgs textArgs;
 	{
-		args.color = { 255, 255, 0 , 255 };
-		args.font = e_FontType::RUNESCAPE_UF;
-		args.size = 25;
-		args.bDropShadow = true;
+		textArgs.font = e_FontType::RUNESCAPE_UF;
+		textArgs.size = 25;
+		textArgs.bDropShadow = true;
 	}
 
 	//Create visuals
@@ -262,7 +288,8 @@ void Option::set_option(OptionArgs _args)
 		float prevHorTextSize = 0.0f;
 		//Create Action Text
 		{
-			textComponent = TextComponent::create_text(_args.actionStr.c_str(), get_position(), args);
+			textArgs.color = optionArgs.actionCol;
+			textComponent = TextComponent::create_text(_optionArgs.actionStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
 			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
@@ -275,14 +302,15 @@ void Option::set_option(OptionArgs _args)
 
 		//Create Subject Text
 		{
-			args.color = { 255, 0, 0, 255 };
+			textArgs.color = optionArgs.subjectCol;
 
-			textComponent = TextComponent::create_text(_args.subjectStr.c_str(), get_position(), args);
+			textComponent = TextComponent::create_text(_optionArgs.subjectStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
 			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
 			const Utilities::vec2 position = textComponent->get_position();
 			textComponent->set_position(position + Utilities::vec2(prevHorTextSize, ySizeDiff / 2.0f));
+			set_size(get_size() + Utilities::vec2(15.0f, 0.0f));
 
 		}	add_child(textComponent);
 	}

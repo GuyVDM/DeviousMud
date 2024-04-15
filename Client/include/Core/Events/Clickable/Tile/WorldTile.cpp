@@ -58,12 +58,12 @@ bool WorldTile::handle_event(const SDL_Event* _event)
 			{
 				if (_event->button.button == SDL_BUTTON_RIGHT)
 				{
-					OptionArgs args;
-					args.actionStr = "Walk hereaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-					args.subjectStr = "";
-					args.function = std::bind(&WorldTile::on_left_click, this);
+					OptionArgs optionArgs;
+					optionArgs.actionStr = "Walk here";
+					optionArgs.actionCol = { 255, 255, 0, 255 };
+					optionArgs.function = std::bind(&WorldTile::on_left_click, this);
 
-					OptionsTab::add_option(args);
+					OptionsTab::add_option(optionArgs);
 				}
 			}
 			break;

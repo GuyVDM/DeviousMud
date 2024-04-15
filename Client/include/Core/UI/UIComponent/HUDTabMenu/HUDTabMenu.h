@@ -8,7 +8,9 @@ public:
 
 	void set_icon(Graphics::SpriteType _sprite, Utilities::vec2 _iconSize);
 
+	virtual bool handle_event(const SDL_Event* _event) override;
 protected:
+
 	virtual void on_left_click() override;
 	
 	virtual void init() override;

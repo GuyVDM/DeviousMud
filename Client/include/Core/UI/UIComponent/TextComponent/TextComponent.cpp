@@ -49,7 +49,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 
 		//Set text texture.
 		textComponent->textTexture = texture;
-		textComponent->args = _args;
+		textComponent->optionArgs = _args;
 	}
 	else 
 	{
@@ -84,18 +84,18 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 		const Utilities::ivec2 position = Utilities::to_ivec2(get_position());
 		const Utilities::ivec2 size = Utilities::to_ivec2(get_size());
 
-		if (args.bDropShadow)
+		if (optionArgs.bDropShadow)
 		{
 			const static int32_t dropShadowOffsetPx = 1;
 			const SDL_Rect dsRenderQuad = { position.x + dropShadowOffsetPx, position.y + dropShadowOffsetPx, size.x, size.y };
 
 			SDL_SetTextureColorMod(textTexture, 0, 0, 0);
-			SDL_SetTextureAlphaMod(textTexture, args.color.a);
+			SDL_SetTextureAlphaMod(textTexture, optionArgs.color.a);
 
 			SDL_RenderCopy(_renderer->renderer, textTexture, NULL, &dsRenderQuad);
 
-			SDL_SetTextureColorMod(textTexture, args.color.r, args.color.g, args.color.b);
-			SDL_SetTextureAlphaMod(textTexture, args.color.a);
+			SDL_SetTextureColorMod(textTexture, optionArgs.color.r, optionArgs.color.g, optionArgs.color.b);
+			SDL_SetTextureAlphaMod(textTexture, optionArgs.color.a);
 		}
 
 		// Render the text.

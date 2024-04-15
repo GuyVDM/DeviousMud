@@ -6,6 +6,8 @@
 
 #include "Core/UI/UIComponent/HUDTabMenu/HUDTabMenu.h"
 
+#include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
+
 using namespace Utilities;
 using namespace Graphics;
 
@@ -24,6 +26,34 @@ void HUDTab::set_icon(SpriteType _sprite, vec2 _iconSize)
 	auto renderer = g_globals.renderer.lock();
 	icon = renderer->get_sprite(_sprite);
 	iconSize = _iconSize;
+}
+
+bool HUDTab::handle_event(const SDL_Event* _event) 
+{
+	if (is_hovered())
+	{
+		switch (_event->type)
+		{
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			if (_event->button.button == SDL_BUTTON_RIGHT)
+			{
+				OptionArgs optionArgs;
+				optionArgs.actionStr = "Open";
+				optionArgs.actionCol = { 255, 255, 0, 255 };
+
+				optionArgs.subjectStr = "Tab";
+				optionArgs.subjectCol = { 229, 165, 80, 255 };
+				optionArgs.function = std::bind(&HUDTab::on_left_click, this);
+
+				OptionsTab::add_option(optionArgs);
+			}
+		}
+		break;
+		}
+	}
+
+	return Clickable::handle_event(_event);
 }
 
 void HUDTab::renderBG(std::shared_ptr<Renderer> _renderer)
