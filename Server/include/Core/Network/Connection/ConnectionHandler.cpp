@@ -41,6 +41,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
 			toDisconnect.push_back(clientInfo->clientId);
+			DEVIOUS_LOG("Registered client: " << clientInfo->clientId << " for disconnect.");
 			continue;
 		}
 
@@ -49,11 +50,9 @@ void Server::ConnectionHandler::update_idle_timers()
 		//
 		if(!clientInfo->bAwaitingPing) 
 		{
-			if(ticks % PING_TICK_INTERVAL == 0 && ticks > 0) 
+			if((ticks % PING_TICK_INTERVAL == 0 && ticks > 0) || !clientInfo->peer) 
 			{
 				clientInfo->bAwaitingPing = true;
-
-				DEVIOUS_LOG("Spotted sign of inactivity from client: " << clientInfo->clientId << ". Sent out ping...");
 
 				Packets::s_PacketHeader packet;
 				packet.interpreter = e_PacketInterpreter::PACKET_PING;
@@ -64,7 +63,9 @@ void Server::ConnectionHandler::update_idle_timers()
 		{
 			clientInfo->ticksSinceLastResponse++;
 
-			if (clientInfo->ticksSinceLastResponse == MAX_TICK_INTERVAL_NO_RESPONSE)
+			DEVIOUS_LOG("Client " << clientInfo->clientId << " awaiting disconnection: ticks passed: " << clientInfo->ticksSinceLastResponse);
+
+			if (clientInfo->ticksSinceLastResponse >= MAX_TICK_INTERVAL_NO_RESPONSE)
 			{
 				DEVIOUS_LOG("Couldnt retrieve any sign of connection from " << clientInfo->clientId << ". Disconnecting...");
 				toDisconnect.push_back(clientInfo->clientId);

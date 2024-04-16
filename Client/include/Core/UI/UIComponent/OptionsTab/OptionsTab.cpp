@@ -227,12 +227,14 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 void OptionsTab::clampToViewport()
 {
 	auto renderer = g_globals.renderer.lock();
+
 	Utilities::ivec2 vpSize;
 	renderer->get_viewport_size(&vpSize.x, &vpSize.y);
 
 	// Clamp position
-	const Utilities::vec2 size = get_bounding_rect().get_size();
-	const Utilities::vec2 pos = get_position();
+	const Rect boundingRect = get_bounding_rect();
+	const Utilities::vec2 size = boundingRect.get_size();
+	const Utilities::vec2 pos = boundingRect.minPos;
 
 	set_position
 	(
@@ -258,7 +260,7 @@ void Option::on_left_click()
 {
 	optionArgs.function();
 	DEVIOUS_EVENT("Selected Option.")
-	on_clicked.invoke();
+	on_clicked.invoke(); //Move back down
 }
 
 void Option::init()

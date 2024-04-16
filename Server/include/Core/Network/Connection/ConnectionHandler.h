@@ -1,6 +1,8 @@
 #pragma once
 #include <unordered_map>
+
 #include <memory>
+
 #include <optional>
 
 #pragma region FORWARD_DECLERATIONS
