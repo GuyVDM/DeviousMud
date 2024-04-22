@@ -24,7 +24,10 @@ namespace Graphics
 
 		// HUD ICONS
 		HUD_ICON_PLACEHOLDER = 8,
-		HUD_ICON_SKILLS      = 9
+		HUD_ICON_SKILLS      = 9,
+
+		//Entities
+		NPC_GOBLIN = 10
 	}; 
 
 	typedef class _Sprite 

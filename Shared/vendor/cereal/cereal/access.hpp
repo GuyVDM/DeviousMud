@@ -174,7 +174,7 @@ namespace cereal
           @param args The arguments to the constructor for T
           @throw Exception If called more than once */
       template <class ... Args>
-      void operator()( Args && ... optionArgs );
+      void operator()( Args && ... m_textArgs );
       // implementation deferred due to reliance on cereal::access
 
       //! Get a reference to the initialized underlying object
@@ -305,9 +305,9 @@ namespace cereal
 
       // for placement new
       template <class T, class ... Args> inline
-      static void construct( T *& ptr, Args && ... optionArgs )
+      static void construct( T *& ptr, Args && ... m_textArgs )
       {
-        new (ptr) T( std::forward<Args>( optionArgs )... );
+        new (ptr) T( std::forward<Args>( m_textArgs )... );
       }
 
       // for non-placement new with a default constructor
@@ -337,12 +337,12 @@ namespace cereal
   // ######################################################################
   // Deferred Implementation, see construct for more information
   template <class T> template <class ... Args> inline
-  void construct<T>::operator()( Args && ... optionArgs )
+  void construct<T>::operator()( Args && ... m_textArgs )
   {
     if( itsValid )
       throw Exception("Attempting to construct an already initialized object");
 
-    ::cereal::access::construct( itsPtr, std::forward<Args>( optionArgs )... );
+    ::cereal::access::construct( itsPtr, std::forward<Args>( m_textArgs )... );
     itsEnableSharedRestoreFunction();
     itsValid = true;
   }

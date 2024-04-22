@@ -38,8 +38,8 @@ private:
 	void create_layers();
 
 private:
-	bool bIsrunning;
+	bool m_bIsrunning;
 
-	std::unique_ptr<RSCross> cursor;
-	std::vector<std::unique_ptr<Graphics::UI::Layer>> layers;
+	std::unique_ptr<RSCross> m_cursor;
+	std::vector<std::unique_ptr<Graphics::UI::Layer>> m_layers;
 };

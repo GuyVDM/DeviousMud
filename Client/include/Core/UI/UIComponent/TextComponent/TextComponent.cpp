@@ -15,10 +15,10 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 	if (!_contents.empty())
 	{
 
-		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
+		std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
 
 		//Create font path
-		std::string fontPath = renderer->assetsPath;
+		std::string fontPath = m_renderer->assetsPath;
 		{
 			fontPath.append("/fonts/");
 			fontPath.append(Fonts::FontMap().at(_args.font));
@@ -40,7 +40,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 			);
 
 		//Create texture from surface.
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer->m_renderer, textSurface);
 		DEVIOUS_ASSERT(texture != NULL);
 
 		//Cleanup the font and surface.
@@ -48,8 +48,8 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 		TTF_CloseFont(font);
 
 		//Set text texture.
-		textComponent->textTexture = texture;
-		textComponent->optionArgs = _args;
+		textComponent->m_textTexture = texture;
+		textComponent->m_textArgs = _args;
 	}
 	else 
 	{
@@ -66,7 +66,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 
 TextComponent::~TextComponent()
 {
-	SDL_DestroyTexture(textTexture);
+	SDL_DestroyTexture(m_textTexture);
 }
 
 void Graphics::TextComponent::init()
@@ -79,29 +79,29 @@ void Graphics::TextComponent::init()
 
 void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-	if (textTexture)
+	if (m_textTexture)
 	{
-		const Utilities::ivec2 position = Utilities::to_ivec2(get_position());
+		const Utilities::ivec2 m_position = Utilities::to_ivec2(get_position());
 		const Utilities::ivec2 size = Utilities::to_ivec2(get_size());
 
-		if (optionArgs.bDropShadow)
+		if (m_textArgs.bDropShadow)
 		{
 			const static int32_t dropShadowOffsetPx = 1;
-			const SDL_Rect dsRenderQuad = { position.x + dropShadowOffsetPx, position.y + dropShadowOffsetPx, size.x, size.y };
+			const SDL_Rect dsRenderQuad = { m_position.x + dropShadowOffsetPx, m_position.y + dropShadowOffsetPx, size.x, size.y };
 
-			SDL_SetTextureColorMod(textTexture, 0, 0, 0);
-			SDL_SetTextureAlphaMod(textTexture, optionArgs.color.a);
+			SDL_SetTextureColorMod(m_textTexture, 0, 0, 0);
+			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
 
-			SDL_RenderCopy(_renderer->renderer, textTexture, NULL, &dsRenderQuad);
+			SDL_RenderCopy(_renderer->m_renderer, m_textTexture, NULL, &dsRenderQuad);
 
-			SDL_SetTextureColorMod(textTexture, optionArgs.color.r, optionArgs.color.g, optionArgs.color.b);
-			SDL_SetTextureAlphaMod(textTexture, optionArgs.color.a);
+			SDL_SetTextureColorMod(m_textTexture, m_textArgs.color.r, m_textArgs.color.g, m_textArgs.color.b);
+			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
 		}
 
 		// Render the text.
 		{
-			const SDL_Rect renderQuad = { position.x, position.y, size.x, size.y };
-			SDL_RenderCopy(_renderer->renderer, textTexture, NULL, &renderQuad);
+			const SDL_Rect renderQuad = { m_position.x, m_position.y, size.x, size.y };
+			SDL_RenderCopy(_renderer->m_renderer, m_textTexture, NULL, &renderQuad);
 		}
 	}
 }

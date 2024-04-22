@@ -25,10 +25,10 @@ public:
 	void update();
 
 private:
-	Utilities::vec2  position;
-	Utilities::vec2  scale;
+	Utilities::vec2  m_position;
+	Utilities::vec2  m_scale;
 
-	Graphics::Sprite sprite;
+	Graphics::Sprite m_sprite;
 
-	std::shared_ptr<Graphics::Renderer> renderer;
+	std::shared_ptr<Graphics::Renderer> m_renderer;
 };

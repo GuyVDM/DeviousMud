@@ -90,7 +90,7 @@ typedef struct SDL_RendererInfo
  */
 typedef struct SDL_Vertex
 {
-    SDL_FPoint position;        /**< Vertex position, in SDL_Renderer coordinates  */
+    SDL_FPoint m_position;        /**< Vertex position, in SDL_Renderer coordinates  */
     SDL_Color  color;           /**< Vertex color */
     SDL_FPoint tex_coord;       /**< Normalized texture coordinates, if needed */
 } SDL_Vertex;
@@ -204,7 +204,7 @@ extern DECLSPEC int SDLCALL SDL_GetRenderDriverInfo(int index,
  */
 extern DECLSPEC int SDLCALL SDL_CreateWindowAndRenderer(
                                 int width, int height, Uint32 window_flags,
-                                SDL_Window **window, SDL_Renderer **renderer);
+                                SDL_Window **window, SDL_Renderer **m_renderer);
 
 
 /**
@@ -270,7 +270,7 @@ extern DECLSPEC SDL_Renderer * SDLCALL SDL_GetRenderer(SDL_Window * window);
  *
  * \since This function is available since SDL 2.0.22.
  */
-extern DECLSPEC SDL_Window * SDLCALL SDL_RenderGetWindow(SDL_Renderer *renderer);
+extern DECLSPEC SDL_Window * SDLCALL SDL_RenderGetWindow(SDL_Renderer *m_renderer);
 
 /**
  * Get information about a rendering context.
@@ -285,7 +285,7 @@ extern DECLSPEC SDL_Window * SDLCALL SDL_RenderGetWindow(SDL_Renderer *renderer)
  *
  * \sa SDL_CreateRenderer
  */
-extern DECLSPEC int SDLCALL SDL_GetRendererInfo(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_GetRendererInfo(SDL_Renderer * m_renderer,
                                                 SDL_RendererInfo * info);
 
 /**
@@ -305,7 +305,7 @@ extern DECLSPEC int SDLCALL SDL_GetRendererInfo(SDL_Renderer * renderer,
  *
  * \sa SDL_GetRenderer
  */
-extern DECLSPEC int SDLCALL SDL_GetRendererOutputSize(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_GetRendererOutputSize(SDL_Renderer * m_renderer,
                                                       int *w, int *h);
 
 /**
@@ -330,7 +330,7 @@ extern DECLSPEC int SDLCALL SDL_GetRendererOutputSize(SDL_Renderer * renderer,
  * \sa SDL_QueryTexture
  * \sa SDL_UpdateTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTexture(SDL_Renderer * renderer,
+extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTexture(SDL_Renderer * m_renderer,
                                                         Uint32 format,
                                                         int access, int w,
                                                         int h);
@@ -359,7 +359,7 @@ extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTexture(SDL_Renderer * renderer,
  * \sa SDL_DestroyTexture
  * \sa SDL_QueryTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface);
+extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTextureFromSurface(SDL_Renderer * m_renderer, SDL_Surface * surface);
 
 /**
  * Query the attributes of a texture.
@@ -383,7 +383,7 @@ extern DECLSPEC SDL_Texture * SDLCALL SDL_CreateTextureFromSurface(SDL_Renderer 
  *
  * \sa SDL_CreateTexture
  */
-extern DECLSPEC int SDLCALL SDL_QueryTexture(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_QueryTexture(SDL_Texture * m_textTexture,
                                              Uint32 * format, int *access,
                                              int *w, int *h);
 
@@ -411,7 +411,7 @@ extern DECLSPEC int SDLCALL SDL_QueryTexture(SDL_Texture * textTexture,
  * \sa SDL_GetTextureColorMod
  * \sa SDL_SetTextureAlphaMod
  */
-extern DECLSPEC int SDLCALL SDL_SetTextureColorMod(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_SetTextureColorMod(SDL_Texture * m_textTexture,
                                                    Uint8 r, Uint8 g, Uint8 b);
 
 
@@ -430,7 +430,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureColorMod(SDL_Texture * textTexture,
  * \sa SDL_GetTextureAlphaMod
  * \sa SDL_SetTextureColorMod
  */
-extern DECLSPEC int SDLCALL SDL_GetTextureColorMod(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_GetTextureColorMod(SDL_Texture * m_textTexture,
                                                    Uint8 * r, Uint8 * g,
                                                    Uint8 * b);
 
@@ -455,7 +455,7 @@ extern DECLSPEC int SDLCALL SDL_GetTextureColorMod(SDL_Texture * textTexture,
  * \sa SDL_GetTextureAlphaMod
  * \sa SDL_SetTextureColorMod
  */
-extern DECLSPEC int SDLCALL SDL_SetTextureAlphaMod(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_SetTextureAlphaMod(SDL_Texture * m_textTexture,
                                                    Uint8 alpha);
 
 /**
@@ -471,7 +471,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureAlphaMod(SDL_Texture * textTexture,
  * \sa SDL_GetTextureColorMod
  * \sa SDL_SetTextureAlphaMod
  */
-extern DECLSPEC int SDLCALL SDL_GetTextureAlphaMod(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_GetTextureAlphaMod(SDL_Texture * m_textTexture,
                                                    Uint8 * alpha);
 
 /**
@@ -490,7 +490,7 @@ extern DECLSPEC int SDLCALL SDL_GetTextureAlphaMod(SDL_Texture * textTexture,
  * \sa SDL_GetTextureBlendMode
  * \sa SDL_RenderCopy
  */
-extern DECLSPEC int SDLCALL SDL_SetTextureBlendMode(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_SetTextureBlendMode(SDL_Texture * m_textTexture,
                                                     SDL_BlendMode blendMode);
 
 /**
@@ -505,7 +505,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureBlendMode(SDL_Texture * textTexture,
  *
  * \sa SDL_SetTextureBlendMode
  */
-extern DECLSPEC int SDLCALL SDL_GetTextureBlendMode(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_GetTextureBlendMode(SDL_Texture * m_textTexture,
                                                     SDL_BlendMode *blendMode);
 
 /**
@@ -521,7 +521,7 @@ extern DECLSPEC int SDLCALL SDL_GetTextureBlendMode(SDL_Texture * textTexture,
  *
  * \sa SDL_GetTextureScaleMode
  */
-extern DECLSPEC int SDLCALL SDL_SetTextureScaleMode(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_SetTextureScaleMode(SDL_Texture * m_textTexture,
                                                     SDL_ScaleMode scaleMode);
 
 /**
@@ -535,7 +535,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureScaleMode(SDL_Texture * textTexture,
  *
  * \sa SDL_SetTextureScaleMode
  */
-extern DECLSPEC int SDLCALL SDL_GetTextureScaleMode(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_GetTextureScaleMode(SDL_Texture * m_textTexture,
                                                     SDL_ScaleMode *scaleMode);
 
 /**
@@ -549,7 +549,7 @@ extern DECLSPEC int SDLCALL SDL_GetTextureScaleMode(SDL_Texture * textTexture,
  *
  * \sa SDL_GetTextureUserData
  */
-extern DECLSPEC int SDLCALL SDL_SetTextureUserData(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_SetTextureUserData(SDL_Texture * m_textTexture,
                                                    void *userdata);
 
 /**
@@ -563,7 +563,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureUserData(SDL_Texture * textTexture,
  *
  * \sa SDL_SetTextureUserData
  */
-extern DECLSPEC void * SDLCALL SDL_GetTextureUserData(SDL_Texture * textTexture);
+extern DECLSPEC void * SDLCALL SDL_GetTextureUserData(SDL_Texture * m_textTexture);
 
 /**
  * Update the given texture rectangle with new pixel data.
@@ -594,7 +594,7 @@ extern DECLSPEC void * SDLCALL SDL_GetTextureUserData(SDL_Texture * textTexture)
  * \sa SDL_LockTexture
  * \sa SDL_UnlockTexture
  */
-extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture * m_textTexture,
                                               const SDL_Rect * rect,
                                               const void *pixels, int pitch);
 
@@ -625,7 +625,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture * textTexture,
  *
  * \sa SDL_UpdateTexture
  */
-extern DECLSPEC int SDLCALL SDL_UpdateYUVTexture(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_UpdateYUVTexture(SDL_Texture * m_textTexture,
                                                  const SDL_Rect * rect,
                                                  const Uint8 *Yplane, int Ypitch,
                                                  const Uint8 *Uplane, int Upitch,
@@ -651,7 +651,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateYUVTexture(SDL_Texture * textTexture,
  *
  * \since This function is available since SDL 2.0.16.
  */
-extern DECLSPEC int SDLCALL SDL_UpdateNVTexture(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_UpdateNVTexture(SDL_Texture * m_textTexture,
                                                  const SDL_Rect * rect,
                                                  const Uint8 *Yplane, int Ypitch,
                                                  const Uint8 *UVplane, int UVpitch);
@@ -683,7 +683,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateNVTexture(SDL_Texture * textTexture,
  *
  * \sa SDL_UnlockTexture
  */
-extern DECLSPEC int SDLCALL SDL_LockTexture(SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_LockTexture(SDL_Texture * m_textTexture,
                                             const SDL_Rect * rect,
                                             void **pixels, int *pitch);
 
@@ -719,7 +719,7 @@ extern DECLSPEC int SDLCALL SDL_LockTexture(SDL_Texture * textTexture,
  * \sa SDL_LockTexture
  * \sa SDL_UnlockTexture
  */
-extern DECLSPEC int SDLCALL SDL_LockTextureToSurface(SDL_Texture *textTexture,
+extern DECLSPEC int SDLCALL SDL_LockTextureToSurface(SDL_Texture *m_textTexture,
                                             const SDL_Rect *rect,
                                             SDL_Surface **surface);
 
@@ -740,7 +740,7 @@ extern DECLSPEC int SDLCALL SDL_LockTextureToSurface(SDL_Texture *textTexture,
  *
  * \sa SDL_LockTexture
  */
-extern DECLSPEC void SDLCALL SDL_UnlockTexture(SDL_Texture * textTexture);
+extern DECLSPEC void SDLCALL SDL_UnlockTexture(SDL_Texture * m_textTexture);
 
 /**
  * Determine whether a renderer supports the use of render targets.
@@ -752,7 +752,7 @@ extern DECLSPEC void SDLCALL SDL_UnlockTexture(SDL_Texture * textTexture);
  *
  * \sa SDL_SetRenderTarget
  */
-extern DECLSPEC SDL_bool SDLCALL SDL_RenderTargetSupported(SDL_Renderer *renderer);
+extern DECLSPEC SDL_bool SDLCALL SDL_RenderTargetSupported(SDL_Renderer *m_renderer);
 
 /**
  * Set a texture as the current rendering target.
@@ -776,8 +776,8 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderTargetSupported(SDL_Renderer *rendere
  *
  * \sa SDL_GetRenderTarget
  */
-extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *renderer,
-                                                SDL_Texture *textTexture);
+extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *m_renderer,
+                                                SDL_Texture *m_textTexture);
 
 /**
  * Get the current render target.
@@ -792,7 +792,7 @@ extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *renderer,
  *
  * \sa SDL_SetRenderTarget
  */
-extern DECLSPEC SDL_Texture * SDLCALL SDL_GetRenderTarget(SDL_Renderer *renderer);
+extern DECLSPEC SDL_Texture * SDLCALL SDL_GetRenderTarget(SDL_Renderer *m_renderer);
 
 /**
  * Set a device independent resolution for rendering.
@@ -820,7 +820,7 @@ extern DECLSPEC SDL_Texture * SDLCALL SDL_GetRenderTarget(SDL_Renderer *renderer
  *
  * \sa SDL_RenderGetLogicalSize
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetLogicalSize(SDL_Renderer * renderer, int w, int h);
+extern DECLSPEC int SDLCALL SDL_RenderSetLogicalSize(SDL_Renderer * m_renderer, int w, int h);
 
 /**
  * Get device independent resolution for rendering.
@@ -841,7 +841,7 @@ extern DECLSPEC int SDLCALL SDL_RenderSetLogicalSize(SDL_Renderer * renderer, in
  *
  * \sa SDL_RenderSetLogicalSize
  */
-extern DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer * renderer, int *w, int *h);
+extern DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer * m_renderer, int *w, int *h);
 
 /**
  * Set whether to force integer scales for resolution-independent rendering.
@@ -860,7 +860,7 @@ extern DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer * renderer, i
  * \sa SDL_RenderGetIntegerScale
  * \sa SDL_RenderSetLogicalSize
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer * m_renderer,
                                                       SDL_bool enable);
 
 /**
@@ -874,7 +874,7 @@ extern DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer * renderer,
  *
  * \sa SDL_RenderSetIntegerScale
  */
-extern DECLSPEC SDL_bool SDLCALL SDL_RenderGetIntegerScale(SDL_Renderer * renderer);
+extern DECLSPEC SDL_bool SDLCALL SDL_RenderGetIntegerScale(SDL_Renderer * m_renderer);
 
 /**
  * Set the drawing area for rendering on the current target.
@@ -892,7 +892,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderGetIntegerScale(SDL_Renderer * render
  *
  * \sa SDL_RenderGetViewport
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetViewport(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderSetViewport(SDL_Renderer * m_renderer,
                                                   const SDL_Rect * rect);
 
 /**
@@ -905,7 +905,7 @@ extern DECLSPEC int SDLCALL SDL_RenderSetViewport(SDL_Renderer * renderer,
  *
  * \sa SDL_RenderSetViewport
  */
-extern DECLSPEC void SDLCALL SDL_RenderGetViewport(SDL_Renderer * renderer,
+extern DECLSPEC void SDLCALL SDL_RenderGetViewport(SDL_Renderer * m_renderer,
                                                    SDL_Rect * rect);
 
 /**
@@ -923,7 +923,7 @@ extern DECLSPEC void SDLCALL SDL_RenderGetViewport(SDL_Renderer * renderer,
  * \sa SDL_RenderGetClipRect
  * \sa SDL_RenderIsClipEnabled
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetClipRect(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderSetClipRect(SDL_Renderer * m_renderer,
                                                   const SDL_Rect * rect);
 
 /**
@@ -939,7 +939,7 @@ extern DECLSPEC int SDLCALL SDL_RenderSetClipRect(SDL_Renderer * renderer,
  * \sa SDL_RenderIsClipEnabled
  * \sa SDL_RenderSetClipRect
  */
-extern DECLSPEC void SDLCALL SDL_RenderGetClipRect(SDL_Renderer * renderer,
+extern DECLSPEC void SDLCALL SDL_RenderGetClipRect(SDL_Renderer * m_renderer,
                                                    SDL_Rect * rect);
 
 /**
@@ -954,7 +954,7 @@ extern DECLSPEC void SDLCALL SDL_RenderGetClipRect(SDL_Renderer * renderer,
  * \sa SDL_RenderGetClipRect
  * \sa SDL_RenderSetClipRect
  */
-extern DECLSPEC SDL_bool SDLCALL SDL_RenderIsClipEnabled(SDL_Renderer * renderer);
+extern DECLSPEC SDL_bool SDLCALL SDL_RenderIsClipEnabled(SDL_Renderer * m_renderer);
 
 
 /**
@@ -979,7 +979,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderIsClipEnabled(SDL_Renderer * renderer
  * \sa SDL_RenderGetScale
  * \sa SDL_RenderSetLogicalSize
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetScale(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderSetScale(SDL_Renderer * m_renderer,
                                                float scaleX, float scaleY);
 
 /**
@@ -993,7 +993,7 @@ extern DECLSPEC int SDLCALL SDL_RenderSetScale(SDL_Renderer * renderer,
  *
  * \sa SDL_RenderSetScale
  */
-extern DECLSPEC void SDLCALL SDL_RenderGetScale(SDL_Renderer * renderer,
+extern DECLSPEC void SDLCALL SDL_RenderGetScale(SDL_Renderer * m_renderer,
                                                float *scaleX, float *scaleY);
 
 /**
@@ -1017,7 +1017,7 @@ extern DECLSPEC void SDLCALL SDL_RenderGetScale(SDL_Renderer * renderer,
  * \sa SDL_RenderGetLogicalSize
  * \sa SDL_RenderSetLogicalSize
  */
-extern DECLSPEC void SDLCALL SDL_RenderWindowToLogical(SDL_Renderer * renderer, 
+extern DECLSPEC void SDLCALL SDL_RenderWindowToLogical(SDL_Renderer * m_renderer, 
                                                             int windowX, int windowY, 
                                                             float *logicalX, float *logicalY);
                                                   
@@ -1043,7 +1043,7 @@ extern DECLSPEC void SDLCALL SDL_RenderWindowToLogical(SDL_Renderer * renderer,
  * \sa SDL_RenderGetLogicalSize
  * \sa SDL_RenderSetLogicalSize
  */
-extern DECLSPEC void SDLCALL SDL_RenderLogicalToWindow(SDL_Renderer * renderer, 
+extern DECLSPEC void SDLCALL SDL_RenderLogicalToWindow(SDL_Renderer * m_renderer, 
                                                             float logicalX, float logicalY,
                                                             int *windowX, int *windowY);
 
@@ -1076,7 +1076,7 @@ extern DECLSPEC void SDLCALL SDL_RenderLogicalToWindow(SDL_Renderer * renderer,
  * \sa SDL_RenderFillRect
  * \sa SDL_RenderFillRects
  */
-extern DECLSPEC int SDLCALL SDL_SetRenderDrawColor(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_SetRenderDrawColor(SDL_Renderer * m_renderer,
                                            Uint8 r, Uint8 g, Uint8 b,
                                            Uint8 a);
 
@@ -1099,7 +1099,7 @@ extern DECLSPEC int SDLCALL SDL_SetRenderDrawColor(SDL_Renderer * renderer,
  *
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_GetRenderDrawColor(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_GetRenderDrawColor(SDL_Renderer * m_renderer,
                                            Uint8 * r, Uint8 * g, Uint8 * b,
                                            Uint8 * a);
 
@@ -1125,7 +1125,7 @@ extern DECLSPEC int SDLCALL SDL_GetRenderDrawColor(SDL_Renderer * renderer,
  * \sa SDL_RenderFillRect
  * \sa SDL_RenderFillRects
  */
-extern DECLSPEC int SDLCALL SDL_SetRenderDrawBlendMode(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_SetRenderDrawBlendMode(SDL_Renderer * m_renderer,
                                                        SDL_BlendMode blendMode);
 
 /**
@@ -1140,7 +1140,7 @@ extern DECLSPEC int SDLCALL SDL_SetRenderDrawBlendMode(SDL_Renderer * renderer,
  *
  * \sa SDL_SetRenderDrawBlendMode
  */
-extern DECLSPEC int SDLCALL SDL_GetRenderDrawBlendMode(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_GetRenderDrawBlendMode(SDL_Renderer * m_renderer,
                                                        SDL_BlendMode *blendMode);
 
 /**
@@ -1157,7 +1157,7 @@ extern DECLSPEC int SDLCALL SDL_GetRenderDrawBlendMode(SDL_Renderer * renderer,
  *
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderClear(SDL_Renderer * renderer);
+extern DECLSPEC int SDLCALL SDL_RenderClear(SDL_Renderer * m_renderer);
 
 /**
  * Draw a point on the current rendering target.
@@ -1184,7 +1184,7 @@ extern DECLSPEC int SDLCALL SDL_RenderClear(SDL_Renderer * renderer);
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawPoint(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawPoint(SDL_Renderer * m_renderer,
                                                 int x, int y);
 
 /**
@@ -1210,7 +1210,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawPoint(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawPoints(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawPoints(SDL_Renderer * m_renderer,
                                                  const SDL_Point * points,
                                                  int count);
 
@@ -1241,7 +1241,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawPoints(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawLine(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawLine(SDL_Renderer * m_renderer,
                                                int x1, int y1, int x2, int y2);
 
 /**
@@ -1267,7 +1267,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawLine(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawLines(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawLines(SDL_Renderer * m_renderer,
                                                 const SDL_Point * points,
                                                 int count);
 
@@ -1293,7 +1293,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawLines(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawRect(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawRect(SDL_Renderer * m_renderer,
                                                const SDL_Rect * rect);
 
 /**
@@ -1319,7 +1319,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawRect(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawRects(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawRects(SDL_Renderer * m_renderer,
                                                 const SDL_Rect * rects,
                                                 int count);
 
@@ -1349,7 +1349,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawRects(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC int SDLCALL SDL_RenderFillRect(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderFillRect(SDL_Renderer * m_renderer,
                                                const SDL_Rect * rect);
 
 /**
@@ -1374,7 +1374,7 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRect(SDL_Renderer * renderer,
  * \sa SDL_RenderFillRect
  * \sa SDL_RenderPresent
  */
-extern DECLSPEC int SDLCALL SDL_RenderFillRects(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderFillRects(SDL_Renderer * m_renderer,
                                                 const SDL_Rect * rects,
                                                 int count);
 
@@ -1406,8 +1406,8 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRects(SDL_Renderer * renderer,
  * \sa SDL_SetTextureBlendMode
  * \sa SDL_SetTextureColorMod
  */
-extern DECLSPEC int SDLCALL SDL_RenderCopy(SDL_Renderer * renderer,
-                                           SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderCopy(SDL_Renderer * m_renderer,
+                                           SDL_Texture * m_textTexture,
                                            const SDL_Rect * srcrect,
                                            const SDL_Rect * dstrect);
 
@@ -1450,8 +1450,8 @@ extern DECLSPEC int SDLCALL SDL_RenderCopy(SDL_Renderer * renderer,
  * \sa SDL_SetTextureBlendMode
  * \sa SDL_SetTextureColorMod
  */
-extern DECLSPEC int SDLCALL SDL_RenderCopyEx(SDL_Renderer * renderer,
-                                           SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderCopyEx(SDL_Renderer * m_renderer,
+                                           SDL_Texture * m_textTexture,
                                            const SDL_Rect * srcrect,
                                            const SDL_Rect * dstrect,
                                            const double angle,
@@ -1469,7 +1469,7 @@ extern DECLSPEC int SDLCALL SDL_RenderCopyEx(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawPointF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawPointF(SDL_Renderer * m_renderer,
                                                  float x, float y);
 
 /**
@@ -1482,7 +1482,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawPointF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawPointsF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawPointsF(SDL_Renderer * m_renderer,
                                                   const SDL_FPoint * points,
                                                   int count);
 
@@ -1498,7 +1498,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawPointsF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawLineF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawLineF(SDL_Renderer * m_renderer,
                                                 float x1, float y1, float x2, float y2);
 
 /**
@@ -1512,7 +1512,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawLineF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawLinesF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawLinesF(SDL_Renderer * m_renderer,
                                                  const SDL_FPoint * points,
                                                  int count);
 
@@ -1526,7 +1526,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawLinesF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawRectF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawRectF(SDL_Renderer * m_renderer,
                                                 const SDL_FRect * rect);
 
 /**
@@ -1540,7 +1540,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawRectF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderDrawRectsF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderDrawRectsF(SDL_Renderer * m_renderer,
                                                  const SDL_FRect * rects,
                                                  int count);
 
@@ -1555,7 +1555,7 @@ extern DECLSPEC int SDLCALL SDL_RenderDrawRectsF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderFillRectF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderFillRectF(SDL_Renderer * m_renderer,
                                                 const SDL_FRect * rect);
 
 /**
@@ -1569,7 +1569,7 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRectF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderFillRectsF(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderFillRectsF(SDL_Renderer * m_renderer,
                                                  const SDL_FRect * rects,
                                                  int count);
 
@@ -1587,8 +1587,8 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRectsF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderCopyF(SDL_Renderer * renderer,
-                                            SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderCopyF(SDL_Renderer * m_renderer,
+                                            SDL_Texture * m_textTexture,
                                             const SDL_Rect * srcrect,
                                             const SDL_FRect * dstrect);
 
@@ -1613,8 +1613,8 @@ extern DECLSPEC int SDLCALL SDL_RenderCopyF(SDL_Renderer * renderer,
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderCopyExF(SDL_Renderer * renderer,
-                                            SDL_Texture * textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderCopyExF(SDL_Renderer * m_renderer,
+                                            SDL_Texture * m_textTexture,
                                             const SDL_Rect * srcrect,
                                             const SDL_FRect * dstrect,
                                             const double angle,
@@ -1641,8 +1641,8 @@ extern DECLSPEC int SDLCALL SDL_RenderCopyExF(SDL_Renderer * renderer,
  * \sa SDL_RenderGeometryRaw
  * \sa SDL_Vertex
  */
-extern DECLSPEC int SDLCALL SDL_RenderGeometry(SDL_Renderer *renderer,
-                                               SDL_Texture *textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderGeometry(SDL_Renderer *m_renderer,
+                                               SDL_Texture *m_textTexture,
                                                const SDL_Vertex *vertices, int num_vertices,
                                                const int *indices, int num_indices);
 
@@ -1671,8 +1671,8 @@ extern DECLSPEC int SDLCALL SDL_RenderGeometry(SDL_Renderer *renderer,
  * \sa SDL_RenderGeometry
  * \sa SDL_Vertex
  */
-extern DECLSPEC int SDLCALL SDL_RenderGeometryRaw(SDL_Renderer *renderer,
-                                               SDL_Texture *textTexture,
+extern DECLSPEC int SDLCALL SDL_RenderGeometryRaw(SDL_Renderer *m_renderer,
+                                               SDL_Texture *m_textTexture,
                                                const float *xy, int xy_stride,
                                                const SDL_Color *color, int color_stride,
                                                const float *uv, int uv_stride,
@@ -1705,7 +1705,7 @@ extern DECLSPEC int SDLCALL SDL_RenderGeometryRaw(SDL_Renderer *renderer,
  *
  * \since This function is available since SDL 2.0.0.
  */
-extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer * renderer,
+extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer * m_renderer,
                                                  const SDL_Rect * rect,
                                                  Uint32 format,
                                                  void *pixels, int pitch);
@@ -1750,7 +1750,7 @@ extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer * renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC void SDLCALL SDL_RenderPresent(SDL_Renderer * renderer);
+extern DECLSPEC void SDLCALL SDL_RenderPresent(SDL_Renderer * m_renderer);
 
 /**
  * Destroy the specified texture.
@@ -1765,7 +1765,7 @@ extern DECLSPEC void SDLCALL SDL_RenderPresent(SDL_Renderer * renderer);
  * \sa SDL_CreateTexture
  * \sa SDL_CreateTextureFromSurface
  */
-extern DECLSPEC void SDLCALL SDL_DestroyTexture(SDL_Texture * textTexture);
+extern DECLSPEC void SDLCALL SDL_DestroyTexture(SDL_Texture * m_textTexture);
 
 /**
  * Destroy the rendering context for a window and free associated textures.
@@ -1779,7 +1779,7 @@ extern DECLSPEC void SDLCALL SDL_DestroyTexture(SDL_Texture * textTexture);
  *
  * \sa SDL_CreateRenderer
  */
-extern DECLSPEC void SDLCALL SDL_DestroyRenderer(SDL_Renderer * renderer);
+extern DECLSPEC void SDLCALL SDL_DestroyRenderer(SDL_Renderer * m_renderer);
 
 /**
  * Force the rendering context to flush any pending commands to the underlying
@@ -1810,7 +1810,7 @@ extern DECLSPEC void SDLCALL SDL_DestroyRenderer(SDL_Renderer * renderer);
  *
  * \since This function is available since SDL 2.0.10.
  */
-extern DECLSPEC int SDLCALL SDL_RenderFlush(SDL_Renderer * renderer);
+extern DECLSPEC int SDLCALL SDL_RenderFlush(SDL_Renderer * m_renderer);
 
 
 /**
@@ -1848,7 +1848,7 @@ extern DECLSPEC int SDLCALL SDL_RenderFlush(SDL_Renderer * renderer);
  * \sa SDL_GL_MakeCurrent
  * \sa SDL_GL_UnbindTexture
  */
-extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *textTexture, float *texw, float *texh);
+extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *m_textTexture, float *texw, float *texh);
 
 /**
  * Unbind an OpenGL/ES/ES2 texture from the current context.
@@ -1863,7 +1863,7 @@ extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *textTexture, float *
  * \sa SDL_GL_BindTexture
  * \sa SDL_GL_MakeCurrent
  */
-extern DECLSPEC int SDLCALL SDL_GL_UnbindTexture(SDL_Texture *textTexture);
+extern DECLSPEC int SDLCALL SDL_GL_UnbindTexture(SDL_Texture *m_textTexture);
 
 /**
  * Get the CAMetalLayer associated with the given Metal renderer.
@@ -1879,7 +1879,7 @@ extern DECLSPEC int SDLCALL SDL_GL_UnbindTexture(SDL_Texture *textTexture);
  *
  * \sa SDL_RenderGetMetalCommandEncoder
  */
-extern DECLSPEC void *SDLCALL SDL_RenderGetMetalLayer(SDL_Renderer * renderer);
+extern DECLSPEC void *SDLCALL SDL_RenderGetMetalLayer(SDL_Renderer * m_renderer);
 
 /**
  * Get the Metal command encoder for the current frame
@@ -1900,7 +1900,7 @@ extern DECLSPEC void *SDLCALL SDL_RenderGetMetalLayer(SDL_Renderer * renderer);
  *
  * \sa SDL_RenderGetMetalLayer
  */
-extern DECLSPEC void *SDLCALL SDL_RenderGetMetalCommandEncoder(SDL_Renderer * renderer);
+extern DECLSPEC void *SDLCALL SDL_RenderGetMetalCommandEncoder(SDL_Renderer * m_renderer);
 
 /**
  * Toggle VSync of the given renderer.
@@ -1911,7 +1911,7 @@ extern DECLSPEC void *SDLCALL SDL_RenderGetMetalCommandEncoder(SDL_Renderer * re
  *
  * \since This function is available since SDL 2.0.18.
  */
-extern DECLSPEC int SDLCALL SDL_RenderSetVSync(SDL_Renderer* renderer, int vsync);
+extern DECLSPEC int SDLCALL SDL_RenderSetVSync(SDL_Renderer* m_renderer, int vsync);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

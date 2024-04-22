@@ -14,11 +14,11 @@ using namespace Utilities;
 using namespace Graphics;
 using namespace UI;
 
-e_UIInteractionType HUDLayer::sInteractionType = e_UIInteractionType::INTERACT;
+e_UIInteractionType HUDLayer::s_InteractionType = e_UIInteractionType::INTERACT;
 
 e_UIInteractionType HUDLayer::get_interaction_type()
 {
-	return sInteractionType;
+	return s_InteractionType;
 }
 
 void HUDLayer::init()
@@ -26,17 +26,17 @@ void HUDLayer::init()
 	create_hud();
 }
 
-bool HUDLayer::handle_event(const SDL_Event* event)
+bool HUDLayer::handle_event(const SDL_Event* m_event)
 {
 	//TODO: MOVE THIS DISGUSTING STUFF TO A INPUT CLASS AT SOME POINT.
 	static bool altDown = false;
 	static bool leftMouseDown = false;
 	static bool shouldOpenoptionsMenu = false;
 
-	switch (event->type)
+	switch (m_event->type)
 	{
 		case SDL_KEYDOWN:
-		if (event->key.keysym.sym == SDLK_LALT || event->key.keysym.sym == SDLK_RALT)
+		if (m_event->key.keysym.sym == SDLK_LALT || m_event->key.keysym.sym == SDLK_RALT)
 		{
 			altDown = true;
 		}
@@ -44,22 +44,22 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			if (event->button.button == SDL_BUTTON_LEFT)
+			if (m_event->button.button == SDL_BUTTON_LEFT)
 			{
-				leftMouseDown = event->button.button == SDL_BUTTON_LEFT;
+				leftMouseDown = m_event->button.button == SDL_BUTTON_LEFT;
 			}
 		}
 		break;
 
 		case SDL_MOUSEBUTTONUP:
-		if (event->button.button == SDL_BUTTON_LEFT)
+		if (m_event->button.button == SDL_BUTTON_LEFT)
 		{
 			leftMouseDown = false;
 		}
 		break;
 
 		case SDL_KEYUP:
-		if (event->key.keysym.sym == SDLK_LALT || event->key.keysym.sym == SDLK_RALT)
+		if (m_event->key.keysym.sym == SDLK_LALT || m_event->key.keysym.sym == SDLK_RALT)
 		{
 			altDown = false;
 		}
@@ -67,13 +67,13 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 
 		case SDL_MOUSEMOTION:
 		{
-			if(UIComponent::sDraggedComponent) 
+			if(UIComponent::s_draggedComponent) 
 			{
 				Utilities::ivec2 mousePos;
 				SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
-				UIComponent* draggedComponent = UIComponent::sDraggedComponent;
-				draggedComponent->set_position(Utilities::to_vec2(mousePos) - UIComponent::sDragOffset);
+				UIComponent* draggedComponent = UIComponent::s_draggedComponent;
+				draggedComponent->set_position(Utilities::to_vec2(mousePos) - UIComponent::s_dragOffset);
 			}
 		}
 		break;
@@ -81,23 +81,23 @@ bool HUDLayer::handle_event(const SDL_Event* event)
 
 	/// Set the interaction type to moving if both buttons are pressed.
 	/// Moving state makes it so that any hovered on UI elements follows the mouse.
-	sInteractionType = altDown && leftMouseDown ? e_UIInteractionType::MOVE    :
+	s_InteractionType = altDown && leftMouseDown ? e_UIInteractionType::MOVE    :
 		                                altDown ? e_UIInteractionType::DISPLAY :
 		                                          e_UIInteractionType::INTERACT;
 
-	return canvas->handle_event(event);
+	return m_canvas->handle_event(m_event);
 }
 
 void HUDLayer::create_hud()
 {
-	canvas = Canvas::create_canvas();
+	m_canvas = Canvas::create_canvas();
 
 	std::shared_ptr<UIComponent> component;
 
 	// HUD Tab Menu
 	{
 		Utilities::ivec2 viewportSize = Utilities::ivec2(0); 
-		renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
+		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 
 		component = UIComponent::create_component<HUDTabMenu>
 		(
@@ -110,10 +110,10 @@ void HUDLayer::create_hud()
 		const Rect boundingRect = component->get_bounding_rect();
 		const Utilities::vec2 size = boundingRect.get_size();
 		const Utilities::vec2 offset = component->get_position() - Utilities::vec2(boundingRect.minPos.x, boundingRect.minPos.y);
-		const Utilities::vec2 position = Utilities::to_vec2(viewportSize) - size + offset;
-		component->set_position(position);
+		const Utilities::vec2 m_position = Utilities::to_vec2(viewportSize) - size + offset;
+		component->set_position(m_position);
 		component->set_anchor(e_AnchorPreset::BOTTOM_RIGHT);
-		canvas->add_child(component);
+		m_canvas->add_child(component);
 	}
 
 	//// Options Menu
@@ -125,21 +125,21 @@ void HUDLayer::create_hud()
 				SpriteType::HUD_OPTIONS_BOX,
 				true
 			);
-	}   canvas->add_child(component);
+	}   m_canvas->add_child(component);
 }
 
 void HUDLayer::update()
 {
-	std::shared_ptr<UIComponent> base = std::dynamic_pointer_cast<UIComponent>(canvas);
+	std::shared_ptr<UIComponent> base = std::dynamic_pointer_cast<UIComponent>(m_canvas);
 
 	// Render loop
 	{	
-		base->render(renderer);
+		base->render(m_renderer);
 	}
 }
 
 Graphics::UI::HUDLayer::~HUDLayer()
 {
-	UIComponent::sDraggedComponent = nullptr;
+	UIComponent::s_draggedComponent = nullptr;
 }
 

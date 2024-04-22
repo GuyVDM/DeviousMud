@@ -7,7 +7,7 @@ class NetworkHandler;
 namespace Server 
 {
 	class ConnectionHandler;
-	class PlayerHandler;
+	class EntityHandler;
 }
 
 
@@ -19,7 +19,7 @@ namespace Server
 typedef struct _Globals
 {
 	std::shared_ptr<Server::ConnectionHandler> connectionHandler;
-	std::shared_ptr<Server::PlayerHandler>     playerHandler;
+	std::shared_ptr<Server::EntityHandler>     m_entityHandler;
 	std::shared_ptr<NetworkHandler>            networkHandler;
 }   Globals;
 

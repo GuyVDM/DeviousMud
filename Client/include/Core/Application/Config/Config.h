@@ -12,8 +12,8 @@ namespace DM
 			static void  update_deltaTime();
 
         private:
-			static float deltaTime;
-			static std::chrono::time_point<std::chrono::high_resolution_clock> last_time;
+			static float s_deltaTime;
+			static std::chrono::time_point<std::chrono::high_resolution_clock> s_last_time;
 		};
 	}
 }

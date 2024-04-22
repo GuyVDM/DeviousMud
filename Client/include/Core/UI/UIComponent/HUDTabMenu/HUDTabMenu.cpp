@@ -23,9 +23,9 @@ void HUDTab::init()
 
 void HUDTab::set_icon(SpriteType _sprite, vec2 _iconSize)
 {
-	auto renderer = g_globals.renderer.lock();
-	icon = renderer->get_sprite(_sprite);
-	iconSize = _iconSize;
+	auto m_renderer = g_globals.m_renderer.lock();
+	m_icon = m_renderer->get_sprite(_sprite);
+	m_iconSize = _iconSize;
 }
 
 bool HUDTab::handle_event(const SDL_Event* _event) 
@@ -38,15 +38,15 @@ bool HUDTab::handle_event(const SDL_Event* _event)
 		{
 			if (_event->button.button == SDL_BUTTON_RIGHT)
 			{
-				OptionArgs optionArgs;
-				optionArgs.actionStr = "Open";
-				optionArgs.actionCol = { 255, 255, 0, 255 };
+				OptionArgs m_textArgs;
+				m_textArgs.actionStr = "Open";
+				m_textArgs.actionCol = { 255, 255, 0, 255 };
 
-				optionArgs.subjectStr = "Tab";
-				optionArgs.subjectCol = { 229, 165, 80, 255 };
-				optionArgs.function = std::bind(&HUDTab::on_left_click, this);
+				m_textArgs.subjectStr = "Tab";
+				m_textArgs.subjectCol = { 229, 165, 80, 255 };
+				m_textArgs.function = std::bind(&HUDTab::on_left_click, this);
 
-				OptionsTab::add_option(optionArgs);
+				OptionsTab::add_option(m_textArgs);
 			}
 		}
 		break;
@@ -58,14 +58,14 @@ bool HUDTab::handle_event(const SDL_Event* _event)
 
 void HUDTab::renderBG(std::shared_ptr<Renderer> _renderer)
 {
-	const Utilities::vec2 position; 
+	const Utilities::vec2 m_position; 
 
-	_renderer->plot_raw_frame(icon, get_position() + (iconSize / 2.0f), iconSize);
+	_renderer->plot_raw_frame(m_icon, get_position() + (m_iconSize / 2.0f), m_iconSize);
 }
 
 void HUDTab::on_left_click()
 {
-	sprite.color = { 255, 0, 0, 255};
+	m_sprite.color = { 255, 0, 0, 255};
 }
 
 /// <summary>
@@ -73,11 +73,11 @@ void HUDTab::on_left_click()
 /// </summary>
 void HUDTabMenu::init()
 {
-	bIsMovable = true;
+	m_bIsMovable = true;
 
-	float scale = 0.625f;
-	const Size tabSize  = Utilities::vec2(84.0f) * scale;
-	const Size iconSize = Utilities::vec2(42.0f) * scale;
+	float m_scale = 0.625f;
+	const Size tabSize  = Utilities::vec2(84.0f) * m_scale;
+	const Size m_iconSize = Utilities::vec2(42.0f) * m_scale;
 	std::shared_ptr<HUDTab> tab;
 	Position tabPos;
 	
@@ -92,7 +92,7 @@ void HUDTabMenu::init()
 				true
 			);
 		tab->set_anchor(e_AnchorPreset::CENTER);
-		tab->set_icon(SpriteType::HUD_ICON_SKILLS, iconSize);
+		tab->set_icon(SpriteType::HUD_ICON_SKILLS, m_iconSize);
 		add_child(tab);
 	}
 
@@ -229,7 +229,7 @@ void HUDTabMenu::init()
 		component = UIComponent::create_component<UIComponent>
 			(
 				get_position() - Position(tabSize.x / 2.0f, 0.0f),
-				Size(42.0f, 504.0f) * scale,
+				Size(42.0f, 504.0f) * m_scale,
 				SpriteType::HUD_FRAME
 			);
 		component->set_anchor(e_AnchorPreset::CENTER);
@@ -242,7 +242,7 @@ void HUDTabMenu::init()
 		component = UIComponent::create_component<UIComponent>
 			(
 				get_position() + Position(get_size().x, 0.0f),
-				Size(42.0f, 504.0f) * scale,
+				Size(42.0f, 504.0f) * m_scale,
 				SpriteType::HUD_FRAME
 			);
 		component->set_anchor(e_AnchorPreset::CENTER);

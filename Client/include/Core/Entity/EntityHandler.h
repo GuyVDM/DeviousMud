@@ -43,14 +43,14 @@ private:
 	void set_target(const Utilities::vec2& _details);
 
 private:
-	Utilities::vec2 startPos;
-	Utilities::vec2 currentPos;
-	Utilities::vec2 endPos;
+	Utilities::vec2 m_startPos;
+	Utilities::vec2 m_currentPos;
+	Utilities::vec2 m_endPos;
 
-	std::vector<Utilities::ivec2> path;
+	std::vector<Utilities::ivec2> m_path;
 
-	bool  bIsDirty = false;
-	float elapsedTime = 0.0f;
+	bool  m_bIsDirty = false;
+	float m_elapsedTime = 0.0f;
 
 	friend struct _PlayerData;
 };
@@ -60,18 +60,22 @@ private:
 /// </summary>
 typedef struct _PlayerData 
 { 
-	PlayerDetails    details;
-	SimPosition      simPos;
-	Graphics::Sprite sprite;
+	PlayerDetails    m_details;
+	SimPosition      m_simPos;
+	Graphics::Sprite m_sprite;
 
 	void set_position_from_server(const Utilities::ivec2 _position);
 
 }   PlayerData;
 
+struct EntityData 
+{
+};
+
 /// <summary>
 /// Tracks everything that's related to the players that are registered.
 /// </summary>
-class PlayerHandler 
+class EntityHandler 
 {
 public:
 	EventListener<uint64_t> on_local_player_assigned;
@@ -80,25 +84,25 @@ public:
 
 	EventListener<uint64_t> on_player_removed;
 
-	PlayerData& get_data(const uint64_t& _playerhandle);
+	PlayerData& get_data(const uint64_t _playerhandle);
 
 	PlayerData& get_local_player_data();
 
-	void create_player(const uint64_t& _playerhandle, PlayerDetails& _details);
+	void create_player(const uint64_t _playerhandle, PlayerDetails& _details);
 
-	void remove_player(const uint64_t& _playerhandle);
+	void remove_player(const uint64_t _playerhandle);
 
 public:
-	PlayerHandler();
-	~PlayerHandler();
+	EntityHandler();
+	~EntityHandler();
 
 private:
-	PlayerHandler(const PlayerHandler&) = delete;
+	EntityHandler(const EntityHandler&) = delete;
 
 private:
 	void register_local_player(uint64_t _localPlayerId);
 
 private:
-	std::unordered_map<DM::Utils::UUID, PlayerData> players;
-	uint64_t localPlayerId;
+	std::unordered_map<DM::Utils::UUID, PlayerData> m_players;
+	uint64_t m_localPlayerId;
 };

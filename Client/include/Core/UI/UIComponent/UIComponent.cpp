@@ -8,22 +8,22 @@
 
 #include "Core/Global/C_Globals.h"
 
-UIComponent*    UIComponent::sDraggedComponent = nullptr;
-Utilities::vec2 UIComponent::sDragOffset       = Utilities::vec2(0.0f);
+UIComponent*    UIComponent::s_draggedComponent = nullptr;
+Utilities::vec2 UIComponent::s_dragOffset       = Utilities::vec2(0.0f);
 
 const int32_t UIComponent::get_child_count() const
 {
-    return children.size();
+    return (int32_t)m_children.size();
 }
 
 
 void UIComponent::set_active(bool _bIsActive)
 {
-    bIsActive = _bIsActive;
+    m_bIsActive = _bIsActive;
 }
 
 UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
-    Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
+    Clickable(_pos, _size, g_globals.m_renderer.lock()->get_sprite(_sprite))
 {
     set_position(_pos);
 }
@@ -35,12 +35,12 @@ void UIComponent::init()
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
 {
     const Utilities::ivec2 halfExtends = Utilities::to_ivec2(Utilities::vec2(get_size() / 2.0f));
-    const Utilities::ivec2 pos         = Utilities::to_ivec2(get_position());
+    const Utilities::ivec2 m_pos         = Utilities::to_ivec2(get_position());
 
     const Utilities::ivec2 transformedPos
     {
-        pos.x + halfExtends.x,
-        pos.y + halfExtends.y
+        m_pos.x + halfExtends.x,
+        m_pos.y + halfExtends.y
     };
 
     // Calculate sprite's bounding box
@@ -91,9 +91,9 @@ Utilities::vec2 UIComponent::get_anchor_position(e_AnchorPreset _preset, Rect _r
 
 const UIComponent* UIComponent::get_root() const
 {
-    if (parent)
+    if (m_parent)
     {
-        return parent->get_root();
+        return m_parent->get_root();
     }
     else
     {
@@ -103,24 +103,24 @@ const UIComponent* UIComponent::get_root() const
 
 void UIComponent::set_parent(UIComponent* _parent)
 {
-    parent = _parent;
+    m_parent = _parent;
 }
 
 void UIComponent::set_anchor(e_AnchorPreset _anchorPreset)
 {
-    anchor = _anchorPreset;
+    m_anchor = _anchorPreset;
 }
 
 void UIComponent::add_child(std::shared_ptr<UIComponent> _component)
 {
-    auto it = std::find_if(children.begin(), children.end(), [_component](const std::shared_ptr<UIComponent> _other)
+    auto it = std::find_if(m_children.begin(), m_children.end(), [_component](const std::shared_ptr<UIComponent> _other)
         {
             return _component == _other;
         });
 
-    if(it == children.end()) 
+    if(it == m_children.end()) 
     {   
-        children.push_back(_component);
+        m_children.push_back(_component);
         _component->set_parent(this);
         return;
     }
@@ -130,29 +130,29 @@ void UIComponent::add_child(std::shared_ptr<UIComponent> _component)
 
 void UIComponent::remove_child(std::shared_ptr<UIComponent> _component)
 {
-    auto it = std::find_if(children.begin(), children.end(), [_component](const std::shared_ptr<UIComponent> _other)
+    auto it = std::find_if(m_children.begin(), m_children.end(), [_component](const std::shared_ptr<UIComponent> _other)
         {
             return _component == _other;
         });
 
-    if (it != children.end())
+    if (it != m_children.end())
     {
-        children.erase(it);
+        m_children.erase(it);
     }
 }
 
 const Rect UIComponent::get_bounding_rect() const
 {
-    const Utilities::vec2 pos = get_position();
+    const Utilities::vec2 m_pos = get_position();
     const Utilities::vec2 size = get_size();
 
     Rect rect
     {
-        pos,
-        Utilities::vec2(pos.x + size.x, pos.y + size.y)
+        m_pos,
+        Utilities::vec2(m_pos.x + size.x, m_pos.y + size.y)
     };
 
-    for (std::shared_ptr<UIComponent> child : children)
+    for (std::shared_ptr<UIComponent> child : m_children)
     {
         const Rect childRect = child->get_bounding_rect();
 
@@ -167,39 +167,39 @@ const Rect UIComponent::get_bounding_rect() const
 
 const Rect UIComponent::get_local_rect() const
 {
-    const Utilities::vec2 pos  = get_position();
+    const Utilities::vec2 m_pos  = get_position();
     const Utilities::vec2 size = get_size();
 
     return Rect
     {
-        pos,
-        Utilities::vec2(pos.x + size.x, pos.y + size.y)
+        m_pos,
+        Utilities::vec2(m_pos.x + size.x, m_pos.y + size.y)
     };;
 }
 
 void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-    if (bIsActive) 
+    if (m_bIsActive) 
     {
         const bool renderOutline = (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::DISPLAY ||
-            Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) && bIsMovable;
+            Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) && m_bIsMovable;
 
         if (renderOutline)
         {
             const int outlineSizePx = 3;
             const SDL_Color yellow = { 255, 255, 0, 255 };
             const Rect boundingRect = get_bounding_rect();
-            const Utilities::vec2 pos = boundingRect.minPos;
+            const Utilities::vec2 m_pos = boundingRect.minPos;
             const Utilities::vec2 size = boundingRect.maxPos - boundingRect.minPos;
 
-            _renderer->draw_outline(pos, size, outlineSizePx, yellow);
+            _renderer->draw_outline(m_pos, size, outlineSizePx, yellow);
         }
 
         // Render UIComponent Sprite
         _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
         
 
-        for (auto child : children)
+        for (auto child : m_children)
         {
             child->render(_renderer);
         }
@@ -213,13 +213,13 @@ void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
 
 bool UIComponent::handle_event(const SDL_Event* _event)
 {
-    if (bIsActive)
+    if (m_bIsActive)
     {
         if (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE)
         {
-            if (bIsMovable)
+            if (m_bIsMovable)
             {
-                if (!UIComponent::sDraggedComponent)
+                if (!UIComponent::s_draggedComponent)
                 {
                     Utilities::ivec2 mousePos;
                     SDL_GetMouseState(&mousePos.x, &mousePos.y);
@@ -227,22 +227,22 @@ bool UIComponent::handle_event(const SDL_Event* _event)
                     //If the mouse overlaps anywhere of the entirety of this UI element.
                     if (get_bounding_rect().point_overlaps_rect(Utilities::to_vec2(mousePos)))
                     {
-                        UIComponent::sDragOffset = Utilities::to_vec2(mousePos) - get_position();
-                        UIComponent::sDraggedComponent = this;
+                        UIComponent::s_dragOffset = Utilities::to_vec2(mousePos) - get_position();
+                        UIComponent::s_draggedComponent = this;
                         return true;
                     }
                 }
             }
         }
         else
-            if (UIComponent::sDraggedComponent == this)
+            if (UIComponent::s_draggedComponent == this)
             {
-                UIComponent::sDragOffset = Utilities::vec2(0.0f);
-                UIComponent::sDraggedComponent = nullptr;
+                UIComponent::s_dragOffset = Utilities::vec2(0.0f);
+                UIComponent::s_draggedComponent = nullptr;
             }
 
         //Check if any of the children handle it first.
-        for (auto it = children.rbegin(); it != children.rend(); ++it)
+        for (auto it = m_children.rbegin(); it != m_children.rend(); ++it)
         {
             const auto& child = *it;
 
@@ -254,7 +254,7 @@ bool UIComponent::handle_event(const SDL_Event* _event)
 
         //If children didn't handle the event, check if we can handle it ourselves.
         //IF this an interactable ui.
-        if (bInteractable)
+        if (m_bInteractable)
         {
             return Clickable::handle_event(_event);
         }
@@ -265,9 +265,9 @@ bool UIComponent::handle_event(const SDL_Event* _event)
 
 void UIComponent::update_children(Rect _oldRect)
 {
-    for (auto& child : children)
+    for (auto& child : m_children)
     {
-        const e_AnchorPreset childAnchor = child->anchor;
+        const e_AnchorPreset childAnchor = child->m_anchor;
         const Rect oldChildRect = child->get_local_rect();
         const Utilities::vec2 oldAnchorPoint = get_anchor_position(childAnchor, _oldRect);
         const Utilities::vec2 newAnchorPoint = get_anchor_position(childAnchor, get_local_rect());

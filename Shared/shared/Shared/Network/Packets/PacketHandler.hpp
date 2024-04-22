@@ -16,10 +16,10 @@ class PacketHandler
 
 public:
 	template<class T>
-	constexpr static int send_packet(T* data, ENetPeer* peer, ENetHost* host, enet_uint8 channel, enet_uint32 flags);
+	constexpr static int send_packet(T* data, ENetPeer* m_peer, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags);
 
 	template<class T>
-	constexpr static void send_packet_multicast(T* data, ENetHost* host, enet_uint8 channel, enet_uint32 flags);
+	constexpr static void send_packet_multicast(T* data, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags);
 
 	template<class T>
 	constexpr static void retrieve_packet_data(T& packet, ENetEvent* ev);
@@ -35,10 +35,10 @@ public:
 /// <param name="flags"></param>
 /// <returns></returns>
 template<class T>
-constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHost* host, enet_uint8 channel, enet_uint32 flags)
+constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* m_peer, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags)
 {	
 	//Check if the peer id is registered.
-	if (peer->connectID > 0) 
+	if (m_peer->connectID > 0) 
 	{
 		static_assert(std::is_base_of<Packets::s_PacketHeader, T>::value || std::is_same<Packets::s_PacketHeader, T>::value, "T must inherit from the packetheader.");
 
@@ -51,13 +51,13 @@ constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHos
 		std::string stringdata = os.str();
 		ENetPacket* packet = enet_packet_create(stringdata.c_str(), sizeof(stringdata), flags);
 
-		if (enet_peer_send(peer, channel, packet) == 0)
+		if (enet_peer_send(m_peer, channel, packet) == 0)
 		{
-			enet_host_flush(host);
+			enet_host_flush(m_host);
 		}
 		else
 		{
-			DEVIOUS_ASSERT(peer != nullptr);
+			DEVIOUS_ASSERT(m_peer != nullptr);
 			DEVIOUS_ASSERT(packet != nullptr);
 			fprintf(stderr, "Something went wrong with sending out a packet... \n");
 		}
@@ -69,12 +69,12 @@ constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHos
 }
 
 template<class T>
-inline constexpr void PacketHandler::send_packet_multicast(T* data, ENetHost* host, enet_uint8 channel, enet_uint32 flags)
+inline constexpr void PacketHandler::send_packet_multicast(T* data, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags)
 {
-	for(int i = 0; i < host->peerCount; i++)
+	for(int i = 0; i < m_host->peerCount; i++)
 	{
-		ENetPeer* client = &host->peers[i];
-		send_packet<T>(data, client, host, channel, flags);
+		ENetPeer* client = &m_host->peers[i];
+		send_packet<T>(data, client, m_host, channel, flags);
 	}
 }
 

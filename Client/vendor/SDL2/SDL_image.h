@@ -382,7 +382,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
  * \sa IMG_LoadTexture_RW
  * \sa SDL_DestroyTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
+extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *m_renderer, const char *file);
 
 /**
  * Load an image from an SDL data source into a GPU texture.
@@ -429,7 +429,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  * \sa IMG_LoadTextureTyped_RW
  * \sa SDL_DestroyTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc);
+extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *m_renderer, SDL_RWops *src, int freesrc);
 
 /**
  * Load an image from an SDL data source into a GPU texture.
@@ -484,7 +484,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  * \sa IMG_LoadTexture_RW
  * \sa SDL_DestroyTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
+extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *m_renderer, SDL_RWops *src, int freesrc, const char *type);
 #endif /* SDL 2.0 */
 
 /**

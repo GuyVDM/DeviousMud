@@ -366,7 +366,7 @@ extern DECLSPEC SDL_Cursor *SDLCALL SDL_CreateSystemCursor(SDL_SystemCursor id);
  * \sa SDL_GetCursor
  * \sa SDL_ShowCursor
  */
-extern DECLSPEC void SDLCALL SDL_SetCursor(SDL_Cursor * cursor);
+extern DECLSPEC void SDLCALL SDL_SetCursor(SDL_Cursor * m_cursor);
 
 /**
  * Get the active cursor.
@@ -410,7 +410,7 @@ extern DECLSPEC SDL_Cursor *SDLCALL SDL_GetDefaultCursor(void);
  * \sa SDL_CreateCursor
  * \sa SDL_CreateSystemCursor
  */
-extern DECLSPEC void SDLCALL SDL_FreeCursor(SDL_Cursor * cursor);
+extern DECLSPEC void SDLCALL SDL_FreeCursor(SDL_Cursor * m_cursor);
 
 /**
  * Toggle whether or not the cursor is shown.

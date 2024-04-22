@@ -19,11 +19,11 @@
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
     <ClCompile Include="include\Core\Events\EventReceiver.cpp" />
     <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
-    <ClCompile Include="include\Core\Player\PlayerHandler.cpp" />
+    <ClCompile Include="include\Core\Entity\EntityHandler.cpp" />
     <ClCompile Include="include\Core\Rendering\Camera\Camera.cpp" />
     <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.cpp" />
+    <ClCompile Include="include\Core\UI\Layer\EntityLayer\EntityLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\precomp.cpp" />
@@ -45,7 +45,7 @@
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.h">
+    <ClInclude Include="include\Core\UI\Layer\EntityLayer\EntityLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Rendering\Renderer.h">
@@ -60,7 +60,7 @@
     <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Player\PlayerHandler.h">
+    <ClInclude Include="include\Core\Entity\EntityHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h">
@@ -121,6 +121,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\NPC\NPCDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,13 +30,13 @@ private:
 	void process_packet();
 
 private:
-	ENetHost*				   host;
-	ENetPeer*				   peer;
-	ENetEvent				   event;
+	ENetHost*				   m_host;
+	ENetPeer*				   m_peer;
+	ENetEvent				   m_event;
 };
 
 template<class T>
 inline void ENetPacketHandler::send_packet(T* data, enet_uint8 channel, enet_uint32 flags)
 {
-	PacketHandler::send_packet<T>(data, peer, host, channel, flags);
+	PacketHandler::send_packet<T>(data, m_peer, m_host, channel, flags);
 }

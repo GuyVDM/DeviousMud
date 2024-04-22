@@ -21,8 +21,8 @@ private:
 	using UIComponent::UIComponent;
 
 private:
-	Graphics::Sprite icon;
-	Utilities::vec2  iconSize;
+	Graphics::Sprite m_icon;
+	Utilities::vec2  m_iconSize;
 };
 
 /// <summary>

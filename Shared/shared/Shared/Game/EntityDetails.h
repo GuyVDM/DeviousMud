@@ -4,12 +4,12 @@
 #include <string>
 #include <array>
 
-using Skills = std::array<DM::SKILLS::skill, DM::SKILLS::SKILL_COUNT>;
+using Skills = std::array<DM::SKILLS::Skill, DM::SKILLS::SKILL_COUNT>;
 
-typedef struct _EntityDetails
+struct EntityDetails
 {
 	uint8_t           combatLevel;
-	Utilities::ivec2  position;
+	Utilities::ivec2  m_position;
 	Skills            skills;
 
-}   EntityDetails;
+};

@@ -14,19 +14,19 @@ WorldTile::~WorldTile()
 {
 }
 
-std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& position)
+std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& m_position)
 {
 	//Scale each tile up to the specified cellsize within a grid.
-	const Utilities::vec2 scale
+	const Utilities::vec2 m_scale
 	(
 		Graphics::Renderer::GRID_CELL_PX_SIZE,
 		Graphics::Renderer::GRID_CELL_PX_SIZE
 	);
 
-	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
-	const Graphics::Sprite sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
+	const std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
+	const Graphics::Sprite m_sprite = m_renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
 
-	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(position, scale, sprite);
+	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(m_position, m_scale, m_sprite);
 	return tile;
 }
 
@@ -38,14 +38,14 @@ void WorldTile::on_left_click()
 		static_cast<int32_t>(get_position().y)
 	};
 
-	Packets::s_PlayerMovement pos;
-	pos.interpreter = PACKET_MOVE_PLAYER;
-	pos.x = worldPos.x;
-	pos.y = worldPos.y;
-	pos.isRunning = true;
+	Packets::s_PlayerMovement m_pos;
+	m_pos.interpreter = PACKET_MOVE_PLAYER;
+	m_pos.x = worldPos.x;
+	m_pos.y = worldPos.y;
+	m_pos.isRunning = true;
 
 	auto packetHandler = g_globals.packetHandler.lock();
-	packetHandler->send_packet<Packets::s_PlayerMovement>(&pos, 0, 0);
+	packetHandler->send_packet<Packets::s_PlayerMovement>(&m_pos, 0, 0);
 }
 
 bool WorldTile::handle_event(const SDL_Event* _event)
@@ -58,12 +58,12 @@ bool WorldTile::handle_event(const SDL_Event* _event)
 			{
 				if (_event->button.button == SDL_BUTTON_RIGHT)
 				{
-					OptionArgs optionArgs;
-					optionArgs.actionStr = "Walk here";
-					optionArgs.actionCol = { 255, 255, 0, 255 };
-					optionArgs.function = std::bind(&WorldTile::on_left_click, this);
+					OptionArgs m_textArgs;
+					m_textArgs.actionStr = "Walk here";
+					m_textArgs.actionCol = { 255, 255, 0, 255 };
+					m_textArgs.function = std::bind(&WorldTile::on_left_click, this);
 
-					OptionsTab::add_option(optionArgs);
+					OptionsTab::add_option(m_textArgs);
 				}
 			}
 			break;

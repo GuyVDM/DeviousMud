@@ -18,7 +18,7 @@ public:
 	~Camera() = default;
 
 private:
-	Utilities::vec2  pos;
-	uint32_t         render_distance;
+	Utilities::vec2  m_pos;
+	uint32_t         m_renderDistance;
 
 };

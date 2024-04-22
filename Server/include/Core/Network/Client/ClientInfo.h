@@ -18,7 +18,7 @@ typedef unsigned int enet_uint32;
 /// </summary>
 typedef struct _ClientInfo 
 {
-	ENetPeer*				  peer;                        //Client peer, Identified by 'peer->connectId' 
+	ENetPeer*				  m_peer;                        //Client peer, Identified by 'peer->connectId' 
 	enet_uint32               clientId;
 	DM::Utils::UUID           fromPlayerId;                //Unique UUID which refers to its player in the player handler.
 	EventQuery*               packetquery;                 //Player specific query for packets.

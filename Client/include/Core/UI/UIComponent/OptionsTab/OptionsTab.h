@@ -40,7 +40,7 @@ private:
 	void set_option(OptionArgs _args);
 
 private:
-	OptionArgs optionArgs;
+	OptionArgs m_textArgs;
 
 	friend class OptionsTab;
 };
@@ -105,6 +105,6 @@ private:
 	
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 private:
-	Utilities::vec2 initialSize;
-	Rect boundingRectOptions;
+	Utilities::vec2 m_initialSize;
+	Rect m_boundingRectOptionsUI;
 };

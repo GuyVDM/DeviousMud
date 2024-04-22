@@ -88,7 +88,7 @@ typedef enum _ENetSocketShutdown
  */
 typedef struct _ENetAddress
 {
-   enet_uint32 host;
+   enet_uint32 m_host;
    enet_uint16 port;
 } ENetAddress;
 
@@ -263,7 +263,7 @@ typedef enum _ENetPeerFlag
 typedef struct _ENetPeer
 { 
    ENetListNode  dispatchList;
-   struct _ENetHost * host;
+   struct _ENetHost * m_host;
    enet_uint16   outgoingPeerID;
    enet_uint16   incomingPeerID;
    enet_uint32   connectID;
@@ -342,7 +342,7 @@ typedef struct _ENetCompressor
 typedef enet_uint32 (ENET_CALLBACK * ENetChecksumCallback) (const ENetBuffer * buffers, size_t bufferCount);
 
 /** Callback for intercepting received raw UDP packets. Should return 1 to intercept, 0 to ignore, or -1 to propagate an error. */
-typedef int (ENET_CALLBACK * ENetInterceptCallback) (struct _ENetHost * host, struct _ENetEvent * event);
+typedef int (ENET_CALLBACK * ENetInterceptCallback) (struct _ENetHost * m_host, struct _ENetEvent * m_event);
  
 /** An ENet host for communicating with peers.
   *
@@ -439,7 +439,7 @@ typedef enum _ENetEventType
 typedef struct _ENetEvent 
 {
    ENetEventType        type;      /**< type of the event */
-   ENetPeer *           peer;      /**< peer that generated a connect, disconnect or receive event */
+   ENetPeer *           m_peer;      /**< peer that generated a connect, disconnect or receive event */
    enet_uint8           channelID; /**< channel on the peer that generated the event, if appropriate */
    enet_uint32          data;      /**< data associated with the event, if appropriate */
    ENetPacket *         packet;    /**< packet associated with the event, if appropriate */
@@ -570,7 +570,7 @@ ENET_API int        enet_host_service (ENetHost *, ENetEvent *, enet_uint32);
 ENET_API void       enet_host_flush (ENetHost *);
 ENET_API void       enet_host_broadcast (ENetHost *, enet_uint8, ENetPacket *);
 ENET_API void       enet_host_compress (ENetHost *, const ENetCompressor *);
-ENET_API int        enet_host_compress_with_range_coder (ENetHost * host);
+ENET_API int        enet_host_compress_with_range_coder (ENetHost * m_host);
 ENET_API void       enet_host_channel_limit (ENetHost *, size_t);
 ENET_API void       enet_host_bandwidth_limit (ENetHost *, enet_uint32, enet_uint32);
 extern   void       enet_host_bandwidth_throttle (ENetHost *);

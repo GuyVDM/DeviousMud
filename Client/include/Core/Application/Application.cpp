@@ -6,7 +6,7 @@
 
 #include "Core/UI/Layer/HUDLayer/HUDLayer.h"
 
-#include "Core/UI/Layer/PlayerLayer/PlayerLayer.h"
+#include "Core/UI/Layer/EntityLayer/EntityLayer.h"
 
 #include "Core/UI/Layer/WorldLayer/WorldLayer.h"
 
@@ -22,7 +22,7 @@
 
 Application::Application() 
 {
-	bIsrunning = true;
+	m_bIsrunning = true;
 
 	std::shared_ptr<ENetPacketHandler> packetHandler = g_globals.packetHandler.lock();
 
@@ -41,10 +41,10 @@ void Application::init()
 	//Create 2D layers for interaction.
 	create_layers();
 
-	cursor = std::make_unique<RSCross>(Utilities::vec2{ 32.0f, 32.0f });
+	m_cursor = std::make_unique<RSCross>(Utilities::vec2{ 32.0f, 32.0f });
 
 	//Initialize all layers.
-	for (const auto& layer : layers)
+	for (const auto& layer : m_layers)
 	{
 		layer->init();
 	}
@@ -52,41 +52,46 @@ void Application::init()
 
 void Application::load_sprites()
 {
-	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
+	std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
 
 	// Miscelaneous sprites
 	{
-		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
-		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
-		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
+		m_renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
+		m_renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
+		m_renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
 	}
 
 	// Load in all HUD elements.
 	{
-		renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
-		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
-		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
-		renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
+		m_renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
+		m_renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
+		m_renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
+		m_renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
 	}
 
 	// Load in all icons.
 	{
-		renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
-		renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
+		m_renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
+		m_renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
+	}
+
+	//Load in all entities
+	{
+		m_renderer->load_and_bind_surface("entity/0.png", Graphics::SpriteType::NPC_GOBLIN, 50);
 	}
 }
 
 void Application::create_layers()
 {
-	layers.push_back(std::make_unique<Graphics::UI::HUDLayer>());
-	layers.push_back(std::make_unique<Graphics::UI::PlayerLayer>());
-	layers.push_back(std::make_unique<Graphics::UI::WorldLayer>());
+	m_layers.push_back(std::make_unique<Graphics::UI::HUDLayer>());
+	m_layers.push_back(std::make_unique<Graphics::UI::EntityLayer>());
+	m_layers.push_back(std::make_unique<Graphics::UI::WorldLayer>());
 }
 
 void Application::update()
 {
 	//Update layers in reverse order, we want the first layer to be able to render ontop of everything else.
-	for(auto it = layers.rbegin(); it != layers.rend(); ++it)
+	for(auto it = m_layers.rbegin(); it != m_layers.rend(); ++it)
 	{
 		(*it)->update();
 	}
@@ -97,7 +102,7 @@ void Application::update()
 	{
 		bool handledEvent = false;
 
-		for (const auto& layer : layers)
+		for (const auto& layer : m_layers)
 		{
 			// Handle input events
 			if (layer->handle_event(&e))
@@ -117,7 +122,7 @@ void Application::update()
 				SDL_GetMouseState(&mouseX, &mouseY);
 
 				const e_InteractionType interaction = handledEvent ? e_InteractionType::RED_CLICK : e_InteractionType::YELLOW_CLICK;
-				cursor->click(Utilities::vec2((float)mouseX, (float)mouseY), interaction);
+				m_cursor->click(Utilities::vec2((float)mouseX, (float)mouseY), interaction);
 			}
 		}
 
@@ -134,12 +139,12 @@ void Application::update()
 
 		case SDL_WINDOWEVENT:
 			//Handle viewport resizing.
-			if(e.window.event == SDL_WINDOWEVENT_RESIZED) 
+			if(e.window.m_event == SDL_WINDOWEVENT_RESIZED) 
 			{
 				Utilities::ivec2 viewportSize;
 				viewportSize.x = e.window.data1;
 				viewportSize.y = e.window.data2;
-				g_globals.renderer.lock()->on_viewport_size_changed.invoke(Utilities::to_vec2(viewportSize));
+				g_globals.m_renderer.lock()->on_viewport_size_changed.invoke(Utilities::to_vec2(viewportSize));
 			}
 			break;
 
@@ -149,14 +154,14 @@ void Application::update()
 		}
 	}
 
-	cursor->update();
+	m_cursor->update();
 
 	Graphics::Animation::Animator::update();
 }
 
 const bool Application::is_running() const
 {
-	return bIsrunning;
+	return m_bIsrunning;
 }
 
 void Application::close_application()
@@ -170,5 +175,5 @@ void Application::close_application()
 
 	packetHandler->send_packet<Packets::s_PacketHeader>(&packet, 0, ENET_PACKET_FLAG_RELIABLE);
 
-	bIsrunning = false;
+	m_bIsrunning = false;
 }

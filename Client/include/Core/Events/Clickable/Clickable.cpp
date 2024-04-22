@@ -12,7 +12,7 @@
 #include "Core/Global/C_Globals.h"
 
 Clickable::Clickable(const Utilities::vec2& _pos, const Utilities::vec2& _scale, Graphics::Sprite _sprite) : EventReceiver(),
-    pos(_pos), size(_scale), sprite(_sprite), bIsHovered(false)
+    m_pos(_pos), size(_scale), m_sprite(_sprite), m_bIsHovered(false)
 {
 }
 
@@ -35,18 +35,18 @@ bool Clickable::handle_event(const SDL_Event* _event)
         {
             if (is_overlapping)
             {
-                if (!bIsHovered) //If not hovering before, start hovering.
+                if (!m_bIsHovered) //If not hovering before, start hovering.
                 {
-                    bIsHovered = true;
+                    m_bIsHovered = true;
                     on_hover();
                 }
 
                 return true;
             }
 
-            if(bIsHovered) //If hovering before, but not anymore, stop hovering
+            if(m_bIsHovered) //If hovering before, but not anymore, stop hovering
             {
-                bIsHovered = false;
+                m_bIsHovered = false;
                 on_hover_end();
                 return false;
             }
@@ -79,10 +79,10 @@ bool Clickable::handle_event(const SDL_Event* _event)
 
 const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
-    Utilities::vec2 camPos = g_globals.renderer.lock()->get_camera()->get_position();
+    Utilities::vec2 camPos = g_globals.m_renderer.lock()->get_camera()->get_position();
 
     int32_t viewportWidth, viewportHeight;
-    g_globals.renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
+    g_globals.m_renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
 
     viewportWidth /= 2;
     viewportHeight /= 2;
@@ -92,8 +92,8 @@ const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
     int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
 
     Utilities::ivec2 transformedPos;
-    transformedPos.x = (static_cast<int32_t>(pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
-    transformedPos.y = (static_cast<int32_t>(pos.y) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.y + viewportHeight;
+    transformedPos.x = (static_cast<int32_t>(m_pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
+    transformedPos.y = (static_cast<int32_t>(m_pos.y) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.y + viewportHeight;
     transformedPos.x += halfExtendsWidth;
     transformedPos.y += halfExtendsHeight;
 
@@ -124,17 +124,17 @@ void Clickable::on_right_click()
 
 const bool Clickable::is_hovered() const
 {
-    return bIsHovered;
+    return m_bIsHovered;
 }
 
 const Graphics::Sprite& Clickable::get_sprite() const
 {
-    return sprite;
+    return m_sprite;
 }
 
 const Utilities::vec2& Clickable::get_position() const
 {
-    return pos;
+    return m_pos;
 }
 
 const Utilities::vec2& Clickable::get_size() const
@@ -144,7 +144,7 @@ const Utilities::vec2& Clickable::get_size() const
 
 void Clickable::set_position(Utilities::vec2 _pos)
 {
-    pos = _pos;
+    m_pos = _pos;
 }
 
 void Clickable::set_size(Utilities::vec2 _size)

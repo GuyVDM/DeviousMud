@@ -23,7 +23,7 @@ namespace Graphics
 
 			virtual void init() override;
 
-			virtual bool handle_event(const SDL_Event* event) override;
+			virtual bool handle_event(const SDL_Event* m_event) override;
 			
 			virtual void update() override;
 
@@ -38,9 +38,9 @@ namespace Graphics
 			void create_hud();
 
 		private:
-			std::shared_ptr<Canvas> canvas;
+			std::shared_ptr<Canvas> m_canvas;
 
-			static e_UIInteractionType sInteractionType;
+			static e_UIInteractionType s_InteractionType;
 		};
 	}
 }

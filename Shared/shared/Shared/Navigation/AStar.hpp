@@ -130,12 +130,12 @@ inline std::vector<Utilities::ivec2> AStar::find_path(const Utilities::ivec2& _s
 
 	//Start tracing and reversing the path so it's linear from the starting point.
 calculate_path:
-	std::vector<Utilities::ivec2> path;
+	std::vector<Utilities::ivec2> m_path;
 
 	Utilities::ivec2 current = _endPoint;
 	while (current != _startPoint)
 	{
-		path.push_back(current);
+		m_path.push_back(current);
 
 		if (parents.find(current) != parents.end())
 		{
@@ -146,9 +146,9 @@ calculate_path:
 		break;
 	}
 
-	std::reverse(path.begin(), path.end());
+	std::reverse(m_path.begin(), m_path.end());
 
-	return path;
+	return m_path;
 }
 
 #pragma endregion

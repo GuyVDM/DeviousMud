@@ -292,8 +292,8 @@ namespace cereal
             auto result = PolymorphicCasters::lookup_if_exists( parentInfo, childInfo );
             if( result.first )
             {
-              auto const & path = result.second;
-              return {path.size(), path};
+              auto const & m_path = result.second;
+              return {m_path.size(), m_path};
             }
             else
               return {(std::numeric_limits<size_t>::max)(), {}};
@@ -323,16 +323,16 @@ namespace cereal
             using Relations = std::unordered_multimap<std::type_index, std::pair<std::type_index, std::vector<PolymorphicCaster const *>>>;
             Relations unregisteredRelations; // Defer insertions until after main loop to prevent iterator invalidation
 
-            const auto parent = parentStack.top();
+            const auto m_parent = parentStack.top();
             parentStack.pop();
 
             // Update paths to all children marked dirty
-            for( auto const & childPair : baseMap[parent] )
+            for( auto const & childPair : baseMap[m_parent] )
             {
               const auto child = childPair.first;
               if( isDirty( child ) && baseMap.count( child ) )
               {
-                auto parentChildPath = checkRelation( parent, child );
+                auto parentChildPath = checkRelation( m_parent, child );
 
                 // Search all paths from the child to its own children (finalChild),
                 // looking for a shorter parth from parent to finalChild
@@ -340,19 +340,19 @@ namespace cereal
                 {
                   const auto finalChild = finalChildPair.first;
 
-                  auto parentFinalChildPath = checkRelation( parent, finalChild );
+                  auto parentFinalChildPath = checkRelation( m_parent, finalChild );
                   auto childFinalChildPath  = checkRelation( child, finalChild );
 
                   const size_t newLength = 1u + parentChildPath.first;
 
                   if( newLength < parentFinalChildPath.first )
                   {
-                    std::vector<PolymorphicCaster const *> path = parentChildPath.second;
-                    path.insert( path.end(), childFinalChildPath.second.begin(), childFinalChildPath.second.end() );
+                    std::vector<PolymorphicCaster const *> m_path = parentChildPath.second;
+                    m_path.insert( m_path.end(), childFinalChildPath.second.begin(), childFinalChildPath.second.end() );
 
                     // Check to see if we have a previous uncommitted path in unregisteredRelations
                     // that is shorter. If so, ignore this path
-                    auto hintRange = unregisteredRelations.equal_range( parent );
+                    auto hintRange = unregisteredRelations.equal_range( m_parent );
                     auto hint = hintRange.first;
                     for( ; hint != hintRange.second; ++hint )
                       if( hint->second.first == finalChild )
@@ -362,14 +362,14 @@ namespace cereal
                     if( uncommittedExists && (hint->second.second.size() <= newLength) )
                       continue;
 
-                    auto newPath = std::pair<std::type_index, std::vector<PolymorphicCaster const *>>{finalChild, std::move(path)};
+                    auto newPath = std::pair<std::type_index, std::vector<PolymorphicCaster const *>>{finalChild, std::move(m_path)};
 
                     // Insert the new path if it doesn't exist, otherwise this will just lookup where to do the
                     // replacement
                     #ifdef CEREAL_OLDER_GCC
                     auto old = unregisteredRelations.insert( hint, std::make_pair(parent, newPath) );
                     #else // NOT CEREAL_OLDER_GCC
-                    auto old = unregisteredRelations.emplace_hint( hint, parent, newPath );
+                    auto old = unregisteredRelations.emplace_hint( hint, m_parent, newPath );
                     #endif // NOT CEREAL_OLDER_GCC
 
                     // If there was an uncommitted path, we need to perform a replacement
@@ -389,10 +389,10 @@ namespace cereal
             }
 
             // Mark current parent as modified
-            dirtySet.emplace_back( parent );
+            dirtySet.emplace_back( m_parent );
 
             // Insert all parents of the current parent node that haven't yet been processed
-            auto parentRange = reverseMap.equal_range( parent );
+            auto parentRange = reverseMap.equal_range( m_parent );
             for( auto pIter = parentRange.first; pIter != parentRange.second; ++pIter )
             {
               const auto pParent = pIter->second;

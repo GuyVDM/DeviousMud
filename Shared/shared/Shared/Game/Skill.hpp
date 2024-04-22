@@ -31,11 +31,11 @@ namespace DM
 			SKILL_COUNT 
 		};  constexpr uint8_t SKILL_COUNT = static_cast<uint8_t>(e_skills::SKILL_COUNT) - 1;
 
-		typedef struct _skill
+		struct Skill
 		{
 			uint8_t level;         //Gets calculated when values gets deserialized based on the amount of experience.
 			uint8_t levelboosted; //The actual working level that gets used for calculations.
 			int32_t experience;  //The amount of experience accumulated in a skill.
-		}   skill;
+		};
 	}
 }

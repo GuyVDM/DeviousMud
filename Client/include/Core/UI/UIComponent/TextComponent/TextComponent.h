@@ -21,12 +21,12 @@ struct TextArgs
 
 	const static TextArgs Default()
 	{
-		TextArgs optionArgs{};
-		optionArgs.color = { 255, 255, 255, 255 };
-		optionArgs.size = 10;
-		optionArgs.font = e_FontType::RUNESCAPE_UF;
-		optionArgs.bDropShadow = false;
-		return optionArgs;
+		TextArgs m_textArgs{};
+		m_textArgs.color = { 255, 255, 255, 255 };
+		m_textArgs.size = 10;
+		m_textArgs.font = e_FontType::RUNESCAPE_UF;
+		m_textArgs.bDropShadow = false;
+		return m_textArgs;
 	}
 };
 
@@ -46,8 +46,8 @@ namespace Graphics
 	private:
 		using UIComponent::UIComponent;
 
-		SDL_Texture* textTexture;
-		TextArgs     optionArgs;
+		SDL_Texture* m_textTexture;
+		TextArgs     m_textArgs;
 
 	    void renderText(std::shared_ptr<Graphics::Renderer> _renderer);
 

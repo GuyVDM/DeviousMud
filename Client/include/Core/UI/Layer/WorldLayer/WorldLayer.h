@@ -14,14 +14,14 @@ namespace Graphics
 
 			virtual void update() override;
 
-			virtual bool handle_event(const SDL_Event* event) override;
+			virtual bool handle_event(const SDL_Event* m_event) override;
 
 		public: //Implement Parent class constructor
 			using Layer::Layer;
 			~WorldLayer() override = default;
 
 		private:
-			std::vector<std::shared_ptr<WorldTile>> tiles;
+			std::vector<std::shared_ptr<WorldTile>> m_tiles;
 		};
 	}
 }

@@ -164,12 +164,12 @@ private:
 	/// <summary>
 	/// Reference to UI component that's getting moved.
 	/// </summary>
-	static UIComponent* sDraggedComponent;
+	static UIComponent* s_draggedComponent;
 
 	/// <summary>
 	/// The point of offset 
 	/// </summary>
-	static Utilities::vec2 sDragOffset;
+	static Utilities::vec2 s_dragOffset;
 
 	/// <summary>
 	/// Make children adjust to any potential changes. Call when a change related to the position or scale has been made.
@@ -193,14 +193,14 @@ private:
 	friend std::shared_ptr<UIComponent>;
 
 protected:
-	bool                                       bIsActive     = true;
-	bool                                       bIsMovable    = false;
-	bool									   bInteractable = true;
-	UIComponent*                               parent;
-	std::vector<std::shared_ptr<UIComponent>>  children;
+	bool                                       m_bIsActive     = true;
+	bool                                       m_bIsMovable    = false;
+	bool									   m_bInteractable = true;
+	UIComponent*                               m_parent;
+	std::vector<std::shared_ptr<UIComponent>>  m_children;
 	
 private:
-	e_AnchorPreset                             anchor = e_AnchorPreset::TOP_LEFT;
+	e_AnchorPreset                             m_anchor = e_AnchorPreset::TOP_LEFT;
 };
 
 template<typename T>
@@ -213,7 +213,7 @@ inline std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _p
 	// Cast back to base so we can call the init function since the base is a friend.
 	{
 		UIComponent* base = dynamic_cast<UIComponent*>(component);
-		base->bInteractable = _bInteractable;
+		base->m_bInteractable = _bInteractable;
 		base->init();
 	}
 

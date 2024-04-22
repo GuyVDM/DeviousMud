@@ -27,7 +27,7 @@ void OptionsTab::open_option_menu()
 void OptionsTab::init()
 {
 	// Cache initial size.
-	initialSize = get_size();
+	m_initialSize = get_size();
 
 	//Set up callbacks
 	{
@@ -49,21 +49,21 @@ void OptionsTab::init()
 
 	//Set up visuals
 	{
-		sprite.color = { 0, 0, 0, 0 };
+		m_sprite.color = { 0, 0, 0, 0 };
 		std::shared_ptr<UIComponent> component;
 		//Create options header 
 		{
-			TextArgs optionArgs;
+			TextArgs m_textArgs;
 			{
-				optionArgs.color = { 93, 84, 71 , 255 };
-				optionArgs.font = e_FontType::RUNESCAPE_UF;
-				optionArgs.size = 25;
+				m_textArgs.color = { 93, 84, 71 , 255 };
+				m_textArgs.font = e_FontType::RUNESCAPE_UF;
+				m_textArgs.size = 25;
 			}
 
-			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), optionArgs);
+			component = TextComponent::create_text("Choose Option", get_position() + Utilities::vec2(10.0f, 2.5f), m_textArgs);
 			add_child(component);
-			initialSize = component->get_size() + Utilities::vec2(20.0f, 5.0f);
-			set_size(initialSize);
+			m_initialSize = component->get_size() + Utilities::vec2(20.0f, 5.0f);
+			set_size(m_initialSize);
 			component->set_anchor(e_AnchorPreset::CENTER_LEFT);
 		}
 	}
@@ -73,7 +73,7 @@ void OptionsTab::init()
 
 void OptionsTab::on_hover_end()
 {
-	if(bIsActive) 
+	if(m_bIsActive) 
 	{
 		close();
 	}
@@ -101,8 +101,8 @@ void OptionsTab::create_option(OptionArgs _args)
 	option->set_anchor(e_AnchorPreset::TOP_LEFT);
 
 	//Move the option to the latest dropdown slot.
-	const Utilities::vec2 position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
-	option->set_position(position);
+	const Utilities::vec2 m_position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
+	option->set_position(m_position);
 }
 
 void OptionsTab::regenerate_option_box()
@@ -115,39 +115,39 @@ void OptionsTab::regenerate_option_box()
 		const float pxEdgeOffset = 5.0f;
 
 		//We start at 1 since the header text element takes slot 0 always.
-		for (int i = 1; i < children.size(); i++)
+		for (int i = 1; i < m_children.size(); i++)
 		{
-			if (children[i])
+			if (m_children[i])
 			{
-				biggestRect.minPos.x = std::min(biggestRect.minPos.x, children[i]->get_bounding_rect().minPos.x);
-				biggestRect.minPos.y = std::min(biggestRect.minPos.y, children[i]->get_bounding_rect().minPos.y);
-				biggestRect.maxPos.x = std::max(biggestRect.maxPos.x, children[i]->get_bounding_rect().maxPos.x);
-				biggestRect.maxPos.y = std::max(biggestRect.maxPos.y, children[i]->get_bounding_rect().maxPos.y);
+				biggestRect.minPos.x = std::min(biggestRect.minPos.x, m_children[i]->get_bounding_rect().minPos.x);
+				biggestRect.minPos.y = std::min(biggestRect.minPos.y, m_children[i]->get_bounding_rect().minPos.y);
+				biggestRect.maxPos.x = std::max(biggestRect.maxPos.x, m_children[i]->get_bounding_rect().maxPos.x);
+				biggestRect.maxPos.y = std::max(biggestRect.maxPos.y, m_children[i]->get_bounding_rect().maxPos.y);
 			}
 		}
 
 		//Scale all UI elements horizontally to match the biggest item.
-		for (int i = 1; i < children.size(); i++)
+		for (int i = 1; i < m_children.size(); i++)
 		{
-			const Utilities::vec2 childSizeOld = children[i]->get_size();
-			children[i]->set_size(Utilities::vec2(biggestRect.get_size().x, childSizeOld.y));
+			const Utilities::vec2 childSizeOld = m_children[i]->get_size();
+			m_children[i]->set_size(Utilities::vec2(biggestRect.get_size().x, childSizeOld.y));
 		}
 
 		set_size(Utilities::vec2(biggestRect.get_size().x, get_size().y));
 	}
 	else
 	{
-		biggestRect = { get_position(), get_position() + initialSize };
+		biggestRect = { get_position(), get_position() + m_initialSize };
 	}
 
-	boundingRectOptions = biggestRect;
+	m_boundingRectOptionsUI = biggestRect;
 }
 
 const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
 {
 	const Rect boundingRect = get_bounding_rect();
 
-	const Utilities::vec2 pos = boundingRect.minPos;
+	const Utilities::vec2 m_pos = boundingRect.minPos;
 	const Utilities::vec2 size = boundingRect.get_size();
 
 	// Calculate sprite's screen coordinates
@@ -155,8 +155,8 @@ const bool OptionsTab::overlaps_rect(const int& _x, const int& _y) const
 	int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
 
 	Utilities::ivec2 transformedPos;
-	transformedPos.x = static_cast<int32_t>(pos.x);
-	transformedPos.y = static_cast<int32_t>(pos.y);
+	transformedPos.x = static_cast<int32_t>(m_pos.x);
+	transformedPos.y = static_cast<int32_t>(m_pos.y);
 	transformedPos.x += halfExtendsWidth;
 	transformedPos.y += halfExtendsHeight;
 
@@ -174,7 +174,7 @@ void OptionsTab::show()
 	// We only want to render the options menu if we have any entries.
 	if (get_child_count() > 1) 
 	{
-		if (!bIsActive)
+		if (!m_bIsActive)
 		{
 			const Utilities::vec2 offset = Utilities::vec2(get_bounding_rect().get_size().x / 2.0f, 10.0f);
 
@@ -187,21 +187,21 @@ void OptionsTab::show()
 
 			regenerate_option_box();
 
-			bIsActive = true;
+			m_bIsActive = true;
 		}
 	}
 }
 
 void OptionsTab::close()
 {
-	const auto& startOptions = children.begin() + 1;
+	const auto& startOptions = m_children.begin() + 1;
 
-	children.erase(startOptions, children.end());
-	children.resize(1);
+	m_children.erase(startOptions, m_children.end());
+	m_children.resize(1);
 
-	bIsActive = false;
+	m_bIsActive = false;
 
-	set_size(initialSize);
+	set_size(m_initialSize);
 }
 
 void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
@@ -220,57 +220,57 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	if (get_child_count() > 1)
 	{
 		//Render bounding rectangle around the options specifically.
-		_renderer->draw_outline(boundingRectOptions.minPos, boundingRectOptions.get_size(), -pxOutline, optionsOutlineColor);
+		_renderer->draw_outline(m_boundingRectOptionsUI.minPos, m_boundingRectOptionsUI.get_size(), -pxOutline, optionsOutlineColor);
 	}
 }
 
 void OptionsTab::clampToViewport()
 {
-	auto renderer = g_globals.renderer.lock();
+	auto m_renderer = g_globals.m_renderer.lock();
 
 	Utilities::ivec2 vpSize;
-	renderer->get_viewport_size(&vpSize.x, &vpSize.y);
+	m_renderer->get_viewport_size(&vpSize.x, &vpSize.y);
 
 	// Clamp position
 	const Rect boundingRect = get_bounding_rect();
 	const Utilities::vec2 size = boundingRect.get_size();
-	const Utilities::vec2 pos = boundingRect.minPos;
+	const Utilities::vec2 m_pos = boundingRect.minPos;
 
 	set_position
 	(
 		Utilities::vec2
 		(
-			std::max(0.0f, std::min(pos.x, (float)vpSize.x - size.x)),
-			std::max(0.0f, std::min(pos.y, (float)vpSize.y - size.y))
+			std::max(0.0f, std::min(m_pos.x, (float)vpSize.x - size.x)),
+			std::max(0.0f, std::min(m_pos.y, (float)vpSize.y - size.y))
 		)
 	);
 }
 
 void Option::on_hover()
 {
-	sprite.color = { 103, 94, 81, 255 };
+	m_sprite.color = { 103, 94, 81, 255 };
 }
 
 void Option::on_hover_end()
 {
-	sprite.color = { 93, 84, 71, 255 };
+	m_sprite.color = { 93, 84, 71, 255 };
 }
 
 void Option::on_left_click()
 {
-	optionArgs.function();
+	m_textArgs.function();
 	DEVIOUS_EVENT("Selected Option.")
 	on_clicked.invoke(); //Move back down
 }
 
 void Option::init()
 {
-	sprite.color = { 93, 84, 71, 255 };
+	m_sprite.color = { 93, 84, 71, 255 };
 }
 
 void Option::set_option(OptionArgs _optionArgs)
 {
-	optionArgs = _optionArgs;
+	m_textArgs = _optionArgs;
 
 	//Define Text
 	TextArgs textArgs;
@@ -290,13 +290,13 @@ void Option::set_option(OptionArgs _optionArgs)
 		float prevHorTextSize = 0.0f;
 		//Create Action Text
 		{
-			textArgs.color = optionArgs.actionCol;
+			textArgs.color = m_textArgs.actionCol;
 			textComponent = TextComponent::create_text(_optionArgs.actionStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
-			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
-			const Utilities::vec2 position = textComponent->get_position();
-			textComponent->set_position(position + Utilities::vec2(pxWhiteSpacing, ySizeDiff / 2.0f));
+			const float ySizeDiff = m_parent->get_size().y - textComponent->get_size().y;
+			const Utilities::vec2 m_position = textComponent->get_position();
+			textComponent->set_position(m_position + Utilities::vec2(pxWhiteSpacing, ySizeDiff / 2.0f));
 
 			prevHorTextSize = textComponent->get_size().x + textSpacing;
 
@@ -304,14 +304,14 @@ void Option::set_option(OptionArgs _optionArgs)
 
 		//Create Subject Text
 		{
-			textArgs.color = optionArgs.subjectCol;
+			textArgs.color = m_textArgs.subjectCol;
 
 			textComponent = TextComponent::create_text(_optionArgs.subjectStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
-			const float ySizeDiff = parent->get_size().y - textComponent->get_size().y;
-			const Utilities::vec2 position = textComponent->get_position();
-			textComponent->set_position(position + Utilities::vec2(prevHorTextSize, ySizeDiff / 2.0f));
+			const float ySizeDiff = m_parent->get_size().y - textComponent->get_size().y;
+			const Utilities::vec2 m_position = textComponent->get_position();
+			textComponent->set_position(m_position + Utilities::vec2(prevHorTextSize, ySizeDiff / 2.0f));
 			set_size(get_size() + Utilities::vec2(15.0f, 0.0f));
 
 		}	add_child(textComponent);

@@ -36,12 +36,12 @@ protected:
 	const bool is_hovered() const;
 
 protected:
-	Graphics::Sprite  sprite;
+	Graphics::Sprite  m_sprite;
 
 private:
 	Utilities::vec2   size;
-	Utilities::vec2	  pos;
-	bool bIsHovered;
+	Utilities::vec2	  m_pos;
+	bool m_bIsHovered;
 
 private:
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const;

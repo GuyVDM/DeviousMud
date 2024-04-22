@@ -328,9 +328,9 @@ namespace cereal
       //! Serializes all passed in data
       /*! This is the primary interface for serializing data with an archive */
       template <class ... Types> inline
-      ArchiveType & operator()( Types && ... optionArgs )
+      ArchiveType & operator()( Types && ... m_textArgs )
       {
-        self->process( std::forward<Types>( optionArgs )... );
+        self->process( std::forward<Types>( m_textArgs )... );
         return *self;
       }
 
@@ -725,9 +725,9 @@ namespace cereal
       //! Serializes all passed in data
       /*! This is the primary interface for serializing data with an archive */
       template <class ... Types> inline
-      ArchiveType & operator()( Types && ... optionArgs )
+      ArchiveType & operator()( Types && ... m_textArgs )
       {
-        process( std::forward<Types>( optionArgs )... );
+        process( std::forward<Types>( m_textArgs )... );
         return *self;
       }
 

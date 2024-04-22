@@ -14,43 +14,43 @@ using namespace CLIENT;
 using namespace Utils;
 
 // All registered controllers.
-std::unordered_map<DM::Utils::UUID, Animator::AnimationController> Animator::animators;
+std::unordered_map<DM::Utils::UUID, Animator::AnimationController> Animator::s_animators;
 
 void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animationType, const bool& _bIsLooping, const float& _playbackSpeed)
 {
 	////Set the first frame of the animation
 	const Animation2D animation = Animations::animationMap().at(_animationType);
 
-	if (Animator::animators.find(_sprite.get_uuid()) == Animator::animators.end())
+	if (Animator::s_animators.find(_sprite.get_uuid()) == Animator::s_animators.end())
 	{
 		AnimationController controller;
 		controller.uuid = _sprite.get_uuid();
-		controller.sprite = &_sprite;
+		controller.m_sprite = &_sprite;
 		controller.bPaused = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
 		controller.playbackSpeed = _playbackSpeed;
 		controller.keyframeIndex = 0;
-		controller.elapsedTime = 0.0f;
+		controller.m_elapsedTime = 0.0f;
 
 		//Register the animation controller
-		Animator::animators[controller.uuid] = controller;
-		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+		Animator::s_animators[controller.uuid] = controller;
+		controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 		return;
 	}
 
 	// If the controller already exists, just update the animation within the controller.
 	{
-		AnimationController& controller = Animator::animators[_sprite.get_uuid()];
+		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
 		controller.bPaused = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
 		controller.playbackSpeed = _playbackSpeed;
 		controller.keyframeIndex = 0;
-		controller.elapsedTime = 0.0f;
-		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+		controller.m_elapsedTime = 0.0f;
+		controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 
-		Animator::animators[controller.uuid] = controller;
+		Animator::s_animators[controller.uuid] = controller;
 	}
 }
 
@@ -58,12 +58,12 @@ void Graphics::Animation::Animator::set_default_animation(Sprite& _sprite, const
 {
 	if (_animation != e_AnimationType::NO_ANIMATION) 
 	{
-		if (Animator::animators.find(_sprite.get_uuid()) == Animator::animators.end())
+		if (Animator::s_animators.find(_sprite.get_uuid()) == Animator::s_animators.end())
 		{
 			Animator::play_animation(_sprite, _animation, true, _playbackSpeed);
 		}
 
-		AnimationController& controller = Animator::animators[_sprite.get_uuid()];
+		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
 		controller.defaultAnimation = _animation;
 		controller.defaultPlaybackspeed = _playbackSpeed;
 		return;
@@ -74,9 +74,9 @@ void Graphics::Animation::Animator::set_default_animation(Sprite& _sprite, const
 
 void Graphics::Animation::Animator::stop_current_animation(Sprite& _sprite)
 {
-	if (Animator::animators.find(_sprite.get_uuid()) != Animator::animators.end())
+	if (Animator::s_animators.find(_sprite.get_uuid()) != Animator::s_animators.end())
 	{
-		AnimationController& controller = Animator::animators[_sprite.get_uuid()];
+		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
 		
 		if(controller.defaultAnimation != e_AnimationType::NO_ANIMATION) 
 		{
@@ -90,17 +90,17 @@ void Graphics::Animation::Animator::stop_current_animation(Sprite& _sprite)
 
 void Animator::update()
 {
-	for (auto& pair : animators)
+	for (auto& pair : s_animators)
 	{
 		AnimationController& controller = pair.second;
 
 		if (!controller.bPaused) 
 		{
-			controller.elapsedTime += Config::get_deltaTime() * controller.playbackSpeed;
+			controller.m_elapsedTime += Config::get_deltaTime() * controller.playbackSpeed;
 
-			if (controller.elapsedTime > 1.0f)
+			if (controller.m_elapsedTime > 1.0f)
 			{
-				controller.elapsedTime = 0.0f;
+				controller.m_elapsedTime = 0.0f;
 				controller.keyframeIndex++;
 
 				//Set the first frame of the animation
@@ -129,7 +129,7 @@ void Animator::update()
 
 				// Set new animation frame.
 				{
-					controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+					controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 				}
 			}
 		}
@@ -138,14 +138,14 @@ void Animator::update()
 
 void Animator::clear()
 {
-	Animator::animators.clear();
+	Animator::s_animators.clear();
 }
 
 void Graphics::Animation::Animator::destroy(const uint64_t _uuid)
 {
-	if(Animator::animators.find(_uuid) != Animator::animators.end()) 
+	if(Animator::s_animators.find(_uuid) != Animator::s_animators.end()) 
 	{
 		DEVIOUS_LOG("Destroyed animator of uuid: " << _uuid);
-		Animator::animators.erase(_uuid);
+		Animator::s_animators.erase(_uuid);
 	}
 }

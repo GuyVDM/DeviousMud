@@ -73,7 +73,7 @@ namespace Packets
 	struct s_PlayerPath : public s_Player 
 	{
 		int pathSize;
-		std::vector<std::pair<int, int>> path;
+		std::vector<std::pair<int, int>> m_path;
 
 		template <class Archive>
 		void serialize(Archive& ar) 
@@ -81,9 +81,9 @@ namespace Packets
 			ar(cereal::base_class<s_Player>(this));
 			ar(pathSize);
 			
-			for(int i = 0; i < path.size(); i++) 
+			for(int i = 0; i < m_path.size(); i++) 
 			{
-				ar(path[i].first, path[i].second);
+				ar(m_path[i].first, m_path[i].second);
 			}
 		}
 	};

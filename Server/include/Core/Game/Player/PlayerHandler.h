@@ -21,7 +21,7 @@ using namespace SKILLS;
 
 namespace Server 
 {
-	class PlayerHandler
+	class EntityHandler
 	{
 	public:
 		void register_player(const PlayerUUID& _playerId);
@@ -41,6 +41,6 @@ namespace Server
 		const Utilities::ivec2& get_player_position(const PlayerUUID& _playerId);
 
 	private:
-		std::unordered_map<PlayerUUID, std::shared_ptr<PlayerDetails>> players;
+		std::unordered_map<PlayerUUID, std::shared_ptr<PlayerDetails>> m_players;
 	};
 }

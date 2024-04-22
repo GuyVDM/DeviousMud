@@ -888,7 +888,7 @@ extern DECLSPEC const char *SDLCALL SDL_GetWindowTitle(SDL_Window * window);
  * \since This function is available since SDL 2.0.0.
  */
 extern DECLSPEC void SDLCALL SDL_SetWindowIcon(SDL_Window * window,
-                                               SDL_Surface * icon);
+                                               SDL_Surface * m_icon);
 
 /**
  * Associate an arbitrary named pointer with a window.
@@ -1875,7 +1875,7 @@ extern DECLSPEC void SDLCALL SDL_DisableScreenSaver(void);
  * \sa SDL_GL_GetProcAddress
  * \sa SDL_GL_UnloadLibrary
  */
-extern DECLSPEC int SDLCALL SDL_GL_LoadLibrary(const char *path);
+extern DECLSPEC int SDLCALL SDL_GL_LoadLibrary(const char *m_path);
 
 /**
  * Get an OpenGL function by name.

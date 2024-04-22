@@ -14,13 +14,13 @@ namespace Graphics
 			struct AnimationController
 			{
 				DM::Utils::UUID uuid;
-				Sprite*                  sprite;
+				Sprite*                  m_sprite;
 				bool                     bPaused;
 				e_AnimationType          currentAnimation;
 				bool					 bIsLooping;
 				float					 playbackSpeed;
 				int32_t				     keyframeIndex;
-				float					 elapsedTime;
+				float					 m_elapsedTime;
 
 
 				e_AnimationType          defaultAnimation     = e_AnimationType::NO_ANIMATION;
@@ -31,7 +31,7 @@ namespace Graphics
 					if (defaultAnimation != e_AnimationType::NO_ANIMATION)
 					{
 						keyframeIndex    = 0;
-						elapsedTime      = 0.0f;
+						m_elapsedTime      = 0.0f;
 						bPaused          = false;
 						bIsLooping       = true;
 						currentAnimation = defaultAnimation;
@@ -81,7 +81,7 @@ namespace Graphics
 		private:
 			static void destroy(const uint64_t _uuid);
 
-			static std::unordered_map<DM::Utils::UUID, AnimationController> animators;
+			static std::unordered_map<DM::Utils::UUID, AnimationController> s_animators;
 		};
 	}
 }

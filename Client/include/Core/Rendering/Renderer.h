@@ -51,7 +51,7 @@ namespace Graphics
 		private:
 			uint32_t     framecount;
 			SDL_Surface* surface;
-			SDL_Texture* textTexture;
+			SDL_Texture* m_textTexture;
 		};
 
 	public:
@@ -106,7 +106,7 @@ namespace Graphics
 
 		SDL_Window* window;
 
-		SDL_Renderer* renderer;
+		SDL_Renderer* m_renderer;
 
 		friend class TextComponent;
 	};

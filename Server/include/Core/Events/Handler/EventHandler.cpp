@@ -42,18 +42,18 @@ void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo
 
 		case e_PacketInterpreter::PACKET_MOVE_PLAYER:
 		{
-			Packets::s_PlayerMovement position;
-			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(position, _event);
+			Packets::s_PlayerMovement m_position;
+			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(m_position, _event);
 
 			eventQuery->queue_packet
 			(
-				std::move(std::make_unique<Packets::s_PlayerMovement>(position))
+				std::move(std::make_unique<Packets::s_PlayerMovement>(m_position))
 			);
 		}
 		break;
 	}
 
-	DEVIOUS_EVENT("Received packet from client handle: " << _clientInfo->peer->connectID << " Event Id: " << static_cast<unsigned>(packetHeader.interpreter));
+	DEVIOUS_EVENT("Received packet from client handle: " << _clientInfo->m_peer->connectID << " Event Id: " << static_cast<unsigned>(packetHeader.interpreter));
 }
 
 void Server::EventHandler::handle_queud_events(ENetHost* _host)
@@ -92,12 +92,12 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				const PlayerUUID fromPlayerId = _client->fromPlayerId;
 
 				auto pMovement = transform_packet<Packets::s_PlayerMovement>(std::move(packet));
-				bool reachedDest = g_globals.playerHandler->move_player_towards(fromPlayerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
+				bool reachedDest = g_globals.m_entityHandler->move_player_towards(fromPlayerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
 
 				// Send updated player position back to the clients.
 				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that's invalid.
 				{
-					ivec2 playerPos = g_globals.playerHandler->get_player_position(fromPlayerId);
+					ivec2 playerPos = g_globals.m_entityHandler->get_player_position(fromPlayerId);
 
 					Packets::s_PlayerMovement packet;
 					packet.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
@@ -112,16 +112,16 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				if (!reachedDest)
 				{
 					//Retrieve the current position after having moved the player.
-					Packets::s_PlayerMovement position;
-					position.fromPlayerId = _client->fromPlayerId;
-					position.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
-					position.x = pMovement->x;
-					position.y = pMovement->y;
-					position.isRunning = pMovement->isRunning;
+					Packets::s_PlayerMovement m_position;
+					m_position.fromPlayerId = _client->fromPlayerId;
+					m_position.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;
+					m_position.x = pMovement->x;
+					m_position.y = pMovement->y;
+					m_position.isRunning = pMovement->isRunning;
 
 					_client->packetquery->queue_packet
 					(
-						std::make_unique<Packets::s_PlayerMovement>(position)
+						std::make_unique<Packets::s_PlayerMovement>(m_position)
 					);
 				}
 			}

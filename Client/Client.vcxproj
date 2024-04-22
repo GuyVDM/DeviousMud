@@ -185,7 +185,7 @@
     <ClCompile Include="include\Core\Events\EventReceiver.cpp" />
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
     <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
-    <ClCompile Include="include\Core\Player\PlayerHandler.cpp" />
+    <ClCompile Include="include\Core\Entity\EntityHandler.cpp" />
     <ClCompile Include="include\Core\Rendering\Animation\Animation2D.cpp" />
     <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
     <ClCompile Include="include\Core\Rendering\Camera\Camera.cpp" />
@@ -196,7 +196,7 @@
     <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.cpp" />
+    <ClCompile Include="include\Core\UI\Layer\EntityLayer\EntityLayer.cpp" />
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
@@ -210,6 +210,7 @@
   <ItemGroup>
     <ClInclude Include="include\Core\Application\Application.h" />
     <ClInclude Include="include\Core\Application\Config\Config.h" />
+    <ClInclude Include="include\Core\NPC\NPCDef.h" />
     <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
     <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
     <ClInclude Include="include\Core\Events\Clickable\Entity\WorldEntity.h" />
@@ -218,7 +219,7 @@
     <ClInclude Include="include\Core\Global\C_Globals.h" />
     <ClInclude Include="include\Core\Network\Client\ClientWrapper.h" />
     <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
-    <ClInclude Include="include\Core\Player\PlayerHandler.h" />
+    <ClInclude Include="include\Core\Entity\EntityHandler.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animations.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
@@ -231,7 +232,7 @@
     <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h" />
     <ClInclude Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.h" />
     <ClInclude Include="include\Core\UI\Layer\Layer.h" />
-    <ClInclude Include="include\Core\UI\Layer\PlayerLayer\PlayerLayer.h" />
+    <ClInclude Include="include\Core\UI\Layer\EntityLayer\EntityLayer.h" />
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
     <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h" />
     <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />

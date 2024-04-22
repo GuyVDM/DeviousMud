@@ -16,7 +16,7 @@
 
 #include "Core/Network/Packets/ENetPacketHandler.h"
 
-#include "Core/Player/PlayerHandler.h"
+#include "Core/Entity/EntityHandler.h"
 
 #include "Core/UI/Layer/Layer.h"
 
@@ -28,8 +28,8 @@ Globals g_globals;
 
 Client::Client(ENetHost* c)
 {
-	host = c;
-	peer = nullptr;
+	m_host = c;
+	m_peer = nullptr;
 }
 
 Client Client::connect_localhost(bool& _succeeded)
@@ -43,19 +43,19 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 {
 	const enet_uint32 CONNECTION_TIME_MS = 5000;
 
-	ENetHost* host;
+	ENetHost* m_host;
 	ENetAddress address;
 	_succeeded = false;
 
-	host = enet_host_create(NULL,
+	m_host = enet_host_create(NULL,
 		1,
 		2,
 		0,
 		0);
 
-	Client c(host);
+	Client c(m_host);
 
-	if (host == NULL)
+	if (m_host == NULL)
 	{
 		fprintf(stderr, "An error occurred while trying to create an ENet client host.\n");
 		exit(EXIT_FAILURE);
@@ -64,9 +64,9 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 	enet_address_set_host(&address,_ip);
 	address.port = _port;
 
-	c.peer = enet_host_connect(host, &address, 2, 0);
+	c.m_peer = enet_host_connect(m_host, &address, 2, 0);
 
-	if (c.peer == NULL)
+	if (c.m_peer == NULL)
 	{
 		fprintf(stderr, "No available peers for initiating an ENet connection.\n");
 		exit(EXIT_FAILURE);
@@ -74,7 +74,7 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 
 	/* Wait up to 5 seconds for the connection attempt to succeed.*/
 	ENetEvent e;
-	if (enet_host_service(host, &e, CONNECTION_TIME_MS) > 0 && e.type == ENET_EVENT_TYPE_CONNECT)
+	if (enet_host_service(m_host, &e, CONNECTION_TIME_MS) > 0 && e.type == ENET_EVENT_TYPE_CONNECT)
 	{
 		_succeeded = true;
 		puts("Connection to 127.0.0.1:1234 succeeded.\n");
@@ -85,7 +85,7 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		/* Either the 5 seconds are up or a disconnect event was */
 		/* received. Reset the peer in the event the 5 seconds   */
 		/* had run out without any significant event.            */
-		enet_peer_reset(c.peer);
+		enet_peer_reset(c.m_peer);
 		puts("Connection to 127.0.0.1:1234 failed.\n");
 	}
 
@@ -103,9 +103,9 @@ void Client::init()
 void Client::quit()
 {
 	//Clean up ENet
-	enet_peer_reset(peer);
+	enet_peer_reset(m_peer);
 	enet_deinitialize();
-	enet_host_destroy(host);
+	enet_host_destroy(m_host);
 
 	//Clear up SDL
 	TTF_Quit();
@@ -118,25 +118,25 @@ void Client::quit()
 void Client::start_ticking()
 {
 	//Packethandler creation.
-	auto packetHandler = std::make_shared<ENetPacketHandler>(host, peer);
+	auto packetHandler = std::make_shared<ENetPacketHandler>(m_host, m_peer);
 
 	//Playerhandler creation.
-	auto playerHandler = std::make_shared<PlayerHandler>();
+	auto m_entityHandler = std::make_shared<EntityHandler>();
 
 	//Renderer creation
 	const std::string texture_path = "assets";
 	const Utilities::ivec2 window_size = Utilities::ivec2(1000, 1000);
 
-	auto renderer = std::shared_ptr<Graphics::Renderer>
+	auto m_renderer = std::shared_ptr<Graphics::Renderer>
 	(
 		Graphics::Renderer::create_renderer(TITLE, window_size, texture_path)
 	);
 
 	//Setup globals
 	{
-		g_globals.renderer = renderer;
+		g_globals.m_renderer = m_renderer;
 		g_globals.packetHandler = packetHandler;
-		g_globals.playerHandler = playerHandler;
+		g_globals.m_entityHandler = m_entityHandler;
 	}
 
 	//Create application
@@ -147,12 +147,12 @@ void Client::start_ticking()
 	{
 		DM::CLIENT::Config::update_deltaTime();
 
-		renderer->start_frame();
+		m_renderer->start_frame();
 
 		packetHandler->update();
 
 		application->update();
 
-		renderer->end_frame();
+		m_renderer->end_frame();
 	}
 }

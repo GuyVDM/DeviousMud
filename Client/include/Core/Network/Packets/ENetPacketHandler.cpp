@@ -4,7 +4,7 @@
 
 #include "Core/Network/Client/ClientWrapper.h"
 
-#include "Core/Player/PlayerHandler.h"
+#include "Core/Entity/EntityHandler.h"
 
 #include "Core/Global/C_Globals.h"
 
@@ -14,7 +14,7 @@
 
 
 ENetPacketHandler::ENetPacketHandler(ENetHost* _host, ENetPeer* _peer) :
-	host(_host), peer(_peer)
+	m_host(_host), m_peer(_peer)
 {
 
 }
@@ -26,9 +26,9 @@ ENetPacketHandler::~ENetPacketHandler()
 void ENetPacketHandler::update()
 {
 	//---ENET EVENT HANDLING---//
-	if (enet_host_service(host, &event, 0) > 0)
+	if (enet_host_service(m_host, &m_event, 0) > 0)
 	{
-		switch (event.type)
+		switch (m_event.type)
 		{
 		case ENET_EVENT_TYPE_CONNECT:
 			DEVIOUS_LOG("Succesfully connected to server.");
@@ -55,18 +55,18 @@ void ENetPacketHandler::process_packet()
 	//Retrieve the interpreter from the enetevent reference to see
 	//what event type we have received.
 	Packets::s_PacketHeader header;
-	PacketHandler::retrieve_packet_data<Packets::s_PacketHeader>(header, &event);
+	PacketHandler::retrieve_packet_data<Packets::s_PacketHeader>(header, &m_event);
 
-	std::shared_ptr<PlayerHandler> playerHandler = g_globals.playerHandler.lock();
+	std::shared_ptr<EntityHandler> m_entityHandler = g_globals.m_entityHandler.lock();
 
 	switch (header.interpreter)
 	{
 		case e_PacketInterpreter::PACKET_MOVE_PLAYER: 
 		{
 			Packets::s_PlayerMovement playerData;
-			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &event);
+			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &m_event);
 
-			playerHandler->get_data(playerData.fromPlayerId).set_position_from_server
+			m_entityHandler->get_data(playerData.fromPlayerId).set_position_from_server
 			(
 				Utilities::ivec2(playerData.x, playerData.y)
 			);
@@ -87,29 +87,29 @@ void ENetPacketHandler::process_packet()
 		case e_PacketInterpreter::PACKET_CREATE_PLAYER:
 		{
 			Packets::s_PlayerPosition player;
-			PacketHandler::retrieve_packet_data<Packets::s_PlayerPosition>(player, &event);
+			PacketHandler::retrieve_packet_data<Packets::s_PlayerPosition>(player, &m_event);
 		
-			PlayerDetails details;
-			details.position.x = player.x;
-			details.position.y = player.y;
+			PlayerDetails m_details;
+			m_details.m_position.x = player.x;
+			m_details.m_position.y = player.y;
 
-			playerHandler->create_player(player.fromPlayerId, details);
+			m_entityHandler->create_player(player.fromPlayerId, m_details);
 		}
 		break;
 
 		case e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER:
 		{
 			Packets::s_Player player;
-			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &event);
-			playerHandler->on_local_player_assigned.invoke(player.fromPlayerId);
+			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &m_event);
+			m_entityHandler->on_local_player_assigned.invoke(player.fromPlayerId);
 		}
 		break;
 
 		case e_PacketInterpreter::PACKET_DISCONNECT_PLAYER:
 		{
 			Packets::s_Player playerData;
-			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &event);
-			playerHandler->remove_player(playerData.fromPlayerId);
+			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &m_event);
+			m_entityHandler->remove_player(playerData.fromPlayerId);
 		}
 		break;
 
@@ -120,5 +120,5 @@ void ENetPacketHandler::process_packet()
 		break;
 	}
 
-	enet_packet_destroy(event.packet);
+	enet_packet_destroy(m_event.packet);
 }

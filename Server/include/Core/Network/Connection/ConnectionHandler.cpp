@@ -36,7 +36,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		{
 			Packets::s_PacketHeader packet;
 			packet.interpreter = e_PacketInterpreter::PACKET_TIMEOUT_WARNING;
-			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
@@ -50,13 +50,13 @@ void Server::ConnectionHandler::update_idle_timers()
 		//
 		if(!clientInfo->bAwaitingPing) 
 		{
-			if((ticks % PING_TICK_INTERVAL == 0 && ticks > 0) || !clientInfo->peer) 
+			if((ticks % PING_TICK_INTERVAL == 0 && ticks > 0) || !clientInfo->m_peer) 
 			{
 				clientInfo->bAwaitingPing = true;
 
 				Packets::s_PacketHeader packet;
 				packet.interpreter = e_PacketInterpreter::PACKET_PING;
-				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 			}
 		}
 		else
@@ -90,19 +90,20 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 	if (client_info.find(clientId) != client_info.end())
 	{
-		DEVIOUS_WARN("Can't register the same client twice, " << clientId << " is already registered.");
+		DEVIOUS_ERR("Can't register the same client twice, " << clientId << " is already registered.");
 		return;
 	}
 
-	std::shared_ptr<Server::PlayerHandler> pHandler = g_globals.playerHandler;
+	std::shared_ptr<Server::EntityHandler> pHandler = g_globals.m_entityHandler;
 
 	auto newClient = std::make_shared<ClientInfo>();
-	newClient->peer          = _peer;
-	newClient->clientId      = clientId;
-	newClient->fromPlayerId      = DM::Utils::UUID::generate();
-	newClient->bAwaitingPing = false;
-	newClient->idleticks     = 0;
-	newClient->packetquery   = new EventQuery();
+	newClient->m_peer					  = _peer;
+	newClient->clientId			      = clientId;
+	newClient->fromPlayerId			  = DM::Utils::UUID::generate();
+	newClient->bAwaitingPing	      = false;
+	newClient->idleticks			  = 0;
+	newClient->ticksSinceLastResponse = 0;
+	newClient->packetquery			  = new EventQuery();
 
 	client_info[clientId] = newClient;     //Generate Client info
 	client_handles.push_back(clientId); //Register client handle
@@ -138,7 +139,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 			packet.fromPlayerId = clientInfo->fromPlayerId;
 			packet.x = playerPos.x;
 			packet.y = playerPos.y;
-			PacketHandler::send_packet<Packets::s_PlayerPosition>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_PlayerPosition>(&packet, newClient->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 	}
 
@@ -147,7 +148,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		Packets::s_Player player;
 		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER;
 		player.fromPlayerId = newClient->fromPlayerId;
-		PacketHandler::send_packet<Packets::s_Player>(&player, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet<Packets::s_Player>(&player, newClient->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
@@ -159,11 +160,11 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 		return;
 	}
 
-	enet_peer_disconnect_now(client_info[_clienthandle]->peer, NULL);
+	enet_peer_disconnect_now(client_info[_clienthandle]->m_peer, NULL);
 
 	//Logout the player
 	const uint64_t fromPlayerId = client_info[_clienthandle]->fromPlayerId;
-	g_globals.playerHandler->logout_player(fromPlayerId);
+	g_globals.m_entityHandler->logout_player(fromPlayerId);
 
 	//Multicast to all other players that a player has left.
 	Packets::s_Player playerData;
@@ -191,7 +192,6 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 
 	//Remove client entry
 	client_info.erase(_clienthandle);
-	DEVIOUS_LOG("Cleared client data: " << _clienthandle << ".");
 }
 
 RefClientInfo Server::ConnectionHandler::get_client_info(const enet_uint32& _clienthandle)

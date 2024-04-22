@@ -193,7 +193,7 @@ typedef struct SDL_DisplayEvent
     Uint32 type;        /**< ::SDL_DISPLAYEVENT */
     Uint32 timestamp;   /**< In milliseconds, populated using SDL_GetTicks() */
     Uint32 display;     /**< The associated display index */
-    Uint8 event;        /**< ::SDL_DisplayEventID */
+    Uint8 m_event;        /**< ::SDL_DisplayEventID */
     Uint8 padding1;
     Uint8 padding2;
     Uint8 padding3;
@@ -208,7 +208,7 @@ typedef struct SDL_WindowEvent
     Uint32 type;        /**< ::SDL_WINDOWEVENT */
     Uint32 timestamp;   /**< In milliseconds, populated using SDL_GetTicks() */
     Uint32 windowID;    /**< The associated window */
-    Uint8 event;        /**< ::SDL_WindowEventID */
+    Uint8 m_event;        /**< ::SDL_WindowEventID */
     Uint8 padding1;
     Uint8 padding2;
     Uint8 padding3;
@@ -880,7 +880,7 @@ extern DECLSPEC void SDLCALL SDL_FlushEvents(Uint32 minType, Uint32 maxType);
  * \sa SDL_WaitEvent
  * \sa SDL_WaitEventTimeout
  */
-extern DECLSPEC int SDLCALL SDL_PollEvent(SDL_Event * event);
+extern DECLSPEC int SDLCALL SDL_PollEvent(SDL_Event * m_event);
 
 /**
  * Wait indefinitely for the next available event.
@@ -902,7 +902,7 @@ extern DECLSPEC int SDLCALL SDL_PollEvent(SDL_Event * event);
  * \sa SDL_PumpEvents
  * \sa SDL_WaitEventTimeout
  */
-extern DECLSPEC int SDLCALL SDL_WaitEvent(SDL_Event * event);
+extern DECLSPEC int SDLCALL SDL_WaitEvent(SDL_Event * m_event);
 
 /**
  * Wait until the specified timeout (in milliseconds) for the next available
@@ -928,7 +928,7 @@ extern DECLSPEC int SDLCALL SDL_WaitEvent(SDL_Event * event);
  * \sa SDL_PumpEvents
  * \sa SDL_WaitEvent
  */
-extern DECLSPEC int SDLCALL SDL_WaitEventTimeout(SDL_Event * event,
+extern DECLSPEC int SDLCALL SDL_WaitEventTimeout(SDL_Event * m_event,
                                                  int timeout);
 
 /**
@@ -963,7 +963,7 @@ extern DECLSPEC int SDLCALL SDL_WaitEventTimeout(SDL_Event * event,
  * \sa SDL_PollEvent
  * \sa SDL_RegisterEvents
  */
-extern DECLSPEC int SDLCALL SDL_PushEvent(SDL_Event * event);
+extern DECLSPEC int SDLCALL SDL_PushEvent(SDL_Event * m_event);
 
 /**
  * A function pointer used for callbacks that watch the event queue.
@@ -977,7 +977,7 @@ extern DECLSPEC int SDLCALL SDL_PushEvent(SDL_Event * event);
  * \sa SDL_SetEventFilter
  * \sa SDL_AddEventWatch
  */
-typedef int (SDLCALL * SDL_EventFilter) (void *userdata, SDL_Event * event);
+typedef int (SDLCALL * SDL_EventFilter) (void *userdata, SDL_Event * m_event);
 
 /**
  * Set up a filter to process all events before they change internal state and

@@ -31,7 +31,6 @@ private:
 	void init();
 
 private:
-
-	ENetHost* host;
-	ENetPeer* peer;
+	ENetHost* m_host;
+	ENetPeer* m_peer;
 };

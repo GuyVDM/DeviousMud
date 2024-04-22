@@ -83,7 +83,7 @@ typedef struct SDL_hid_device_ SDL_hid_device; /**< opaque hidapi structure */
 typedef struct SDL_hid_device_info
 {
     /** Platform-specific device path */
-    char *path;
+    char *m_path;
     /** Device Vendor ID */
     unsigned short vendor_id;
     /** Device Product ID */
@@ -240,7 +240,7 @@ extern DECLSPEC SDL_hid_device * SDLCALL SDL_hid_open(unsigned short vendor_id, 
  *
  * \since This function is available since SDL 2.0.18.
  */
-extern DECLSPEC SDL_hid_device * SDLCALL SDL_hid_open_path(const char *path, int bExclusive /* = false */);
+extern DECLSPEC SDL_hid_device * SDLCALL SDL_hid_open_path(const char *m_path, int bExclusive /* = false */);
 
 /**
  * Write an Output report to a HID device.

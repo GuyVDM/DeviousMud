@@ -11,7 +11,7 @@
 void Graphics::UI::WorldLayer::init()
 {
 	//TODO: Data should later get loaded in chunks, size & stuff should get rendered relative to the camera.
-	const std::shared_ptr<Graphics::Renderer>& renderer = g_globals.renderer.lock();
+	const std::shared_ptr<Graphics::Renderer>& m_renderer = g_globals.m_renderer.lock();
 
 	const Utilities::vec2 WORLD_SIZE{ 10, 10 };
 
@@ -19,7 +19,7 @@ void Graphics::UI::WorldLayer::init()
 	{
 		for(int32_t j = 0; j < WORLD_SIZE.y; j++)
 		{
-			tiles.push_back(WorldTile::create_tile
+			m_tiles.push_back(WorldTile::create_tile
 			(
 				Utilities::vec2
 				(
@@ -33,17 +33,17 @@ void Graphics::UI::WorldLayer::init()
 
 void Graphics::UI::WorldLayer::update()
 {
-	for(const auto& tile : tiles) 
+	for(const auto& tile : m_tiles) 
 	{
-		renderer->plot_frame(tile->get_sprite(), tile->get_position(), tile->get_size());
+		m_renderer->plot_frame(tile->get_sprite(), tile->get_position(), tile->get_size());
 	}
 }
 
-bool Graphics::UI::WorldLayer::handle_event(const SDL_Event* event)
+bool Graphics::UI::WorldLayer::handle_event(const SDL_Event* m_event)
 {
-	for(const auto& tile : tiles) 
+	for(const auto& tile : m_tiles) 
 	{
-		if(tile->handle_event(event)) 
+		if(tile->handle_event(m_event)) 
 		{
 			return true;
 		}

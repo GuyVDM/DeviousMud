@@ -1,8 +1,14 @@
 #pragma once
-#include "EntityDetails.h"
+#include "Shared/Utilities/vec2.hpp"
 
-typedef struct _PlayerDetails : public _EntityDetails 
+#include "Shared/Game/Skill.hpp"
+
+using SkillMap = std::array<DM::SKILLS::Skill, DM::SKILLS::SKILL_COUNT>;
+
+struct PlayerDetails
 {
-	std::string name   = "";
-
-}   PlayerDetails;
+	std::string name = "";
+	uint8_t combatLevel = 0;
+	Utilities::ivec2 m_position  = Utilities::ivec2(0);
+	SkillMap skills;
+};

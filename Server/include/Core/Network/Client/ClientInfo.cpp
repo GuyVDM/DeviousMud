@@ -7,7 +7,7 @@
 
 _ClientInfo::_ClientInfo()
 {
-	peer = nullptr;
+	m_peer = nullptr;
 	fromPlayerId    = 0;
 	idleticks   = 0;
 	packetquery = nullptr; 
@@ -15,7 +15,7 @@ _ClientInfo::_ClientInfo()
 
 _ClientInfo::~_ClientInfo()
 {
-	peer = nullptr;
+	m_peer = nullptr;
 	delete packetquery;
 }
 

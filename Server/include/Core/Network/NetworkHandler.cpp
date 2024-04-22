@@ -55,13 +55,13 @@ ENetHost* NetworkHandler::get_server_host()
 void NetworkHandler::start_ticking()
 {
 	auto connectionHandler = std::make_shared<Server::ConnectionHandler>();
-	auto playerHandler     = std::make_shared<Server::PlayerHandler>();
+	auto m_entityHandler     = std::make_shared<Server::EntityHandler>();
 
 	bool is_running = true;
 
 	//Setting global references.
 	g_globals.connectionHandler = connectionHandler;
-	g_globals.playerHandler		= playerHandler;
+	g_globals.m_entityHandler		= m_entityHandler;
 	g_globals.networkHandler    = std::shared_ptr<NetworkHandler>(this);
 
 	float ticktimer = 0.0f;
@@ -79,19 +79,19 @@ void NetworkHandler::start_ticking()
 			{
 			case ENET_EVENT_TYPE_CONNECT:
 			{
-				connectionHandler->register_client(e.peer);
+				connectionHandler->register_client(e.m_peer);
 			}
 			break;
 
 			case ENET_EVENT_TYPE_DISCONNECT:
 			{
-				connectionHandler->disconnect_client(e.peer->connectID);
+				connectionHandler->disconnect_client(e.m_peer->connectID);
 			}
 			break;
 
 			case ENET_EVENT_TYPE_RECEIVE:
 			{
-				RefClientInfo clientInfo = connectionHandler->get_client_info(e.peer->connectID);
+				RefClientInfo clientInfo = connectionHandler->get_client_info(e.m_peer->connectID);
 				Server::EventHandler::queue_incoming_event(&e, clientInfo);
 				enet_packet_destroy(e.packet);
 			}
