@@ -14,7 +14,7 @@
 
 
 ENetPacketHandler::ENetPacketHandler(ENetHost* _host, ENetPeer* _peer) :
-	m_host(_host), m_peer(_peer)
+	m_host(_host), peer(_peer)
 {
 
 }
@@ -57,7 +57,7 @@ void ENetPacketHandler::process_packet()
 	Packets::s_PacketHeader header;
 	PacketHandler::retrieve_packet_data<Packets::s_PacketHeader>(header, &m_event);
 
-	std::shared_ptr<EntityHandler> m_entityHandler = g_globals.m_entityHandler.lock();
+	std::shared_ptr<EntityHandler> entityHandler = g_globals.entityHandler.lock();
 
 	switch (header.interpreter)
 	{
@@ -66,7 +66,7 @@ void ENetPacketHandler::process_packet()
 			Packets::s_PlayerMovement playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &m_event);
 
-			m_entityHandler->get_data(playerData.fromPlayerId).set_position_from_server
+			entityHandler->get_data(playerData.fromPlayerId).set_position_from_server
 			(
 				Utilities::ivec2(playerData.x, playerData.y)
 			);
@@ -93,7 +93,7 @@ void ENetPacketHandler::process_packet()
 			m_details.m_position.x = player.x;
 			m_details.m_position.y = player.y;
 
-			m_entityHandler->create_player(player.fromPlayerId, m_details);
+			entityHandler->create_player(player.fromPlayerId, m_details);
 		}
 		break;
 
@@ -101,7 +101,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Player player;
 			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &m_event);
-			m_entityHandler->on_local_player_assigned.invoke(player.fromPlayerId);
+			entityHandler->on_local_player_assigned.invoke(player.fromPlayerId);
 		}
 		break;
 
@@ -109,7 +109,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Player playerData;
 			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &m_event);
-			m_entityHandler->remove_player(playerData.fromPlayerId);
+			entityHandler->remove_player(playerData.fromPlayerId);
 		}
 		break;
 

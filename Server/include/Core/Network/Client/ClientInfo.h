@@ -16,9 +16,9 @@ typedef unsigned int enet_uint32;
 /// Struct containing all info regarding the client.
 /// Warning: DON'T USE ANY PEER RELATED VARIABLES, THEY'RE ALL VOLATILE.
 /// </summary>
-typedef struct _ClientInfo 
+struct ClientInfo 
 {
-	ENetPeer*				  m_peer;                        //Client peer, Identified by 'peer->connectId' 
+	ENetPeer*				  peer;                        //Client peer, Identified by 'peer->connectId' 
 	enet_uint32               clientId;
 	DM::Utils::UUID           fromPlayerId;                //Unique UUID which refers to its player in the player handler.
 	EventQuery*               packetquery;                 //Player specific query for packets.
@@ -32,7 +32,7 @@ typedef struct _ClientInfo
 	/// </summary>
 	void refresh();
 
-	_ClientInfo();
-	~_ClientInfo();
+	ClientInfo();
+	~ClientInfo();
 
-}	ClientInfo;
+};

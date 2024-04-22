@@ -29,7 +29,7 @@ Globals g_globals;
 Client::Client(ENetHost* c)
 {
 	m_host = c;
-	m_peer = nullptr;
+	peer = nullptr;
 }
 
 Client Client::connect_localhost(bool& _succeeded)
@@ -64,9 +64,9 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 	enet_address_set_host(&address,_ip);
 	address.port = _port;
 
-	c.m_peer = enet_host_connect(m_host, &address, 2, 0);
+	c.peer = enet_host_connect(m_host, &address, 2, 0);
 
-	if (c.m_peer == NULL)
+	if (c.peer == NULL)
 	{
 		fprintf(stderr, "No available peers for initiating an ENet connection.\n");
 		exit(EXIT_FAILURE);
@@ -85,7 +85,7 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		/* Either the 5 seconds are up or a disconnect event was */
 		/* received. Reset the peer in the event the 5 seconds   */
 		/* had run out without any significant event.            */
-		enet_peer_reset(c.m_peer);
+		enet_peer_reset(c.peer);
 		puts("Connection to 127.0.0.1:1234 failed.\n");
 	}
 
@@ -103,7 +103,7 @@ void Client::init()
 void Client::quit()
 {
 	//Clean up ENet
-	enet_peer_reset(m_peer);
+	enet_peer_reset(peer);
 	enet_deinitialize();
 	enet_host_destroy(m_host);
 
@@ -118,10 +118,10 @@ void Client::quit()
 void Client::start_ticking()
 {
 	//Packethandler creation.
-	auto packetHandler = std::make_shared<ENetPacketHandler>(m_host, m_peer);
+	auto packetHandler = std::make_shared<ENetPacketHandler>(m_host, peer);
 
 	//Playerhandler creation.
-	auto m_entityHandler = std::make_shared<EntityHandler>();
+	auto entityHandler = std::make_shared<EntityHandler>();
 
 	//Renderer creation
 	const std::string texture_path = "assets";
@@ -136,7 +136,7 @@ void Client::start_ticking()
 	{
 		g_globals.m_renderer = m_renderer;
 		g_globals.packetHandler = packetHandler;
-		g_globals.m_entityHandler = m_entityHandler;
+		g_globals.entityHandler = entityHandler;
 	}
 
 	//Create application

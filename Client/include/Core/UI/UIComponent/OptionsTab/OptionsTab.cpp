@@ -101,7 +101,7 @@ void OptionsTab::create_option(OptionArgs _args)
 	option->set_anchor(e_AnchorPreset::TOP_LEFT);
 
 	//Move the option to the latest dropdown slot.
-	const Utilities::vec2 m_position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * (get_child_count() - 1));
+	const Utilities::vec2 m_position = get_position() + Utilities::vec2(0.0f, 2.0f) + (Utilities::vec2(0.0f, size.y) * ((float)get_child_count() - 1.0f));
 	option->set_position(m_position);
 }
 
@@ -206,7 +206,7 @@ void OptionsTab::close()
 
 void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-	const float pxOutline = 2;
+	const int pxOutline = 2;
 	const SDL_Color outlineColor = { 93, 84, 71, 255 };
 	const SDL_Color optionsOutlineColor = { 0, 0, 0, 255 };
 

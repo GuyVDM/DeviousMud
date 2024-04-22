@@ -53,7 +53,7 @@ void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo
 		break;
 	}
 
-	DEVIOUS_EVENT("Received packet from client handle: " << _clientInfo->m_peer->connectID << " Event Id: " << static_cast<unsigned>(packetHeader.interpreter));
+	DEVIOUS_EVENT("Received packet from client handle: " << _clientInfo->peer->connectID << " Event Id: " << static_cast<unsigned>(packetHeader.interpreter));
 }
 
 void Server::EventHandler::handle_queud_events(ENetHost* _host)
@@ -92,12 +92,12 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				const PlayerUUID fromPlayerId = _client->fromPlayerId;
 
 				auto pMovement = transform_packet<Packets::s_PlayerMovement>(std::move(packet));
-				bool reachedDest = g_globals.m_entityHandler->move_player_towards(fromPlayerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
+				bool reachedDest = g_globals.entityHandler->move_player_towards(fromPlayerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
 
 				// Send updated player position back to the clients.
 				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that's invalid.
 				{
-					ivec2 playerPos = g_globals.m_entityHandler->get_player_position(fromPlayerId);
+					ivec2 playerPos = g_globals.entityHandler->get_player_position(fromPlayerId);
 
 					Packets::s_PlayerMovement packet;
 					packet.interpreter = e_PacketInterpreter::PACKET_MOVE_PLAYER;

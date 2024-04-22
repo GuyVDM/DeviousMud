@@ -13,7 +13,7 @@ namespace DM
 
         private:
 			static float s_deltaTime;
-			static std::chrono::time_point<std::chrono::high_resolution_clock> s_last_time;
+			static std::chrono::time_point<std::chrono::high_resolution_clock> s_lastTime;
 		};
 	}
 }

@@ -48,6 +48,6 @@ private:
 	EventQuery(EventQuery* _previous);
 
 private:
-	EventStack packets;
+	EventStack m_packets;
 };
 

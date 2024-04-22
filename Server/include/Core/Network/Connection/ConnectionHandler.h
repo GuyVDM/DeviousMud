@@ -8,7 +8,7 @@
 #pragma region FORWARD_DECLERATIONS
 
 typedef struct _ENetPeer ENetPeer;
-typedef struct _ClientInfo ClientInfo;
+typedef struct ClientInfo ClientInfo;
 typedef unsigned int enet_uint32;
 
 #pragma endregion
@@ -80,8 +80,8 @@ namespace Server
 		ConnectionHandler(ConnectionHandler&) = delete;
 
 	private:
-		std::vector<enet_uint32>                       client_handles;
-		std::unordered_map<enet_uint32, RefClientInfo> client_info;
+		std::vector<enet_uint32>                       m_clientHandles;
+		std::unordered_map<enet_uint32, RefClientInfo> m_clientInfo;
 
 		friend class NetworkHandler;
 	};

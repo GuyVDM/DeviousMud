@@ -20,11 +20,11 @@
 
 void Server::ConnectionHandler::update_idle_timers()
 {
-	ENetHost* server = g_globals.networkHandler->get_server_host();
+	ENetHost* m_server = g_globals.networkHandler->get_server_host();
 
 	std::vector<enet_uint32> toDisconnect;
 
-	for (auto& pair : client_info)
+	for (auto& pair : m_clientInfo)
 	{
 		RefClientInfo clientInfo = pair.second;
 		uint32_t ticks = clientInfo->idleticks++;
@@ -36,7 +36,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		{
 			Packets::s_PacketHeader packet;
 			packet.interpreter = e_PacketInterpreter::PACKET_TIMEOUT_WARNING;
-			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
@@ -50,13 +50,13 @@ void Server::ConnectionHandler::update_idle_timers()
 		//
 		if(!clientInfo->bAwaitingPing) 
 		{
-			if((ticks % PING_TICK_INTERVAL == 0 && ticks > 0) || !clientInfo->m_peer) 
+			if((ticks % PING_TICK_INTERVAL == 0 && ticks > 0) || !clientInfo->peer) 
 			{
 				clientInfo->bAwaitingPing = true;
 
 				Packets::s_PacketHeader packet;
 				packet.interpreter = e_PacketInterpreter::PACKET_PING;
-				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 			}
 		}
 		else
@@ -88,16 +88,16 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 {
 	const enet_uint32 clientId = _peer->connectID;
 
-	if (client_info.find(clientId) != client_info.end())
+	if (m_clientInfo.find(clientId) != m_clientInfo.end())
 	{
 		DEVIOUS_ERR("Can't register the same client twice, " << clientId << " is already registered.");
 		return;
 	}
 
-	std::shared_ptr<Server::EntityHandler> pHandler = g_globals.m_entityHandler;
+	std::shared_ptr<Server::EntityHandler> pHandler = g_globals.entityHandler;
 
 	auto newClient = std::make_shared<ClientInfo>();
-	newClient->m_peer					  = _peer;
+	newClient->peer					  = _peer;
 	newClient->clientId			      = clientId;
 	newClient->fromPlayerId			  = DM::Utils::UUID::generate();
 	newClient->bAwaitingPing	      = false;
@@ -105,13 +105,13 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	newClient->ticksSinceLastResponse = 0;
 	newClient->packetquery			  = new EventQuery();
 
-	client_info[clientId] = newClient;     //Generate Client info
-	client_handles.push_back(clientId); //Register client handle
+	m_clientInfo[clientId] = newClient;     //Generate Client info
+	m_clientHandles.push_back(clientId); //Register client handle
 
 	//Register our player in the player handler.
 	pHandler->register_player(newClient->fromPlayerId);
 
-	ENetHost* server = g_globals.networkHandler->get_server_host();
+	ENetHost* m_server = g_globals.networkHandler->get_server_host();
 
 	//Create player data associated with the client.
 	{
@@ -122,16 +122,16 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		packet.y = 0;
 
 		//Sign to all clients that are already connected that a new player has joined.
-		PacketHandler::send_packet_multicast<Packets::s_PlayerPosition>(&packet, server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet_multicast<Packets::s_PlayerPosition>(&packet, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
 	//Send all existing playerdata over to the registered player.
-	for(enet_uint32 handle : client_handles) 
+	for(enet_uint32 handle : m_clientHandles) 
 	{
 		if (clientId == handle) //If it's our own client, skip.
 			continue;
 		{
-			const RefClientInfo clientInfo = client_info[handle];
+			const RefClientInfo clientInfo = m_clientInfo[handle];
 			const Utilities::ivec2 playerPos = pHandler->get_player_position(clientInfo->fromPlayerId);
 
 			Packets::s_PlayerPosition packet;
@@ -139,7 +139,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 			packet.fromPlayerId = clientInfo->fromPlayerId;
 			packet.x = playerPos.x;
 			packet.y = playerPos.y;
-			PacketHandler::send_packet<Packets::s_PlayerPosition>(&packet, newClient->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_PlayerPosition>(&packet, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 	}
 
@@ -148,28 +148,28 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		Packets::s_Player player;
 		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER;
 		player.fromPlayerId = newClient->fromPlayerId;
-		PacketHandler::send_packet<Packets::s_Player>(&player, newClient->m_peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet<Packets::s_Player>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
 void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthandle)
 {
-	if (client_info.find(_clienthandle) == client_info.end())
+	if (m_clientInfo.find(_clienthandle) == m_clientInfo.end())
 	{
 		DEVIOUS_WARN("Couldn't delete client data, handle (" << _clienthandle << ") doesn't exist.");
 		return;
 	}
 
-	enet_peer_disconnect_now(client_info[_clienthandle]->m_peer, NULL);
+	enet_peer_disconnect_now(m_clientInfo[_clienthandle]->peer, NULL);
 
 	//Logout the player
-	const uint64_t fromPlayerId = client_info[_clienthandle]->fromPlayerId;
-	g_globals.m_entityHandler->logout_player(fromPlayerId);
+	const uint64_t fromPlayerId = m_clientInfo[_clienthandle]->fromPlayerId;
+	g_globals.entityHandler->logout_player(fromPlayerId);
 
 	//Multicast to all other players that a player has left.
 	Packets::s_Player playerData;
 	playerData.interpreter = e_PacketInterpreter::PACKET_DISCONNECT_PLAYER;
-	playerData.fromPlayerId = client_info[_clienthandle]->fromPlayerId;
+	playerData.fromPlayerId = m_clientInfo[_clienthandle]->fromPlayerId;
 	
 	PacketHandler::send_packet_multicast<Packets::s_Player>
 	(
@@ -180,28 +180,28 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	);
 
 	//Find and remove the clienthandle of the client that we're disconnecting.
-	auto it = std::find_if(client_handles.begin(), client_handles.end(), [&_clienthandle](const enet_uint32& _handle)
+	auto it = std::find_if(m_clientHandles.begin(), m_clientHandles.end(), [&_clienthandle](const enet_uint32& _handle)
 		{
 			return _clienthandle == _handle;
 		});
 
-	if (it != client_handles.end())
+	if (it != m_clientHandles.end())
 	{
-		client_handles.erase(it);
+		m_clientHandles.erase(it);
 	}
 
 	//Remove client entry
-	client_info.erase(_clienthandle);
+	m_clientInfo.erase(_clienthandle);
 }
 
 RefClientInfo Server::ConnectionHandler::get_client_info(const enet_uint32& _clienthandle)
 {
-	return client_info.find(_clienthandle) == client_info.end() ? nullptr : client_info[_clienthandle];
+	return m_clientInfo.find(_clienthandle) == m_clientInfo.end() ? nullptr : m_clientInfo[_clienthandle];
 }
 
 const std::vector<enet_uint32>& Server::ConnectionHandler::get_client_handles() const
 {
-	return client_handles;
+	return m_clientHandles;
 }
 
 

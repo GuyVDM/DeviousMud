@@ -26,42 +26,42 @@ NetworkHandler NetworkHandler::create_host(const char* address, int32_t port, in
 {
 	//Set server host & Connection parameters
 	ENetAddress connection;
-	ENetHost*   server;
+	ENetHost*   m_server;
 
 	enet_address_set_host(&connection, address);
 	connection.port = port;
 
-	server = enet_host_create(&connection,
+	m_server = enet_host_create(&connection,
 							   maxconnections,
 							   channels,
 							   inc_bandwith,
 							   outg_bandwidth);
 
-	if (server == NULL)
+	if (m_server == NULL)
 	{
 		fprintf(stderr, "An error occurred while trying to create a ENet Server Host. \n");
 		exit(EXIT_FAILURE);
 	}
 
 	DEVIOUS_EVENT("Server listening on: [" << address << ":" << port << "].");
-	return NetworkHandler(server);
+	return NetworkHandler(m_server);
 }
 
 ENetHost* NetworkHandler::get_server_host()
 {
-	return server;
+	return m_server;
 }
 
 void NetworkHandler::start_ticking()
 {
 	auto connectionHandler = std::make_shared<Server::ConnectionHandler>();
-	auto m_entityHandler     = std::make_shared<Server::EntityHandler>();
+	auto entityHandler     = std::make_shared<Server::EntityHandler>();
 
 	bool is_running = true;
 
 	//Setting global references.
 	g_globals.connectionHandler = connectionHandler;
-	g_globals.m_entityHandler		= m_entityHandler;
+	g_globals.entityHandler		= entityHandler;
 	g_globals.networkHandler    = std::shared_ptr<NetworkHandler>(this);
 
 	float ticktimer = 0.0f;
@@ -73,25 +73,25 @@ void NetworkHandler::start_ticking()
 
 		ENetEvent e;
 
-		if(enet_host_service(server, &e, 0) > 0) //Try and catch packets before handling them
+		if(enet_host_service(m_server, &e, 0) > 0) //Try and catch packets before handling them
 		{
 			switch (e.type)
 			{
 			case ENET_EVENT_TYPE_CONNECT:
 			{
-				connectionHandler->register_client(e.m_peer);
+				connectionHandler->register_client(e.peer);
 			}
 			break;
 
 			case ENET_EVENT_TYPE_DISCONNECT:
 			{
-				connectionHandler->disconnect_client(e.m_peer->connectID);
+				connectionHandler->disconnect_client(e.peer->connectID);
 			}
 			break;
 
 			case ENET_EVENT_TYPE_RECEIVE:
 			{
-				RefClientInfo clientInfo = connectionHandler->get_client_info(e.m_peer->connectID);
+				RefClientInfo clientInfo = connectionHandler->get_client_info(e.peer->connectID);
 				Server::EventHandler::queue_incoming_event(&e, clientInfo);
 				enet_packet_destroy(e.packet);
 			}
@@ -99,10 +99,10 @@ void NetworkHandler::start_ticking()
 			}
 		}
 
-		if(ticktimer > TICK_DURATION) 
+		if(ticktimer > m_tickDuration) 
 		{
 			ticktimer = 0.0f;
-			Server::EventHandler::handle_queud_events(server);
+			Server::EventHandler::handle_queud_events(m_server);
 
 			//Check for timeouts.
 			connectionHandler->update_idle_timers();
@@ -117,10 +117,10 @@ void NetworkHandler::destroy()
 
 NetworkHandler::~NetworkHandler()
 {
-	enet_host_destroy(server);
+	enet_host_destroy(m_server);
 }
 
-NetworkHandler::NetworkHandler(ENetHost* server)
+NetworkHandler::NetworkHandler(ENetHost* m_server)
 {
-	this->server = server;
+	this->m_server = m_server;
 }

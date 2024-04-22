@@ -42,7 +42,7 @@ namespace Graphics
 
 			std::shared_ptr<Camera>		        m_playerCamera;
 
-			std::shared_ptr<EntityHandler>      m_entityHandler;
+			std::shared_ptr<EntityHandler>      entityHandler;
 
 			std::shared_ptr<Graphics::Renderer> m_renderer;
 

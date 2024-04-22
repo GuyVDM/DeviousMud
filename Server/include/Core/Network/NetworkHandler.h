@@ -47,11 +47,11 @@ public:
 	~NetworkHandler();
 
 protected:
-	NetworkHandler(ENetHost* server);
+	NetworkHandler(ENetHost* m_server);
 	void destroy();
 
 private:
-	ENetHost* server;
+	ENetHost* m_server;
 
-	const float TICK_DURATION = 0.6f;
+	const float m_tickDuration = 0.6f;
 };

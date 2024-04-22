@@ -6,7 +6,7 @@
 
 typedef struct _ENetEvent ENetEvent;
 
-typedef struct _ClientInfo ClientInfo;
+typedef struct ClientInfo ClientInfo;
 
 typedef struct _ENetHost ENetHost;
 

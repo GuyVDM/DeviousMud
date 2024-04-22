@@ -28,24 +28,24 @@ void Graphics::UI::EntityLayer::init()
 
 	//Grab the player sprite from the renderer and cache it for rendering.
 	{
-		m_entityHandler = g_globals.m_entityHandler.lock();
+		entityHandler = g_globals.entityHandler.lock();
 	}
 
 	//Bind listeners
 	{
 		DEVIOUS_LOG("Binding PlayerLayer callbacks to Playerhandler...");
 
-		m_entityHandler->on_local_player_assigned.add_listener
+		entityHandler->on_local_player_assigned.add_listener
 		(
 			std::bind(&EntityLayer::player_local_assigned, this, std::placeholders::_1)
 		);
 
-		m_entityHandler->on_player_created.add_listener
+		entityHandler->on_player_created.add_listener
 		(
 			std::bind(&EntityLayer::player_created, this, std::placeholders::_1)
 		);
 
-		m_entityHandler->on_player_removed.add_listener
+		entityHandler->on_player_removed.add_listener
 		(
 			std::bind(&EntityLayer::player_destroyed, this, std::placeholders::_1)
 		);
@@ -57,7 +57,7 @@ void Graphics::UI::EntityLayer::update()
 	//Render all player sprites.
 	for (const uint64_t playerHandle : m_playerHandles)
 	{
-		PlayerData& playerData = m_entityHandler->get_data(playerHandle);
+		PlayerData& playerData = entityHandler->get_data(playerHandle);
 		SimPosition& m_simPos = playerData.m_simPos;
 
 		//Update the simulated player position.
@@ -73,7 +73,7 @@ void Graphics::UI::EntityLayer::update()
 	if (m_bHasLocalPlayer)
 	{
 		//Set camera position to be the player
-		SimPosition& localPlayer = m_entityHandler->get_local_player_data().m_simPos;
+		SimPosition& localPlayer = entityHandler->get_local_player_data().m_simPos;
 
 		const Utilities::vec2 transformedPos
 		{

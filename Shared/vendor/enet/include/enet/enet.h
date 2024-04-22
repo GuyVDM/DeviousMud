@@ -439,7 +439,7 @@ typedef enum _ENetEventType
 typedef struct _ENetEvent 
 {
    ENetEventType        type;      /**< type of the event */
-   ENetPeer *           m_peer;      /**< peer that generated a connect, disconnect or receive event */
+   ENetPeer *           peer;      /**< peer that generated a connect, disconnect or receive event */
    enet_uint8           channelID; /**< channel on the peer that generated the event, if appropriate */
    enet_uint32          data;      /**< data associated with the event, if appropriate */
    ENetPacket *         packet;    /**< packet associated with the event, if appropriate */

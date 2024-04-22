@@ -20,7 +20,7 @@ typedef struct _Globals
 {
 	std::weak_ptr<Graphics::Renderer> m_renderer;
 	std::weak_ptr<ENetPacketHandler>  packetHandler;
-	std::weak_ptr<EntityHandler>      m_entityHandler;
+	std::weak_ptr<EntityHandler>      entityHandler;
 }   Globals;
 
 extern Globals g_globals;

@@ -5,21 +5,21 @@
 #include "Core/Events/Query/EventQuery.h"
 
 
-_ClientInfo::_ClientInfo()
+ClientInfo::ClientInfo()
 {
-	m_peer = nullptr;
+	peer = nullptr;
 	fromPlayerId    = 0;
 	idleticks   = 0;
 	packetquery = nullptr; 
 }
 
-_ClientInfo::~_ClientInfo()
+ClientInfo::~ClientInfo()
 {
-	m_peer = nullptr;
+	peer = nullptr;
 	delete packetquery;
 }
 
-void _ClientInfo::refresh()
+void ClientInfo::refresh()
 {
 	bAwaitingPing = false;
 	ticksSinceLastResponse = 0;
