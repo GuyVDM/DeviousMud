@@ -13,12 +13,12 @@ namespace DM
         class UUID
         {
         private:
-            uint64_t identifyer;
+            uint64_t m_identifyer;
 
         public:
             inline static UUID generate()
             {
-                uint64_t identifyer;
+                uint64_t m_identifyer;
 
                 // Get current timestamp
                 uint64_t timestamp = static_cast<uint64_t>(std::time(nullptr));
@@ -33,43 +33,43 @@ namespace DM
                 uint64_t randomBits = dis(gen);
 
                 // Combine timestamp and random bits
-                identifyer = (timestamp << 32) | (randomBits & 0xFFFFFFFF);
-                return UUID(identifyer);
+                m_identifyer = (timestamp << 32) | (randomBits & 0xFFFFFFFF);
+                return UUID(m_identifyer);
             }
 
             inline UUID() 
             {
-                identifyer = 0;
+                m_identifyer = 0;
             }
 
             inline UUID(const uint64_t _id) 
             {
-                identifyer = _id;
+                m_identifyer = _id;
             }
 
             inline operator uint64_t() const 
             {
-                return identifyer;
+                return m_identifyer;
             }
 
             inline bool operator==(const UUID& _other) const
             {
-                return identifyer == _other.identifyer;
+                return m_identifyer == _other.m_identifyer;
             }
 
             inline bool operator==(const uint64_t& _indentifyer) const
             {
-                return identifyer == _indentifyer;
+                return m_identifyer == _indentifyer;
             }
 
             inline bool operator!=(const UUID& _other) const
             {
-                return !(identifyer == _other.identifyer);
+                return !(m_identifyer == _other.m_identifyer);
             }
 
             inline bool operator!=(const uint64_t& _indentifyer) const
             {
-                return identifyer != _indentifyer;
+                return m_identifyer != _indentifyer;
             }
 
             friend struct ::std::hash<UUID>;
@@ -85,7 +85,7 @@ namespace std
         size_t operator()(const DM::Utils::UUID& uuid) const
         {
             // Use the value of the UUID as the hash
-            return hash<uint64_t>()(uuid.identifyer);
+            return hash<uint64_t>()(uuid.m_identifyer);
         }
     };
 }
