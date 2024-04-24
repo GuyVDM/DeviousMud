@@ -31,7 +31,7 @@ namespace Graphics
 			virtual ~Layer() = default;
 
 		protected:
-			std::shared_ptr<Graphics::Renderer> m_renderer;
+			std::shared_ptr<Graphics::Renderer> renderer;
 		};
 	}
 }

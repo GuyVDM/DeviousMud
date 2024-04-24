@@ -23,7 +23,7 @@ void UIComponent::set_active(bool _bIsActive)
 }
 
 UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
-    Clickable(_pos, _size, g_globals.m_renderer.lock()->get_sprite(_sprite))
+    Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
 {
     set_position(_pos);
 }

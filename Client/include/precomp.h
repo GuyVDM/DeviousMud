@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <xmemory>
 #include <string>
+#include <optional>
 
 #include "Shared/Utilities/Assert.h"
 #include "Shared/Utilities/Logger.hpp"

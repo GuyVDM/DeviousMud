@@ -106,7 +106,7 @@ namespace Graphics
 
 		SDL_Window* window;
 
-		SDL_Renderer* m_renderer;
+		SDL_Renderer* renderer;
 
 		friend class TextComponent;
 	};

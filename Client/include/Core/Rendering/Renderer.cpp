@@ -38,7 +38,7 @@ std::shared_ptr<Camera>& Graphics::Renderer::get_camera()
 }
 
 Graphics::Renderer::Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path) :
-	window(_window), m_renderer(_renderer), assetsPath(_texture_path)
+	window(_window), renderer(_renderer), assetsPath(_texture_path)
 {
 	//Make the window resizable
 	SDL_SetWindowResizable(_window, SDL_bool(true));
@@ -62,7 +62,7 @@ void Graphics::Renderer::free()
 	}   sprites.clear();
 
 	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(m_renderer);
+	SDL_DestroyRenderer(renderer);
 }
 
 /// <summary>
@@ -90,14 +90,14 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 	}
 
 	//Store the surface details and lock it behind the sprite type.
-	SDL_Texture* m_textTexture = SDL_CreateTextureFromSurface(m_renderer, surface);
+	SDL_Texture* m_textTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	sprites[_spritetype] = new SDL_SpriteDetails(surface, m_textTexture, _maxframecount);
 }
 
 void Graphics::Renderer::start_frame()
 {
-	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
-	SDL_RenderClear(m_renderer);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_RenderClear(renderer);
 }
 
 void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color)
@@ -110,12 +110,12 @@ void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utiliti
 	SDL_Rect leftRect = { iPos.x - _borderWidth, iPos.y, _borderWidth, iSize.y };
 	SDL_Rect rightRect = { iPos.x + iSize.x, iPos.y, _borderWidth, iSize.y };
 	
-	SDL_SetRenderDrawColor(m_renderer, _color.r, _color.g, _color.b, _color.a);
+	SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
 	
-	SDL_RenderFillRect(m_renderer, &topRect);
-	SDL_RenderFillRect(m_renderer, &bottomRect);
-	SDL_RenderFillRect(m_renderer, &leftRect);
-	SDL_RenderFillRect(m_renderer, &rightRect);
+	SDL_RenderFillRect(renderer, &topRect);
+	SDL_RenderFillRect(renderer, &bottomRect);
+	SDL_RenderFillRect(renderer, &leftRect);
+	SDL_RenderFillRect(renderer, &rightRect);
 }
 
 /// <summary>
@@ -177,7 +177,7 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 
 		//Copy it over to the final frame.
 		SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-		SDL_RenderCopyEx(m_renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
+		SDL_RenderCopyEx(renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
 
 		//Reset to default colors after rendering.
 		SDL_SetTextureColorMod(m_textTexture, 255, 255, 255);
@@ -219,7 +219,7 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 
 	//Copy it over to the final frame.
 	SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-	SDL_RenderCopyEx(m_renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
+	SDL_RenderCopyEx(renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
 
 	//Reset to default colors after rendering.
 	SDL_SetTextureColorMod(m_textTexture, 255, 255, 255);
@@ -236,7 +236,7 @@ void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
 /// </summary>
 void Graphics::Renderer::end_frame()
 {
-	SDL_RenderPresent(m_renderer);
+	SDL_RenderPresent(renderer);
 }
 
 Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)

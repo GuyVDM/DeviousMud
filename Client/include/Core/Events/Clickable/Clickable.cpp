@@ -79,10 +79,10 @@ bool Clickable::handle_event(const SDL_Event* _event)
 
 const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
-    Utilities::vec2 camPos = g_globals.m_renderer.lock()->get_camera()->get_position();
+    Utilities::vec2 camPos = g_globals.renderer.lock()->get_camera()->get_position();
 
     int32_t viewportWidth, viewportHeight;
-    g_globals.m_renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
+    g_globals.renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
 
     viewportWidth /= 2;
     viewportHeight /= 2;

@@ -127,14 +127,14 @@ void Client::start_ticking()
 	const std::string texture_path = "assets";
 	const Utilities::ivec2 window_size = Utilities::ivec2(1000, 1000);
 
-	auto m_renderer = std::shared_ptr<Graphics::Renderer>
+	auto renderer = std::shared_ptr<Graphics::Renderer>
 	(
 		Graphics::Renderer::create_renderer(TITLE, window_size, texture_path)
 	);
 
 	//Setup globals
 	{
-		g_globals.m_renderer = m_renderer;
+		g_globals.renderer = renderer;
 		g_globals.packetHandler = packetHandler;
 		g_globals.entityHandler = entityHandler;
 	}
@@ -147,12 +147,14 @@ void Client::start_ticking()
 	{
 		DM::CLIENT::Config::update_deltaTime();
 
-		m_renderer->start_frame();
+		renderer->start_frame();
 
 		packetHandler->update();
 
 		application->update();
 
-		m_renderer->end_frame();
+		entityHandler->update();
+
+		renderer->end_frame();
 	}
 }

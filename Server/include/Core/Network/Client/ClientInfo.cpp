@@ -8,7 +8,7 @@
 ClientInfo::ClientInfo()
 {
 	peer = nullptr;
-	fromPlayerId    = 0;
+	fromEntityId    = 0;
 	idleticks   = 0;
 	packetquery = nullptr; 
 }

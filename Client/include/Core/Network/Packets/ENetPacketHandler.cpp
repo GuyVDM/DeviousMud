@@ -61,17 +61,18 @@ void ENetPacketHandler::process_packet()
 
 	switch (header.interpreter)
 	{
-		case e_PacketInterpreter::PACKET_MOVE_PLAYER: 
+		case e_PacketInterpreter::PACKET_MOVE_ENTITY: 
 		{
-			Packets::s_PlayerMovement playerData;
-			PacketHandler::retrieve_packet_data<Packets::s_PlayerMovement>(playerData, &m_event);
+			Packets::s_EntityMovement entityData;
+			PacketHandler::retrieve_packet_data<Packets::s_EntityMovement>(entityData, &m_event);
 
-			entityHandler->get_data(playerData.fromPlayerId).set_position_from_server
-			(
-				Utilities::ivec2(playerData.x, playerData.y)
-			);
+			if (auto entityOpt = entityHandler->get_entity(entityData.fromEntityId); entityOpt != std::nullopt)
+			{
+				RefEntity entity = entityOpt.value();
+				entity->move_to(Utilities::ivec2(entityData.x, entityData.y));
+			}
 
-			DEVIOUS_LOG("New position received: " << playerData.x << ", " << playerData.y);
+			DEVIOUS_LOG("New position received: " << entityData.x << ", " << entityData.y);
 		}
 		break;
 
@@ -84,32 +85,32 @@ void ENetPacketHandler::process_packet()
 		}
 		break;
 
-		case e_PacketInterpreter::PACKET_CREATE_PLAYER:
+		case e_PacketInterpreter::PACKET_CREATE_ENTITY:
 		{
-			Packets::s_PlayerPosition player;
-			PacketHandler::retrieve_packet_data<Packets::s_PlayerPosition>(player, &m_event);
+			Packets::s_EntityPosition player;
+			PacketHandler::retrieve_packet_data<Packets::s_EntityPosition>(player, &m_event);
 		
 			PlayerDetails m_details;
 			m_details.m_position.x = player.x;
 			m_details.m_position.y = player.y;
 
-			entityHandler->create_player(player.fromPlayerId, m_details);
+			entityHandler->create_world_entity(player.fromEntityId, 0, Utilities::ivec2(0, 0));
 		}
 		break;
 
-		case e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER:
+		case e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY:
 		{
-			Packets::s_Player player;
-			PacketHandler::retrieve_packet_data<Packets::s_Player>(player, &m_event);
-			entityHandler->on_local_player_assigned.invoke(player.fromPlayerId);
+			Packets::s_Entity player;
+			PacketHandler::retrieve_packet_data<Packets::s_Entity>(player, &m_event);
+			entityHandler->on_local_player_assigned.invoke(player.fromEntityId);
 		}
 		break;
 
-		case e_PacketInterpreter::PACKET_DISCONNECT_PLAYER:
+		case e_PacketInterpreter::PACKET_REMOVE_ENTITY:
 		{
-			Packets::s_Player playerData;
-			PacketHandler::retrieve_packet_data<Packets::s_Player>(playerData, &m_event);
-			entityHandler->remove_player(playerData.fromPlayerId);
+			Packets::s_Entity entityData;
+			PacketHandler::retrieve_packet_data<Packets::s_Entity>(entityData, &m_event);
+			entityHandler->remove_world_entity(entityData.fromEntityId);
 		}
 		break;
 

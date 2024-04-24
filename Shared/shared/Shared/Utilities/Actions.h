@@ -21,7 +21,7 @@ namespace DM
 
 		struct Action
 		{
-			DM::Utils::UUID fromPlayerId;
+			DM::Utils::UUID fromEntityId;
 			DM::Utils::UUID toTargetId;
 			e_SubjectType   subjectType;
 			e_ActionType    actionType;

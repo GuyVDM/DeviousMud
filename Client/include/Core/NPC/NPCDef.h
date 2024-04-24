@@ -9,17 +9,18 @@
 
 struct NPCDef 
 {
-	std::string          name;
-	uint32_t             combatLevel;
-	Graphics::SpriteType m_sprite;
-	e_AnimationType      walkingAnim;
-	e_AnimationType      attackAnim;
-	e_AnimationType      idleAnim;
+	std::string          name           = "null";
+	uint32_t             combatLevel    = 0;
+	uint8_t              size           = 1;                             //UNUSED
+	Graphics::SpriteType sprite         = Graphics::SpriteType::NONE;
+	e_AnimationType      walkingAnim    = e_AnimationType::NO_ANIMATION;
+	e_AnimationType      attackAnim     = e_AnimationType::NO_ANIMATION;
+	e_AnimationType      idleAnim       = e_AnimationType::NO_ANIMATION;
 };
 
 using NPCMap = std::map<uint8_t, NPCDef>;
 
-const static NPCDef get_npc(uint8_t _id) 
+inline const static NPCDef get_npc_definition(uint8_t _id)
 {
 	using namespace Graphics;
 
@@ -28,20 +29,37 @@ const static NPCDef get_npc(uint8_t _id)
 	switch(_id) 
 	{
 	case 0:
+		npc.name = "Player";
+		npc.combatLevel = 0;
+		npc.sprite = SpriteType::PLAYER;
+		npc.size = 1;
+		/// THESE ANIMATIONS NEEDS TO GET GRABBED FROM THE PLAYER HANDLER IN THE FUTURE.
+		///
+		/// 
+		npc.idleAnim = e_AnimationType::PLAYER_IDLE;
+		npc.walkingAnim = e_AnimationType::PLAYER_WALKING;
+		npc.attackAnim = e_AnimationType::PLAYER_WALKING;
+		break;
+
+	case 1:
 		npc.name = "Goblin";
 		npc.combatLevel = 3;
-		npc.m_sprite = SpriteType::NPC_GOBLIN;
+		npc.size = 1;
+		npc.sprite      = SpriteType::NPC_GOBLIN;
 		npc.idleAnim    = e_AnimationType::GOBLIN_IDLE;
 		npc.walkingAnim = e_AnimationType::GOBLIN_WALK;
 		npc.attackAnim  = e_AnimationType::GOBLIN_ATTACK;
+		break;
 
 	default:
 		npc.name = "null";
 		npc.combatLevel = 0;
-		npc.m_sprite = SpriteType::NONE;
+		npc.sprite      = SpriteType::NONE;
+		npc.size = 1;
 		npc.idleAnim    = e_AnimationType::NO_ANIMATION;
 		npc.walkingAnim = e_AnimationType::NO_ANIMATION;
 		npc.attackAnim  = e_AnimationType::NO_ANIMATION;
+		break;
 	}
 
 	return npc;

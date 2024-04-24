@@ -20,7 +20,7 @@
 
 void Server::ConnectionHandler::update_idle_timers()
 {
-	ENetHost* m_server = g_globals.networkHandler->get_server_host();
+	ENetHost* server = g_globals.networkHandler->get_server_host();
 
 	std::vector<enet_uint32> toDisconnect;
 
@@ -36,7 +36,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		{
 			Packets::s_PacketHeader packet;
 			packet.interpreter = e_PacketInterpreter::PACKET_TIMEOUT_WARNING;
-			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
@@ -56,14 +56,12 @@ void Server::ConnectionHandler::update_idle_timers()
 
 				Packets::s_PacketHeader packet;
 				packet.interpreter = e_PacketInterpreter::PACKET_PING;
-				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+				PacketHandler::send_packet<Packets::s_PacketHeader>(&packet, clientInfo->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 			}
 		}
 		else
 		{
 			clientInfo->ticksSinceLastResponse++;
-
-			DEVIOUS_LOG("Client " << clientInfo->clientId << " awaiting disconnection: ticks passed: " << clientInfo->ticksSinceLastResponse);
 
 			if (clientInfo->ticksSinceLastResponse >= MAX_TICK_INTERVAL_NO_RESPONSE)
 			{
@@ -99,7 +97,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	auto newClient = std::make_shared<ClientInfo>();
 	newClient->peer					  = _peer;
 	newClient->clientId			      = clientId;
-	newClient->fromPlayerId			  = DM::Utils::UUID::generate();
+	newClient->fromEntityId			  = DM::Utils::UUID::generate();
 	newClient->bAwaitingPing	      = false;
 	newClient->idleticks			  = 0;
 	newClient->ticksSinceLastResponse = 0;
@@ -109,20 +107,20 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	m_clientHandles.push_back(clientId); //Register client handle
 
 	//Register our player in the player handler.
-	pHandler->register_player(newClient->fromPlayerId);
+	pHandler->register_player(newClient->fromEntityId);
 
 	ENetHost* m_server = g_globals.networkHandler->get_server_host();
 
 	//Create player data associated with the client.
 	{
-		Packets::s_PlayerPosition packet;
-		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_PLAYER;
-		packet.fromPlayerId = newClient->fromPlayerId;
+		Packets::s_EntityPosition packet;
+		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
+		packet.fromEntityId = newClient->fromEntityId;
 		packet.x = 0;
 		packet.y = 0;
 
 		//Sign to all clients that are already connected that a new player has joined.
-		PacketHandler::send_packet_multicast<Packets::s_PlayerPosition>(&packet, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet_multicast<Packets::s_EntityPosition>(&packet, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
 	//Send all existing playerdata over to the registered player.
@@ -132,23 +130,23 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 			continue;
 		{
 			const RefClientInfo clientInfo = m_clientInfo[handle];
-			const Utilities::ivec2 playerPos = pHandler->get_player_position(clientInfo->fromPlayerId);
+			const Utilities::ivec2 playerPos = pHandler->get_player_position(clientInfo->fromEntityId);
 
-			Packets::s_PlayerPosition packet;
-			packet.interpreter = e_PacketInterpreter::PACKET_CREATE_PLAYER;
-			packet.fromPlayerId = clientInfo->fromPlayerId;
+			Packets::s_EntityPosition packet;
+			packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
+			packet.fromEntityId = clientInfo->fromEntityId;
 			packet.x = playerPos.x;
 			packet.y = playerPos.y;
-			PacketHandler::send_packet<Packets::s_PlayerPosition>(&packet, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+			PacketHandler::send_packet<Packets::s_EntityPosition>(&packet, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 	}
 
 	//Send a packet to the client so they can indentify their local player.
 	{
-		Packets::s_Player player;
-		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER;
-		player.fromPlayerId = newClient->fromPlayerId;
-		PacketHandler::send_packet<Packets::s_Player>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+		Packets::s_Entity player;
+		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY;
+		player.fromEntityId = newClient->fromEntityId;
+		PacketHandler::send_packet<Packets::s_Entity>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
@@ -163,15 +161,15 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	enet_peer_disconnect_now(m_clientInfo[_clienthandle]->peer, NULL);
 
 	//Logout the player
-	const uint64_t fromPlayerId = m_clientInfo[_clienthandle]->fromPlayerId;
-	g_globals.entityHandler->logout_player(fromPlayerId);
+	const uint64_t fromEntityId = m_clientInfo[_clienthandle]->fromEntityId;
+	g_globals.entityHandler->logout_player(fromEntityId);
 
 	//Multicast to all other players that a player has left.
-	Packets::s_Player playerData;
-	playerData.interpreter = e_PacketInterpreter::PACKET_DISCONNECT_PLAYER;
-	playerData.fromPlayerId = m_clientInfo[_clienthandle]->fromPlayerId;
+	Packets::s_Entity playerData;
+	playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
+	playerData.fromEntityId = m_clientInfo[_clienthandle]->fromEntityId;
 	
-	PacketHandler::send_packet_multicast<Packets::s_Player>
+	PacketHandler::send_packet_multicast<Packets::s_Entity>
 	(
 		&playerData, 
 		g_globals.networkHandler->get_server_host(), 

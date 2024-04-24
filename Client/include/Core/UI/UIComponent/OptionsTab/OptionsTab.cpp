@@ -91,10 +91,7 @@ void OptionsTab::create_option(OptionArgs _args)
 		true
 	);  add_child(option);
 
-	option->on_clicked.add_listener
-	(
-		std::bind(&OptionsTab::close, this)
-	);
+	option->on_clicked.add_listener(std::bind(&OptionsTab::set_options_delete_flag, this));
 
 	//Register the option
 	option->set_option(_args);
@@ -181,7 +178,8 @@ void OptionsTab::show()
 			Utilities::ivec2 mousePos;
 			{
 				SDL_GetMouseState(&mousePos.x, &mousePos.y);
-			}   set_position(Utilities::to_vec2(mousePos) - offset);
+				set_position(Utilities::to_vec2(mousePos) - offset);
+			}   
 
 			clampToViewport();
 
@@ -194,14 +192,25 @@ void OptionsTab::show()
 
 void OptionsTab::close()
 {
-	const auto& startOptions = m_children.begin() + 1;
+	const auto startOptions = m_children.begin() + 1;
 
-	m_children.erase(startOptions, m_children.end());
-	m_children.resize(1);
-
+	m_flagToClose = false;
 	m_bIsActive = false;
 
 	set_size(m_initialSize);
+	
+	m_children.erase(startOptions, m_children.end());
+	m_children.resize(1);
+}
+
+bool OptionsTab::handle_event(const SDL_Event* _event)
+{
+	if(m_flagToClose) 
+	{
+		close();
+	}
+
+	return UIComponent::handle_event(_event);
 }
 
 void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
@@ -224,12 +233,17 @@ void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 	}
 }
 
+void OptionsTab::set_options_delete_flag()
+{
+	m_flagToClose = true;
+}
+
 void OptionsTab::clampToViewport()
 {
-	auto m_renderer = g_globals.m_renderer.lock();
+	auto renderer = g_globals.renderer.lock();
 
 	Utilities::ivec2 vpSize;
-	m_renderer->get_viewport_size(&vpSize.x, &vpSize.y);
+	renderer->get_viewport_size(&vpSize.x, &vpSize.y);
 
 	// Clamp position
 	const Rect boundingRect = get_bounding_rect();
@@ -258,9 +272,9 @@ void Option::on_hover_end()
 
 void Option::on_left_click()
 {
-	m_textArgs.function();
+	m_optionArgs.function();
 	DEVIOUS_EVENT("Selected Option.")
-	on_clicked.invoke(); //Move back down
+	on_clicked.invoke();
 }
 
 void Option::init()
@@ -270,7 +284,7 @@ void Option::init()
 
 void Option::set_option(OptionArgs _optionArgs)
 {
-	m_textArgs = _optionArgs;
+	m_optionArgs = _optionArgs;
 
 	//Define Text
 	TextArgs textArgs;
@@ -290,7 +304,7 @@ void Option::set_option(OptionArgs _optionArgs)
 		float prevHorTextSize = 0.0f;
 		//Create Action Text
 		{
-			textArgs.color = m_textArgs.actionCol;
+			textArgs.color = m_optionArgs.actionCol;
 			textComponent = TextComponent::create_text(_optionArgs.actionStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);
 
@@ -304,7 +318,7 @@ void Option::set_option(OptionArgs _optionArgs)
 
 		//Create Subject Text
 		{
-			textArgs.color = m_textArgs.subjectCol;
+			textArgs.color = m_optionArgs.subjectCol;
 
 			textComponent = TextComponent::create_text(_optionArgs.subjectStr.c_str(), get_position(), textArgs);
 			textComponent->set_anchor(e_AnchorPreset::CENTER_LEFT);

@@ -11,7 +11,7 @@
 
 Graphics::UI::Layer::Layer()
 {
-	m_renderer = g_globals.m_renderer.lock();
+	renderer = g_globals.renderer.lock();
 }
 
 void Graphics::UI::Layer::init()

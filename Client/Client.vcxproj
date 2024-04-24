@@ -178,9 +178,10 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="include\Core\Application\Application.cpp" />
     <ClCompile Include="include\Core\Application\Config\Config.cpp" />
+    <ClCompile Include="include\Core\Entity\Simulation\SimPosition.cpp" />
     <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Clickable.cpp" />
-    <ClCompile Include="include\Core\Events\Clickable\Entity\WorldEntity.cpp" />
+    <ClCompile Include="include\Core\Entity\WorldEntity\WorldEntity.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Tile\WorldTile.cpp" />
     <ClCompile Include="include\Core\Events\EventReceiver.cpp" />
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
@@ -210,10 +211,11 @@
   <ItemGroup>
     <ClInclude Include="include\Core\Application\Application.h" />
     <ClInclude Include="include\Core\Application\Config\Config.h" />
+    <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h" />
     <ClInclude Include="include\Core\NPC\NPCDef.h" />
     <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
     <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
-    <ClInclude Include="include\Core\Events\Clickable\Entity\WorldEntity.h" />
+    <ClInclude Include="include\Core\Entity\WorldEntity\WorldEntity.h" />
     <ClInclude Include="include\Core\Events\Clickable\Tile\WorldTile.h" />
     <ClInclude Include="include\Core\Events\EventReceiver.h" />
     <ClInclude Include="include\Core\Global\C_Globals.h" />

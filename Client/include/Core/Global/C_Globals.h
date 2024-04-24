@@ -18,7 +18,7 @@ namespace Graphics
 /// </summary>
 typedef struct _Globals 
 {
-	std::weak_ptr<Graphics::Renderer> m_renderer;
+	std::weak_ptr<Graphics::Renderer> renderer;
 	std::weak_ptr<ENetPacketHandler>  packetHandler;
 	std::weak_ptr<EntityHandler>      entityHandler;
 }   Globals;

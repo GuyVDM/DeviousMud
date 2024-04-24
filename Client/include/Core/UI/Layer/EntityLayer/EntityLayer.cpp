@@ -16,64 +16,46 @@ void Graphics::UI::EntityLayer::init()
 {
 	//Set player size.
 	{
-		m_playerSize = Utilities::vec2(128.0f);
+		m_entitySize = Utilities::vec2(128.0f);
 	}
 
 	//Set the player camera as the main camera within the renderer
 	{
-		m_renderer = g_globals.m_renderer.lock();
+		renderer = g_globals.renderer.lock();
 		m_playerCamera = std::make_shared<Camera>();
-		m_renderer->set_camera(m_playerCamera);
+		renderer->set_camera(m_playerCamera);
 	}
 
 	//Grab the player sprite from the renderer and cache it for rendering.
 	{
-		entityHandler = g_globals.entityHandler.lock();
+		m_entityHandler = g_globals.entityHandler.lock();
 	}
 
 	//Bind listeners
 	{
 		DEVIOUS_LOG("Binding PlayerLayer callbacks to Playerhandler...");
 
-		entityHandler->on_local_player_assigned.add_listener
+		m_entityHandler->on_local_player_assigned.add_listener
 		(
 			std::bind(&EntityLayer::player_local_assigned, this, std::placeholders::_1)
-		);
-
-		entityHandler->on_player_created.add_listener
-		(
-			std::bind(&EntityLayer::player_created, this, std::placeholders::_1)
-		);
-
-		entityHandler->on_player_removed.add_listener
-		(
-			std::bind(&EntityLayer::player_destroyed, this, std::placeholders::_1)
 		);
 	}
 }
 
 void Graphics::UI::EntityLayer::update()
 {
-	//Render all player sprites.
-	for (const uint64_t playerHandle : m_playerHandles)
+	for(const auto& worldEntity : m_entityHandler->m_worldEntities) 
 	{
-		PlayerData& playerData = entityHandler->get_data(playerHandle);
-		SimPosition& m_simPos = playerData.m_simPos;
-
-		//Update the simulated player position.
-		if (m_simPos.is_dirty())
-		{
-			m_simPos.update();
-		}
-
-		const Utilities::vec2 tileCenterOffset = (((m_playerSize * 0.5f) / 64.0f) - Utilities::vec2(0.25f, 0.15f));
-		m_renderer->plot_frame(playerData.m_sprite, m_simPos.get_position() - tileCenterOffset, m_playerSize);
+		const RefEntity& entity = worldEntity.second;
+		const SimPosition& entitySim = entity->get_simulated_data();
+		const Utilities::vec2 tileCenterOffset = Utilities::vec2(1.0f) - Utilities::vec2(0.25f, 0.15f);
+		renderer->plot_frame(entity->get_sprite(), entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size);
 	}
 
 	if (m_bHasLocalPlayer)
 	{
 		//Set camera position to be the player
-		SimPosition& localPlayer = entityHandler->get_local_player_data().m_simPos;
+		const SimPosition& localPlayer = m_entityHandler->get_local_player_data()->get_simulated_data();
 
 		const Utilities::vec2 transformedPos
 		{
@@ -85,15 +67,19 @@ void Graphics::UI::EntityLayer::update()
 	}
 }
 
-void Graphics::UI::EntityLayer::player_created(uint64_t _playerId)
+bool Graphics::UI::EntityLayer::handle_event(const SDL_Event* _event)
 {
-	m_playerHandles.push_back(_playerId);
-}
+	for (const auto& worldEntity : m_entityHandler->m_worldEntities)
+	{
+		const RefEntity entity = worldEntity.second;
+		
+		if(entity->handle_event(_event)) 
+		{
+			return true;
+		}
+	}
 
-void Graphics::UI::EntityLayer::player_destroyed(uint64_t _playerId)
-{
-	auto it = std::find(m_playerHandles.begin(), m_playerHandles.end(), _playerId);
-	m_playerHandles.erase(it);
+	return false;
 }
 
 void Graphics::UI::EntityLayer::player_local_assigned(uint64_t _playerId)

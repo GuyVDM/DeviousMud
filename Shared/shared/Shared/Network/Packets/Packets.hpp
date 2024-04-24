@@ -7,21 +7,23 @@
 
 enum e_PacketInterpreter : uint8_t
 {
-	PACKET_NONE                 = 0x00,
+	PACKET_NONE                        = 0x00,
 
-	PACKET_PING                 = 0x01,
+	PACKET_PING                        = 0x01,
 
-	PACKET_CREATE_PLAYER        = 0x02,
+	PACKET_CREATE_ENTITY               = 0x02,
 
-	PACKET_ASSIGN_LOCAL_PLAYER  = 0x03,
+	PACKET_ASSIGN_LOCAL_PLAYER_ENTITY  = 0x03,
 
-	PACKET_DISCONNECT_PLAYER    = 0x04,
+	PACKET_REMOVE_ENTITY               = 0x04,
 
-	PACKET_MOVE_PLAYER          = 0x05,
+	PACKET_MOVE_ENTITY                 = 0x05,
 
-	PACKET_TIMEOUT_WARNING      = 0x06,
+	PACKET_TIMEOUT_WARNING             = 0x06,
 
-	PACKET_PLAYER_PATH          = 0x07
+	PACKET_PLAYER_PATH                 = 0x07,
+
+	PACKET_FOLLOW_ENTITY               = 0x08
 };
 
 namespace Packets
@@ -42,22 +44,37 @@ namespace Packets
 		virtual ~s_PacketHeader() = default;
 	};
 
-	struct s_Player : public s_PacketHeader
+	struct s_Entity : public s_PacketHeader
 	{
 		/// <summary>
 		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
 		/// </summary>
-		uint64_t fromPlayerId = -1;
+		uint64_t fromEntityId = -1;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
-			ar(fromPlayerId);
+			ar(fromEntityId);
 		}
 	};
 
-	struct s_PlayerMovement : public s_Player
+	struct s_EntityFollow : public s_PacketHeader
+	{
+		/// <summary>
+		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
+		/// </summary>
+		uint64_t entityId = -1;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(entityId);
+		}
+	};
+
+	struct s_EntityMovement : public s_Entity
 	{
 		int  x = 0, y = 0;
 		bool isRunning = false;
@@ -65,12 +82,12 @@ namespace Packets
 		template <class Archive>
 		void serialize(Archive& ar)
 		{
-			ar(cereal::base_class<s_Player>(this));
+			ar(cereal::base_class<s_Entity>(this));
 			ar(x, y, isRunning);
 		}
 	};
 
-	struct s_PlayerPath : public s_Player 
+	struct s_EntityPath : public s_Entity 
 	{
 		int pathSize;
 		std::vector<std::pair<int, int>> m_path;
@@ -78,7 +95,7 @@ namespace Packets
 		template <class Archive>
 		void serialize(Archive& ar) 
 		{
-			ar(cereal::base_class<s_Player>(this));
+			ar(cereal::base_class<s_Entity>(this));
 			ar(pathSize);
 			
 			for(int i = 0; i < m_path.size(); i++) 
@@ -88,14 +105,14 @@ namespace Packets
 		}
 	};
 
-	struct s_PlayerPosition : public s_Player
+	struct s_EntityPosition : public s_Entity
 	{
 		int x = 0 , y = 0;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
-			ar(cereal::base_class<s_Player>(this));
+			ar(cereal::base_class<s_Entity>(this));
 			ar(x, y);
 		}
 	};

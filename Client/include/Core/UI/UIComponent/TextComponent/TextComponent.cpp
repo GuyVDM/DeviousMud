@@ -15,10 +15,10 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 	if (!_contents.empty())
 	{
 
-		std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
+		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
 		//Create font path
-		std::string fontPath = m_renderer->assetsPath;
+		std::string fontPath = renderer->assetsPath;
 		{
 			fontPath.append("/fonts/");
 			fontPath.append(Fonts::FontMap().at(_args.font));
@@ -40,7 +40,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 			);
 
 		//Create texture from surface.
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer->m_renderer, textSurface);
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
 		DEVIOUS_ASSERT(texture != NULL);
 
 		//Cleanup the font and surface.
@@ -92,7 +92,7 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 			SDL_SetTextureColorMod(m_textTexture, 0, 0, 0);
 			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
 
-			SDL_RenderCopy(_renderer->m_renderer, m_textTexture, NULL, &dsRenderQuad);
+			SDL_RenderCopy(_renderer->renderer, m_textTexture, NULL, &dsRenderQuad);
 
 			SDL_SetTextureColorMod(m_textTexture, m_textArgs.color.r, m_textArgs.color.g, m_textArgs.color.b);
 			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
@@ -101,7 +101,7 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 		// Render the text.
 		{
 			const SDL_Rect renderQuad = { m_position.x, m_position.y, size.x, size.y };
-			SDL_RenderCopy(_renderer->m_renderer, m_textTexture, NULL, &renderQuad);
+			SDL_RenderCopy(_renderer->renderer, m_textTexture, NULL, &renderQuad);
 		}
 	}
 }

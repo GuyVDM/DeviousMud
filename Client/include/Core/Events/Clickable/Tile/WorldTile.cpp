@@ -23,8 +23,8 @@ std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& m_posit
 		Graphics::Renderer::GRID_CELL_PX_SIZE
 	);
 
-	const std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
-	const Graphics::Sprite m_sprite = m_renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
+	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
+	const Graphics::Sprite m_sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
 
 	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(m_position, m_scale, m_sprite);
 	return tile;
@@ -38,14 +38,14 @@ void WorldTile::on_left_click()
 		static_cast<int32_t>(get_position().y)
 	};
 
-	Packets::s_PlayerMovement m_pos;
-	m_pos.interpreter = PACKET_MOVE_PLAYER;
+	Packets::s_EntityMovement m_pos;
+	m_pos.interpreter = PACKET_MOVE_ENTITY;
 	m_pos.x = worldPos.x;
 	m_pos.y = worldPos.y;
 	m_pos.isRunning = true;
 
 	auto packetHandler = g_globals.packetHandler.lock();
-	packetHandler->send_packet<Packets::s_PlayerMovement>(&m_pos, 0, 0);
+	packetHandler->send_packet<Packets::s_EntityMovement>(&m_pos, 0, 0);
 }
 
 bool WorldTile::handle_event(const SDL_Event* _event)

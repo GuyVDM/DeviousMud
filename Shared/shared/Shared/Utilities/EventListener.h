@@ -2,6 +2,8 @@
 #ifndef EVENT_LISTENER_H
 #define EVENT_LISTENER_H
 
+#include "Shared/Utilities/UUID.hpp"
+
 #include <functional>
 #include <vector>
 
@@ -15,28 +17,33 @@ class EventListener
 	using Listener = std::function<void(Parameter)>;
 
 public:
-	void add_listener(Listener _listener);
+	DM::Utils::UUID add_listener(Listener _listener);
 
-	virtual void invoke(Parameter _param);
+	void remove_listener(DM::Utils::UUID _uuid);
+
+	void invoke(Parameter _param);
 
 	void clear();
 
 private:
-	std::vector<Listener> listeners;
+	std::unordered_map<DM::Utils::UUID, Listener> listeners;
 };
 
 template<typename Parameter>
-inline void EventListener<Parameter>::add_listener(Listener _listener) 
+inline DM::Utils::UUID EventListener<Parameter>::add_listener(Listener _listener)
 {
-	listeners.push_back(_listener);
+	DM::Utils::UUID uuid = DM::Utils::UUID::generate();
+	listeners[uuid] = _listener;
+	return uuid;
 }
 
 template<typename Parameter>
 inline void EventListener<Parameter>::invoke(Parameter _param)
 {
-	for(const auto& listener : listeners) 
+	for (const auto& listener : listeners)
 	{
-		listener(_param);
+		auto& function = listener.second;
+		function(_param);
 	}
 }
 
@@ -53,17 +60,25 @@ class EventListener<void>
 	using Listener = std::function<void()>;
 
 public:
-	inline void add_listener(Listener _listener)
+	inline DM::Utils::UUID add_listener(Listener _listener)
 	{
-		listeners.push_back(_listener);
+		DM::Utils::UUID uuid = DM::Utils::UUID::generate();
+		listeners[uuid] = _listener;
+		return uuid;
 	}
 
 	inline void invoke() 
 	{
 		for (const auto& listener : listeners)
 		{
-			listener();
+			auto& function = listener.second;
+			function();
 		}
+	}
+
+	inline void remove_listener(DM::Utils::UUID _id) 
+	{
+		listeners.erase(_id);
 	}
 
 	inline void clear()
@@ -72,7 +87,7 @@ public:
 	}
 
 private:
-	std::vector<Listener> listeners;
+	std::unordered_map<DM::Utils::UUID, Listener> listeners;
 };
 
 

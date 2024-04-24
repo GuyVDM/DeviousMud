@@ -52,32 +52,32 @@ void Application::init()
 
 void Application::load_sprites()
 {
-	std::shared_ptr<Graphics::Renderer> m_renderer = g_globals.m_renderer.lock();
+	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
 	// Miscelaneous sprites
 	{
-		m_renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
-		m_renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
-		m_renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
+		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
+		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
+		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
 	}
 
 	// Load in all HUD elements.
 	{
-		m_renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
-		m_renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
-		m_renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
-		m_renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
+		renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
+		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
+		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
+		renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
 	}
 
 	// Load in all icons.
 	{
-		m_renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
-		m_renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
+		renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
+		renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
 	}
 
 	//Load in all entities
 	{
-		m_renderer->load_and_bind_surface("entity/0.png", Graphics::SpriteType::NPC_GOBLIN, 50);
+		renderer->load_and_bind_surface("entity/0.png", Graphics::SpriteType::NPC_GOBLIN, 50);
 	}
 }
 
@@ -144,7 +144,7 @@ void Application::update()
 				Utilities::ivec2 viewportSize;
 				viewportSize.x = e.window.data1;
 				viewportSize.y = e.window.data2;
-				g_globals.m_renderer.lock()->on_viewport_size_changed.invoke(Utilities::to_vec2(viewportSize));
+				g_globals.renderer.lock()->on_viewport_size_changed.invoke(Utilities::to_vec2(viewportSize));
 			}
 			break;
 
@@ -171,7 +171,7 @@ void Application::close_application()
 	const std::shared_ptr<ENetPacketHandler> packetHandler = g_globals.packetHandler.lock();
 
 	Packets::s_PacketHeader packet;
-	packet.interpreter = e_PacketInterpreter::PACKET_DISCONNECT_PLAYER;
+	packet.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
 
 	packetHandler->send_packet<Packets::s_PacketHeader>(&packet, 0, ENET_PACKET_FLAG_RELIABLE);
 

@@ -13,17 +13,17 @@ std::shared_ptr<Canvas> Canvas::create_canvas()
 
 void Canvas::init()
 {
-	auto m_renderer = g_globals.m_renderer.lock();
+	auto renderer = g_globals.renderer.lock();
 
 	// Set the canvas size to match the viewport its dimensions.
 	{
 		Utilities::ivec2 viewportSize;
-		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
+		renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 		set_size(Utilities::to_vec2(viewportSize));
 	}
 
 	// Make it so that the canvas always scales to viewport
-	m_renderer->on_viewport_size_changed.add_listener
+	renderer->on_viewport_size_changed.add_listener
 	(
 		std::bind(&Canvas::set_size, this, std::placeholders::_1)
 	);

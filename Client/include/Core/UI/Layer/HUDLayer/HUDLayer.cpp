@@ -97,7 +97,7 @@ void HUDLayer::create_hud()
 	// HUD Tab Menu
 	{
 		Utilities::ivec2 viewportSize = Utilities::ivec2(0); 
-		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
+		renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 
 		component = UIComponent::create_component<HUDTabMenu>
 		(
@@ -134,7 +134,7 @@ void HUDLayer::update()
 
 	// Render loop
 	{	
-		base->render(m_renderer);
+		base->render(renderer);
 	}
 }
 

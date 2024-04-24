@@ -40,7 +40,7 @@ private:
 	void set_option(OptionArgs _args);
 
 private:
-	OptionArgs m_textArgs;
+	OptionArgs m_optionArgs;
 
 	friend class OptionsTab;
 };
@@ -78,6 +78,8 @@ public:
 
 	void close();
 
+	virtual bool handle_event(const SDL_Event* _event) override;
+
 	virtual ~OptionsTab() = default;
 
 	using UIComponent::UIComponent;
@@ -90,6 +92,8 @@ protected:
 	void renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer);
 
 private:
+	void set_options_delete_flag();
+
 	void clampToViewport();
 
 	/// <summary>
@@ -105,6 +109,7 @@ private:
 	
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 private:
+	bool            m_flagToClose;
 	Utilities::vec2 m_initialSize;
-	Rect m_boundingRectOptionsUI;
+	Rect            m_boundingRectOptionsUI;
 };

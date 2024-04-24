@@ -15,7 +15,7 @@
     <ClCompile Include="include\Core\Application\Config\Config.cpp" />
     <ClCompile Include="include\Core\Application\Application.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Clickable.cpp" />
-    <ClCompile Include="include\Core\Events\Clickable\Entity\WorldEntity.cpp" />
+    <ClCompile Include="include\Core\Entity\WorldEntity\WorldEntity.cpp" />
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
     <ClCompile Include="include\Core\Events\EventReceiver.cpp" />
     <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
@@ -37,6 +37,7 @@
     <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
+    <ClCompile Include="include\Core\Entity\Simulation\SimPosition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -81,7 +82,7 @@
     <ClInclude Include="include\Core\Events\Clickable\Tile\WorldTile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Events\Clickable\Entity\WorldEntity.h">
+    <ClInclude Include="include\Core\Entity\WorldEntity\WorldEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Application\Application.h">
@@ -124,6 +125,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\NPC\NPCDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
