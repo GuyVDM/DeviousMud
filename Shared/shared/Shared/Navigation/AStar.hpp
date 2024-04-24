@@ -5,7 +5,7 @@
 
 namespace DM 
 {
-	namespace PATH 
+	namespace Path 
 	{
 		/// <summary>
 		/// Basic Dijkstra Algorithm implementation.
@@ -50,7 +50,7 @@ namespace DM
 #pragma region IMPLEMENTATION_DETAILS
 
 using namespace DM;
-using namespace PATH;
+using namespace Path;
 
 inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, std::vector<Utilities::ivec2> _nodes)
 {
@@ -63,7 +63,7 @@ inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, s
 	return false;
 }
 
-inline int DM::PATH::AStar::get_cost(const Utilities::ivec2& _pos, const Utilities::ivec2& _end)
+inline int DM::Path::AStar::get_cost(const Utilities::ivec2& _pos, const Utilities::ivec2& _end)
 {
 	return abs(_pos.x - _end.x) + abs(_pos.y - _end.y);
 }

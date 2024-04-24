@@ -26,6 +26,8 @@ private:
 
 	void set_target(const Utilities::vec2& _details);
 
+	void set_current_position(const Utilities::vec2 _pos);
+
 private:
 	Utilities::vec2 m_startPos;
 	Utilities::vec2 m_currentPos;

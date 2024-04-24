@@ -103,7 +103,7 @@ bool Server::EntityHandler::move_player_towards(const PlayerUUID& _playerId, con
 	if (playerPos == _target) 
 		return true;
 
-	const std::vector<Utilities::ivec2> m_path = DM::PATH::AStar::find_path(playerPos, _target);
+	const std::vector<Utilities::ivec2> m_path = DM::Path::AStar::find_path(playerPos, _target);
 
 	//Check if there's a path to the destination.
 	if (m_path.size() > 0)
@@ -137,7 +137,7 @@ void Server::EntityHandler::set_player_position(const PlayerUUID& _playerId, con
 	m_players[_playerId]->m_position = _target;
 }
 
-const Utilities::ivec2& Server::EntityHandler::get_player_position(const PlayerUUID& _playerId)
+const Utilities::ivec2 Server::EntityHandler::get_player_position(const PlayerUUID& _playerId)
 {
 	if (m_players.find(_playerId) == m_players.end())
 	{

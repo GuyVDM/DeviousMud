@@ -38,7 +38,7 @@ namespace Server
 		void set_player_position(const PlayerUUID& _playerId,
 								 const Utilities::ivec2& _target);
 
-		const Utilities::ivec2& get_player_position(const PlayerUUID& _playerId);
+		const Utilities::ivec2 get_player_position(const PlayerUUID& _playerId);
 
 	private:
 		std::unordered_map<PlayerUUID, std::shared_ptr<PlayerDetails>> m_players;

@@ -66,7 +66,7 @@ void ENetPacketHandler::process_packet()
 			Packets::s_EntityMovement entityData;
 			PacketHandler::retrieve_packet_data<Packets::s_EntityMovement>(entityData, &m_event);
 
-			if (auto entityOpt = entityHandler->get_entity(entityData.fromEntityId); entityOpt != std::nullopt)
+			if (auto entityOpt = entityHandler->get_entity(entityData.entityId); entityOpt != std::nullopt)
 			{
 				RefEntity entity = entityOpt.value();
 				entity->move_to(Utilities::ivec2(entityData.x, entityData.y));
@@ -89,12 +89,8 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_EntityPosition player;
 			PacketHandler::retrieve_packet_data<Packets::s_EntityPosition>(player, &m_event);
-		
-			PlayerDetails m_details;
-			m_details.m_position.x = player.x;
-			m_details.m_position.y = player.y;
 
-			entityHandler->create_world_entity(player.fromEntityId, 0, Utilities::ivec2(0, 0));
+			entityHandler->create_world_entity(player.entityId, 0, Utilities::ivec2(player.x, player.y));
 		}
 		break;
 
@@ -102,7 +98,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Entity player;
 			PacketHandler::retrieve_packet_data<Packets::s_Entity>(player, &m_event);
-			entityHandler->on_local_player_assigned.invoke(player.fromEntityId);
+			entityHandler->on_local_player_assigned.invoke(player.entityId);
 		}
 		break;
 
@@ -110,7 +106,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_Entity entityData;
 			PacketHandler::retrieve_packet_data<Packets::s_Entity>(entityData, &m_event);
-			entityHandler->remove_world_entity(entityData.fromEntityId);
+			entityHandler->remove_world_entity(entityData.entityId);
 		}
 		break;
 

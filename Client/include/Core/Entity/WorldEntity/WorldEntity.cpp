@@ -25,6 +25,8 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
         g_globals.renderer.lock()->get_sprite(npcDef.sprite)
     );  
     
+    //Set the simulating start of the position equal to the start location.
+    entity->m_simPos.m_currentPos = Utilities::to_vec2(_pos);
     entity->m_NPCDefinition = npcDef;
     entity->m_entityUUID = _uuid;
 
@@ -76,18 +78,18 @@ void WorldEntity::set_interaction_mode(e_InteractionMode _interactionMode)
 
 void WorldEntity::move_to(const Utilities::ivec2 _pos)
 {
-    // We don't want to move if the target is the same as the current one.
-    if (_pos == Utilities::to_ivec2(get_position()))
-        return;
-
-    if (!m_simPos.is_dirty())
+    // We only want to move if the target is NOT the same as the current one.
+    if (_pos != Utilities::to_ivec2(get_position())) 
     {
-        Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
-    }
+        if (!m_simPos.is_dirty()) //Play animation only if it just started walking.
+        {
+            Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
+        }
 
-    m_simPos.set_target(Utilities::to_vec2(_pos));
-    m_sprite.bIsFlipped = _pos.x < get_position().x;
-    set_position(Utilities::to_vec2(_pos));
+        m_sprite.bIsFlipped = _pos.x < get_position().x;
+        m_simPos.set_target(Utilities::to_vec2(_pos));
+        set_position(Utilities::to_vec2(_pos));
+    }
 }
 
 const Utilities::vec2 WorldEntity::get_position() const

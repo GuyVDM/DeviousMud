@@ -28,6 +28,11 @@ void SimPosition::set_target(const Utilities::vec2& _target)
 	}
 }
 
+void SimPosition::set_current_position(const Utilities::vec2 _pos)
+{
+	m_currentPos = _pos;
+}
+
 void SimPosition::update()
 {
 	const float MAX_TIMELINE = 1.0f;

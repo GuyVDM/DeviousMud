@@ -15,7 +15,7 @@
 using Config = DM::CLIENT::Config;
 
 using namespace DM;
-using namespace PATH;
+using namespace Path;
 
 using namespace Graphics::Animation;
 
