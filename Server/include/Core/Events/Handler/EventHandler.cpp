@@ -103,12 +103,11 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 		{
 		case e_PacketInterpreter::PACKET_FOLLOW_ENTITY:
 			{
-				auto pFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
+				auto packetFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
 
 				const Utilities::ivec2 startPos  = g_globals.entityHandler->get_player_position(_client->playerId);
-				const Utilities::ivec2 entityPos = g_globals.entityHandler->get_player_position(pFollow->entityId);
+				const Utilities::ivec2 entityPos = g_globals.entityHandler->get_player_position(packetFollow->entityId);
 
-				//Get neighbouring position of the targeted entity.x
 				const auto get_shortest_neighbouring_tile = [&startPos, &entityPos]()
 				{
 					const std::array<Utilities::ivec2, 4> neighbours
@@ -132,7 +131,6 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 						}
 					}
 
-					DEVIOUS_ERR("Chose: " << neighbours[closest.first].x << ", " << neighbours[closest.first].y << "." << " Cost: " << closest.second << ".");
 					return neighbours[closest.first];
 				};
 
@@ -163,7 +161,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 					Packets::s_EntityFollow packet;
 					packet.action = e_Action::SOFT_ACTION;
 					packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
-					packet.entityId = pFollow->entityId;
+					packet.entityId = packetFollow->entityId;
 
 					_client->packetquery->queue_packet
 					(
