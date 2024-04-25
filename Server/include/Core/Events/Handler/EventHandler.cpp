@@ -13,7 +13,7 @@
 
 #include "Core/Network/Connection/ConnectionHandler.h"
 
-#include "Core/Game/Player/PlayerHandler.h"
+#include "Core/Game/Entity/EntityHandler.h"
 
 
 using ivec2 = Utilities::ivec2;
@@ -118,12 +118,12 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 						Utilities::ivec2(entityPos.x - 1, entityPos.y) //Left
 					};
 
-					std::pair<int32_t, float> closest = std::make_pair<int32_t, float>(0, FLT_MAX);
+					std::pair<int32_t, int> closest = std::make_pair<int32_t, int>(0, INT_MAX);
 
 					for (int32_t i = 0; i < neighbours.size(); i++)
 					{
 						const Utilities::ivec2 node = neighbours[i];
-						const float cost = abs(startPos.x - node.x) + abs(startPos.y - node.y);
+						const int cost = abs(startPos.x - node.x) + abs(startPos.y - node.y);
 
 						if (cost < closest.second)
 						{
@@ -173,7 +173,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 
 		case e_PacketInterpreter::PACKET_MOVE_ENTITY:
 			{
-				const PlayerUUID playerId = _client->playerId;
+				const EntityUUID playerId = _client->playerId;
 
 				auto pMovement = transform_packet<Packets::s_EntityMovement>(std::move(packet));
 				bool reachedDest = g_globals.entityHandler->move_player_towards(playerId, ivec2(pMovement->x, pMovement->y), pMovement->isRunning);
@@ -197,7 +197,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				{
 					//Retrieve the current position after having moved the player.
 					Packets::s_EntityMovement movementPacket;
-					movementPacket.action = e_Action::SOFT_ACTION;
+					movementPacket.action      = e_Action::SOFT_ACTION;
 					movementPacket.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
 					movementPacket.entityId = _client->playerId;
 

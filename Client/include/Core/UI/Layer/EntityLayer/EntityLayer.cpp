@@ -14,11 +14,6 @@
 
 void Graphics::UI::EntityLayer::init()
 {
-	//Set player size.
-	{
-		m_entitySize = Utilities::vec2(128.0f);
-	}
-
 	//Set the player camera as the main camera within the renderer
 	{
 		renderer = g_globals.renderer.lock();

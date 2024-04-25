@@ -1,15 +1,18 @@
 #include "precomp.h"
-#include "NetworkHandler.h"
 
 #include "Shared/Network/Packets/PacketHandler.hpp"
+
+#include "Core/Network/NetworkHandler.h"
 
 #include "Core/Config/Config.h" //TODO: This needss to be moved to a shared project at some point.
 
 #include "Core/Network/Connection/ConnectionHandler.h"
 
-#include "Core/Game/Player/PlayerHandler.h"
+#include "Core/Game/Entity/EntityHandler.h"
 
 #include "Core/Events/Handler/EventHandler.h"
+
+#include "Core/Game/World/World.h"
 
 #include "Core/Globals/S_Globals.h"
 
@@ -56,6 +59,7 @@ void NetworkHandler::start_ticking()
 {
 	auto connectionHandler = std::make_shared<Server::ConnectionHandler>();
 	auto entityHandler     = std::make_shared<Server::EntityHandler>();
+	auto world = std::make_shared<Server::World>();
 
 	bool is_running = true;
 
@@ -63,6 +67,9 @@ void NetworkHandler::start_ticking()
 	g_globals.connectionHandler = connectionHandler;
 	g_globals.entityHandler		= entityHandler;
 	g_globals.networkHandler    = std::shared_ptr<NetworkHandler>(this);
+	g_globals.world             = world;
+
+	world->init();
 
 	float ticktimer = 0.0f;
 
@@ -106,6 +113,7 @@ void NetworkHandler::start_ticking()
 
 			//Check for timeouts.
 			connectionHandler->update_idle_timers();
+			entityHandler->entities_tick();
 		}
 	}
 }

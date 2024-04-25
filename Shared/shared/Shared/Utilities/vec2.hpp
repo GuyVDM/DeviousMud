@@ -46,25 +46,24 @@ namespace Utilities
             return *this;
         }
 
-        inline _ivec2 operator+(const _ivec2& _other)
+        friend inline _ivec2 operator+(const _ivec2& _lhs, const _ivec2& _rhs)
         {
-            x += _other.x;
-            y += _other.y;
-            return *this;
+            return _ivec2(_lhs.x + _rhs.x,_lhs.y + _rhs.y);
+        }
+
+        inline _ivec2 operator+=(const _ivec2& _other)
+        {
+            return _ivec2(x + _other.x, y + _other.y);
         }
 
         inline _ivec2 operator-(const _ivec2& _other)
         {
-            x -= _other.x;
-            y -= _other.y;
-            return *this;
+            return _ivec2(x - _other.x, y - _other.y);
         }
 
         inline _ivec2 operator*(const _ivec2& _other)
         {
-            x *= _other.x;
-            y *= _other.y;
-            return *this;
+            return _ivec2(x * _other.x, y * _other.y);
         }
 
         inline _ivec2 operator/(const _ivec2& _other) //TODO: Possibly broken, needs unit test

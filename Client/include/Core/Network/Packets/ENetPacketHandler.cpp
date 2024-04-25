@@ -70,9 +70,10 @@ void ENetPacketHandler::process_packet()
 			{
 				RefEntity entity = entityOpt.value();
 				entity->move_to(Utilities::ivec2(entityData.x, entityData.y));
+				return;
 			}
 
-			DEVIOUS_LOG("New position received: " << entityData.x << ", " << entityData.y);
+			DEVIOUS_WARN("Tried to move non existing entity.");
 		}
 		break;
 
@@ -87,10 +88,10 @@ void ENetPacketHandler::process_packet()
 
 		case e_PacketInterpreter::PACKET_CREATE_ENTITY:
 		{
-			Packets::s_EntityPosition player;
-			PacketHandler::retrieve_packet_data<Packets::s_EntityPosition>(player, &m_event);
-
-			entityHandler->create_world_entity(player.entityId, 0, Utilities::ivec2(player.x, player.y));
+			Packets::s_CreateEntity entity;
+			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(entity, &m_event);
+			entityHandler->create_world_entity(entity.entityId, entity.npcId, Utilities::ivec2(entity.posX, entity.posY));
+			DEVIOUS_EVENT("Creating Entity of id: " << entity.npcId << " at coords: " << entity.posX << ", " << entity.posY << ".");
 		}
 		break;
 

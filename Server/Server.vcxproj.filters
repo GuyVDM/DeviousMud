@@ -15,8 +15,8 @@
     <ClCompile Include="include\Core\Events\Handler\EventHandler.cpp">
       <Filter>Core\Events\Handler</Filter>
     </ClCompile>
-    <ClCompile Include="include\Core\Game\Player\PlayerHandler.cpp">
-      <Filter>Core\Game\Player</Filter>
+    <ClCompile Include="include\Core\Game\Entity\EntityHandler.cpp">
+      <Filter>Core\Game\Entity</Filter>
     </ClCompile>
     <ClCompile Include="include\Core\Config\Config.cpp">
       <Filter>Core\Config</Filter>
@@ -24,6 +24,8 @@
     <ClCompile Include="include\Core\Network\Client\ClientInfo.cpp">
       <Filter>Core\Network\Client</Filter>
     </ClCompile>
+    <ClCompile Include="include\Core\Game\World\World.cpp" />
+    <ClCompile Include="include\Core\Game\Entity\Definition\EntityDef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\precomp.h" />
@@ -42,8 +44,8 @@
     <ClInclude Include="include\Core\Events\Handler\EventHandler.h">
       <Filter>Core\Events\Handler</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Game\Player\PlayerHandler.h">
-      <Filter>Core\Game\Player</Filter>
+    <ClInclude Include="include\Core\Game\Entity\EntityHandler.h">
+      <Filter>Core\Game\Entity</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Config\Config.h">
       <Filter>Core\Config</Filter>
@@ -51,6 +53,9 @@
     <ClInclude Include="include\Core\Network\Client\ClientInfo.h">
       <Filter>Core\Network\Client</Filter>
     </ClInclude>
+    <ClInclude Include="include\Core\Game\World\NPCWorldSpawn.hpp" />
+    <ClInclude Include="include\Core\Game\World\World.h" />
+    <ClInclude Include="include\Core\Game\Entity\Definition\EntityDef.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -83,7 +88,7 @@
     <Filter Include="Core\Events\Query">
       <UniqueIdentifier>{98c34f3f-1963-4366-8c12-960e4c6a3e7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Game\Player">
+    <Filter Include="Core\Game\Entity">
       <UniqueIdentifier>{b1c9fa10-40cc-4ce1-9087-64b89075d829}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

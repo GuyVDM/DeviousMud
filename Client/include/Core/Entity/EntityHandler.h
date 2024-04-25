@@ -29,7 +29,7 @@ namespace Graphics
 /// <summary>
 /// Holds data to simulating the player movement, alongside entity stats.
 /// </summary>
-struct PlayerData 
+struct Player 
 { 
 	PlayerDetails    m_details;
 };
@@ -71,7 +71,7 @@ private:
 private:
 	std::unordered_map<DM::Utils::UUID, RefEntity>  m_worldEntities;
 
-	std::unordered_map<DM::Utils::UUID, PlayerData> m_players; //TODO: merge with world entities.
+	std::unordered_map<DM::Utils::UUID, Player> m_players; //TODO: merge with world entities.
 	uint64_t                                        m_localPlayerId;
 
 	friend Graphics::UI::EntityLayer;

@@ -177,7 +177,9 @@
     <ClCompile Include="include\Core\Config\Config.cpp" />
     <ClCompile Include="include\Core\Events\Handler\EventHandler.cpp" />
     <ClCompile Include="include\Core\Events\Query\EventQuery.cpp" />
-    <ClCompile Include="include\Core\Game\Player\PlayerHandler.cpp" />
+    <ClCompile Include="include\Core\Game\Entity\Definition\EntityDef.cpp" />
+    <ClCompile Include="include\Core\Game\Entity\EntityHandler.cpp" />
+    <ClCompile Include="include\Core\Game\World\World.cpp" />
     <ClCompile Include="include\Core\Network\Client\ClientInfo.cpp" />
     <ClCompile Include="include\Core\Network\Connection\ConnectionHandler.cpp" />
     <ClCompile Include="include\Core\Network\NetworkHandler.cpp" />
@@ -193,7 +195,10 @@
     <ClInclude Include="include\Core\Config\Config.h" />
     <ClInclude Include="include\Core\Events\Handler\EventHandler.h" />
     <ClInclude Include="include\Core\Events\Query\EventQuery.h" />
-    <ClInclude Include="include\Core\Game\Player\PlayerHandler.h" />
+    <ClInclude Include="include\Core\Game\Entity\Definition\EntityDef.h" />
+    <ClInclude Include="include\Core\Game\Entity\EntityHandler.h" />
+    <ClInclude Include="include\Core\Game\World\NPCWorldSpawn.hpp" />
+    <ClInclude Include="include\Core\Game\World\World.h" />
     <ClInclude Include="include\Core\Globals\S_Globals.h" />
     <ClInclude Include="include\Core\Network\Client\ClientInfo.h" />
     <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h" />

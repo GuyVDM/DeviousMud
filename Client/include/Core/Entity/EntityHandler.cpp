@@ -39,7 +39,6 @@ EntityHandler::~EntityHandler()
 void EntityHandler::create_world_entity(DM::Utils::UUID _uuid, uint8_t _npcId, Utilities::ivec2 _pos)
 {
 	m_worldEntities[_uuid] = WorldEntity::create_entity(_npcId, _pos, _uuid);
-	DEVIOUS_LOG("Created world entity by id:" << _npcId);
 }
 
 void EntityHandler::remove_world_entity(DM::Utils::UUID _uuid)

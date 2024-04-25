@@ -2,8 +2,7 @@
 
 #include "Core/Rendering/Sprite/Sprite.h"
 
-using namespace DM;
-using namespace Utils;
+using namespace DM::Utils;
 
 const Graphics::SpriteType Graphics::_Sprite::get_sprite_type() const
 {
@@ -15,7 +14,7 @@ const uint32_t Graphics::_Sprite::get_framecount() const
 	return frameCount;
 }
 
-const DM::Utils::UUID Graphics::_Sprite::get_uuid() const
+const UUID Graphics::_Sprite::get_uuid() const
 {
 	return uuid;
 }

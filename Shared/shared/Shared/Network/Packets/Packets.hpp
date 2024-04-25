@@ -77,12 +77,19 @@ namespace Packets
 		/// </summary>
 		uint64_t npcId = 0;
 
+		/// <summary>
+		/// Where to spawn the entity.
+		/// </summary>
+		uint32_t posX = 0, posY = 0;
+
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
 			ar(npcId);
+			ar(posX);
+			ar(posY);
 		}
 	};
 

@@ -120,7 +120,7 @@ void Client::start_ticking()
 	//Packethandler creation.
 	auto packetHandler = std::make_shared<ENetPacketHandler>(m_host, peer);
 
-	//Playerhandler creation.
+	//Entityhandler creation.
 	auto entityHandler = std::make_shared<EntityHandler>();
 
 	//Renderer creation

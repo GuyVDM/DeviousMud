@@ -8,7 +8,7 @@
 
 #include "Core/Network/Connection/ConnectionHandler.h"
 
-#include "Core/Game/Player/PlayerHandler.h"
+#include "Core/Game/Entity/EntityHandler.h"
 
 #include "Core/Events/Query/EventQuery.h"
 
@@ -91,8 +91,6 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		return;
 	}
 
-	std::shared_ptr<Server::EntityHandler> pHandler = g_globals.entityHandler;
-
 	auto newClient = std::make_shared<ClientInfo>();
 	newClient->peer					  = _peer;
 	newClient->clientId			      = clientId;
@@ -105,39 +103,55 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	m_clientInfo[clientId] = newClient;  //Generate Client info
 	m_clientHandles.push_back(clientId); //Register client handle
 
-	//Register our player in the player handler.
-	pHandler->register_player(newClient->playerId);
+	std::shared_ptr<Server::EntityHandler> eHandler = g_globals.entityHandler;
 
-	ENetHost* m_server = g_globals.networkHandler->get_server_host();
+	//Register our player in the player handler.
+	eHandler->register_player(newClient->playerId);
+
+	ENetHost* server = g_globals.networkHandler->get_server_host();
 
 	//Create player data associated with the client.
 	{
-		Packets::s_EntityPosition packet;
+		Packets::s_CreateEntity packet;
 		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
 		packet.entityId = newClient->playerId;
-		packet.x = 0;
-		packet.y = 0;
+		packet.npcId = 0;
+		packet.posX = 0;
+		packet.posY = 0;
 
 		//Sign to all clients that are already connected that a new player has joined.
-		PacketHandler::send_packet_multicast<Packets::s_EntityPosition>(&packet, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>(&packet, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
-	//Send all existing playerdata over to the registered player.
-	for(enet_uint32 handle : m_clientHandles) 
+	//Send all existing players over to the registered player.
+	for (enet_uint32 handle : m_clientHandles)
 	{
 		if (clientId == handle) //If it's our own client, skip.
 			continue;
 		{
 			const RefClientInfo clientInfo = m_clientInfo[handle];
-			const Utilities::ivec2 playerPos = pHandler->get_player_position(clientInfo->playerId);
+			const Utilities::ivec2 playerPos = eHandler->get_player_position(clientInfo->playerId);
 
-			Packets::s_EntityPosition packet;
+			Packets::s_CreateEntity packet;
 			packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
 			packet.entityId = clientInfo->playerId;
-			packet.x = playerPos.x;
-			packet.y = playerPos.y;
-			PacketHandler::send_packet<Packets::s_EntityPosition>(&packet, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+			packet.npcId = 0;
+			packet.posX = playerPos.x;
+			packet.posY = playerPos.y;
+			PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 		}
+	}
+
+	//Send all existing entities over to the registered player.
+	for (const auto& entity : eHandler->get_world_entities())
+	{
+		Packets::s_CreateEntity packet;
+		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
+		packet.entityId = entity.first;
+		packet.npcId = entity.second->npcId;
+		packet.posX = entity.second->position.x;
+		packet.posY = entity.second->position.y;
+		PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
 	//Send a packet to the client so they can indentify their local player.
@@ -145,7 +159,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		Packets::s_CreateEntity player;
 		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY;
 		player.entityId = newClient->playerId;
-		PacketHandler::send_packet<Packets::s_CreateEntity>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet<Packets::s_CreateEntity>(&player, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
