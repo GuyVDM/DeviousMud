@@ -87,24 +87,6 @@ namespace Packets
 		}
 	};
 
-	struct s_EntityPath : public s_Entity 
-	{
-		int pathSize;
-		std::vector<std::pair<int, int>> m_path;
-
-		template <class Archive>
-		void serialize(Archive& ar) 
-		{
-			ar(cereal::base_class<s_Entity>(this));
-			ar(pathSize);
-			
-			for(int i = 0; i < m_path.size(); i++) 
-			{
-				ar(m_path[i].first, m_path[i].second);
-			}
-		}
-	};
-
 	struct s_EntityPosition : public s_Entity
 	{
 		int x = 0 , y = 0;

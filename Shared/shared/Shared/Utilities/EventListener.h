@@ -78,7 +78,10 @@ public:
 
 	inline void remove_listener(DM::Utils::UUID _id) 
 	{
-		listeners.erase(_id);
+		if(listeners.find(_id) != listeners.end()) 
+		{
+			listeners.erase(_id);
+		}
 	}
 
 	inline void clear()

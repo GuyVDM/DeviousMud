@@ -32,6 +32,7 @@ EntityHandler::EntityHandler()
 
 EntityHandler::~EntityHandler()
 {
+	m_worldEntities.clear();
 	m_players.clear();
 }
 

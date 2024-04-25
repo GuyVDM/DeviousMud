@@ -102,45 +102,73 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 		switch(packet->interpreter) 
 		{
 			case PACKET_FOLLOW_ENTITY:
-			//{
-			//	auto pFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
+			{
+				auto pFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
 
-			//	//Get neighbouring position of the targeted entity.
-			//	const Utilities::ivec2 startPos = g_globals.entityHandler->get_player_position(_client->playerId);
-			//	const Utilities::ivec2 endPos = g_globals.entityHandler->get_player_position(pFollow->entityId);
+				const Utilities::ivec2 startPos  = g_globals.entityHandler->get_player_position(_client->playerId);
+				const Utilities::ivec2 entityPos = g_globals.entityHandler->get_player_position(pFollow->entityId);
 
-			//	const auto path = DM::Path::AStar::find_path(startPos, endPos);
-			//	const Utilities::ivec2 targetPos = path[path.size() - 1];
+				//Get neighbouring position of the targeted entity.x
+				const auto get_shortest_neighbouring_tile = [&startPos, &entityPos]()
+				{
+					const std::array<Utilities::ivec2, 4> neighbours
+					{
+						Utilities::ivec2(entityPos.x,     entityPos.y - 1), //Up
+						Utilities::ivec2(entityPos.x,     entityPos.y + 1), //Down
+						Utilities::ivec2(entityPos.x + 1, entityPos.y), //Right
+						Utilities::ivec2(entityPos.x - 1, entityPos.y) //Left
+					};
 
-			//	// Queue movement packet with the target being next to the target entity.
-			//	{
-			//		if (targetPos != startPos) 
-			//		{
-			//			Packets::s_EntityMovement packet;
-			//			packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
-			//			packet.entityId = _client->playerId;
-			//			packet.x = targetPos.x;
-			//			packet.y = targetPos.y;
+					std::pair<int32_t, float> closest = std::make_pair<int32_t, float>(0, FLT_MAX);
 
-			//			_client->packetquery->queue_packet
-			//			(
-			//				std::move(std::make_unique<Packets::s_EntityMovement>(packet))
-			//			);
-			//		}
-			//	}
+					for (int32_t i = 0; i < neighbours.size(); i++)
+					{
+						const Utilities::ivec2 node = neighbours[i];
+						const float cost = abs(startPos.x - node.x) + abs(startPos.y - node.y);
 
-			//	//Queue recursive following packet.
-			//	{
-			//		Packets::s_EntityFollow packet;
-			//		packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
-			//		packet.entityId = pFollow->entityId;
+						if (cost < closest.second)
+						{
+							closest = { i, cost };
+						}
+					}
 
-			//		_client->packetquery->queue_packet
-			//		(
-			//			std::move(std::make_unique<Packets::s_EntityFollow>(packet))
-			//		);
-			//	}
-			//}
+					DEVIOUS_ERR("Chose: " << neighbours[closest.first].x << ", " << neighbours[closest.first].y << "." << " Cost: " << closest.second << ".");
+					return neighbours[closest.first];
+				};
+
+				const Utilities::ivec2 target = get_shortest_neighbouring_tile();
+
+				if (startPos != target)
+				{
+					// Queue movement packet with the target being next to the target entity.
+					{
+						Packets::s_EntityMovement packet;
+						packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
+						packet.entityId = _client->playerId;
+						packet.x = target.x;
+						packet.y = target.y;
+						packet.isRunning = true;
+
+						_client->packetquery->queue_packet
+						(
+							std::move(std::make_unique<Packets::s_EntityMovement>(packet))
+						);
+
+					}
+				}
+
+				//Queue recursive following packet.
+				{
+					Packets::s_EntityFollow packet;
+					packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
+					packet.entityId = pFollow->entityId;
+
+					_client->packetquery->queue_packet
+					(
+						std::move(std::make_unique<Packets::s_EntityFollow>(packet))
+					);
+				}
+			}
 			break;
 
 			case PACKET_MOVE_ENTITY:
@@ -153,7 +181,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				// Send updated player position back to the clients.
 				// TODO: Make the getters an optional since it can cause unintended behaviour since it might return a adress of something that's invalid.
 				{
-					ivec2 playerPos = g_globals.entityHandler->get_player_position(playerId);
+					const ivec2 playerPos = g_globals.entityHandler->get_player_position(playerId);
 
 					Packets::s_EntityMovement packet;
 					packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;

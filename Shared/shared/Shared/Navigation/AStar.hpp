@@ -19,7 +19,7 @@ namespace DM
 			/// <param name="startPoint"></param>
 			/// <param name="endPoint"></param>
 			/// <returns></returns>
-			static std::vector<Utilities::ivec2> find_path(const Utilities::ivec2& _startPoint, const Utilities::ivec2& _endPoint);
+			static std::vector<Utilities::ivec2> find_path(const Utilities::ivec2 _startPoint, const Utilities::ivec2 _endPoint);
 
 		private:
 			/// <summary>
@@ -27,12 +27,12 @@ namespace DM
 			/// </summary>
 			/// <param name="node"></param>
 			/// <returns></returns>
-			static std::vector<Utilities::ivec2> get_neighbours(const Utilities::ivec2& _node);
+			static std::vector<Utilities::ivec2> get_neighbours(const Utilities::ivec2 _node);
 
 			/// <summary>
 			/// Generates a grid.
 			/// </summary>
-			static const bool vector_contains_node(const Utilities::ivec2& _target, std::vector<Utilities::ivec2> _nodes);
+			static const bool vector_contains_node(const Utilities::ivec2 _target, std::vector<Utilities::ivec2> _nodes);
 
 			/// <summary>
 			/// Calculate the cost to get to the end point.
@@ -40,8 +40,8 @@ namespace DM
 			/// <param name="_pos"></param>
 			/// <param name="_end"></param>
 			/// <returns></returns>
-			static int get_cost(const Utilities::ivec2& _pos, 
-				                const Utilities::ivec2& _end);
+			static int get_cost(const Utilities::ivec2 _pos, 
+				                const Utilities::ivec2 _end);
 
 		};
 	}
@@ -52,7 +52,7 @@ namespace DM
 using namespace DM;
 using namespace Path;
 
-inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, std::vector<Utilities::ivec2> _nodes)
+inline const bool AStar::vector_contains_node(const Utilities::ivec2 _target, std::vector<Utilities::ivec2> _nodes)
 {
 	for (Utilities::ivec2& node : _nodes)
 	{
@@ -63,12 +63,12 @@ inline const bool AStar::vector_contains_node(const Utilities::ivec2& _target, s
 	return false;
 }
 
-inline int DM::Path::AStar::get_cost(const Utilities::ivec2& _pos, const Utilities::ivec2& _end)
+inline int DM::Path::AStar::get_cost(const Utilities::ivec2 _pos, const Utilities::ivec2 _end)
 {
 	return abs(_pos.x - _end.x) + abs(_pos.y - _end.y);
 }
 
-inline std::vector<Utilities::ivec2> AStar::get_neighbours(const Utilities::ivec2& _node)
+inline std::vector<Utilities::ivec2> AStar::get_neighbours(const Utilities::ivec2 _node)
 {
 	std::vector<Utilities::ivec2> neighbours;
 
@@ -87,7 +87,7 @@ inline std::vector<Utilities::ivec2> AStar::get_neighbours(const Utilities::ivec
 	return neighbours;
 }
 
-inline std::vector<Utilities::ivec2> AStar::find_path(const Utilities::ivec2& _startPoint, const Utilities::ivec2& _endPoint)
+inline std::vector<Utilities::ivec2> AStar::find_path(const Utilities::ivec2 _startPoint, const Utilities::ivec2 _endPoint)
 {
 	std::unordered_map<Utilities::ivec2, Utilities::ivec2> parents;
 

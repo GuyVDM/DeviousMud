@@ -141,7 +141,7 @@ const Utilities::ivec2 Server::EntityHandler::get_player_position(const PlayerUU
 {
 	if (m_players.find(_playerId) == m_players.end())
 	{
-		throw std::runtime_error("No player data was found with the handle given");
+		DEVIOUS_ERR("No player data was found with the handle given");
 		return { Utilities::ivec2(0) };
 	}
 

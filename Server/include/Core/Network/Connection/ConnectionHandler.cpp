@@ -29,9 +29,8 @@ void Server::ConnectionHandler::update_idle_timers()
 		RefClientInfo clientInfo = pair.second;
 		uint32_t ticks = clientInfo->idleticks++;
 
-		//Either send the player a warning with the amount of ticks he's been inactive or completely disconnect the player.
-		//
-		//
+		//Either send the player a warning with the amount of ticks he's been inactive 
+		//or completely disconnect the player.
 		if(ticks == TICKS_TILL_TIMEOUT_WARNING) 
 		{
 			Packets::s_PacketHeader packet;
@@ -97,13 +96,13 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	auto newClient = std::make_shared<ClientInfo>();
 	newClient->peer					  = _peer;
 	newClient->clientId			      = clientId;
-	newClient->playerId			  = DM::Utils::UUID::generate();
+	newClient->playerId			      = DM::Utils::UUID::generate();
 	newClient->bAwaitingPing	      = false;
 	newClient->idleticks			  = 0;
 	newClient->ticksSinceLastResponse = 0;
 	newClient->packetquery			  = new EventQuery();
 
-	m_clientInfo[clientId] = newClient;     //Generate Client info
+	m_clientInfo[clientId] = newClient;  //Generate Client info
 	m_clientHandles.push_back(clientId); //Register client handle
 
 	//Register our player in the player handler.

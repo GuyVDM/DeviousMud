@@ -26,25 +26,25 @@ NetworkHandler NetworkHandler::create_host(const char* address, int32_t port, in
 {
 	//Set server host & Connection parameters
 	ENetAddress connection;
-	ENetHost*   m_server;
+	ENetHost*   server;
 
 	enet_address_set_host(&connection, address);
 	connection.port = port;
 
-	m_server = enet_host_create(&connection,
+	server = enet_host_create(&connection,
 							   maxconnections,
 							   channels,
 							   inc_bandwith,
 							   outg_bandwidth);
 
-	if (m_server == NULL)
+	if (server == NULL)
 	{
 		fprintf(stderr, "An error occurred while trying to create a ENet Server Host. \n");
 		exit(EXIT_FAILURE);
 	}
 
 	DEVIOUS_EVENT("Server listening on: [" << address << ":" << port << "].");
-	return NetworkHandler(m_server);
+	return NetworkHandler(server);
 }
 
 ENetHost* NetworkHandler::get_server_host()
