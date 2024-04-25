@@ -5,7 +5,14 @@
 #include "cereal/types/memory.hpp"
 #include "cereal/archives/binary.hpp"
 
-enum e_PacketInterpreter : uint8_t
+enum class e_Action : uint8_t
+{
+	SOFT_ACTION   = 0x00,
+	MEDIUM_ACTION = 0x01, 
+	HARD_ACTION   = 0x02 
+};
+
+enum class e_PacketInterpreter : uint8_t
 {
 	PACKET_NONE                        = 0x00,
 
@@ -33,29 +40,49 @@ namespace Packets
 	/// </summary>
 	struct s_PacketHeader
 	{
+		/// <summary>
+		/// Interpreter is there to see how the remainder of the data should be interpreted.
+		/// </summary>
 		e_PacketInterpreter interpreter = e_PacketInterpreter::PACKET_NONE;
+
+		/// <summary>
+		/// What type of action is this packet?:
+		/// SOFT   : Lowest priority action.
+		/// MEDIUM : Will wipe all other soft actions in the queue.
+		/// HARD   : Will wipe all actions with exception to hard.
+		/// </summary>
+		e_Action action = e_Action::SOFT_ACTION;
 
 		template <class Archive>
 		void serialize(Archive& ar)
 		{	
 			ar(interpreter);
+			ar(action);
 		}
 
 		virtual ~s_PacketHeader() = default;
 	};
 
-	struct s_Entity : public s_PacketHeader
+	struct s_CreateEntity : public s_PacketHeader
 	{
 		/// <summary>
 		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
+		/// This id is either the playerUUID or the Client UUID
 		/// </summary>
 		uint64_t entityId = -1;
+		
+		/// <summary>
+		/// What type of entity is this, Use the NPCDef as reference on clientside.
+		/// 0 defaults to player.
+		/// </summary>
+		uint64_t npcId = 0;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
+			ar(npcId);
 		}
 	};
 
@@ -63,6 +90,7 @@ namespace Packets
 	{
 		/// <summary>
 		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
+		/// This id is either the playerUUID or the Client UUID
 		/// </summary>
 		uint64_t entityId = -1;
 
@@ -74,27 +102,41 @@ namespace Packets
 		}
 	};
 
-	struct s_EntityMovement : public s_Entity
+	struct s_EntityMovement : public s_PacketHeader
 	{
+		/// <summary>
+		/// The UUID of the entity, From Server->Client it's always the PlayerID, From Client->Server it's the client's
+		/// Peer connect id;
+		/// </summary>
+		uint64_t entityId = -1;
+
 		int  x = 0, y = 0;
 		bool isRunning = false;
 
 		template <class Archive>
 		void serialize(Archive& ar)
 		{
-			ar(cereal::base_class<s_Entity>(this));
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(entityId);
 			ar(x, y, isRunning);
 		}
 	};
 
-	struct s_EntityPosition : public s_Entity
+	struct s_EntityPosition : public s_PacketHeader
 	{
+		/// <summary>
+		/// The UUID of the entity, From Server->Client it's always the PlayerID, From Client->Server it's the client's
+		/// Peer connect id;
+		/// </summary>
+		uint64_t entityId = -1;
+
 		int x = 0 , y = 0;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
 		{
-			ar(cereal::base_class<s_Entity>(this));
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(entityId);
 			ar(x, y);
 		}
 	};

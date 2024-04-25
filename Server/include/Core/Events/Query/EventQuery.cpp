@@ -5,6 +5,33 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
 {
     e_PacketInterpreter interpreter = _packet->interpreter;
 
+    const auto remove_lower_prio_packets = [this](const e_Action _action)
+    {
+        for(int i = m_packets.size() - 1; i >= 0; --i) 
+        {
+            e_Action packetAction = m_packets[i]->action;
+
+            if(packetAction < _action)
+            {
+                m_packets.erase(m_packets.begin() + i);
+            }
+        }
+    };
+
+    // Make sure that only the highest priority packets remain.
+    // This allows us to cancel actions that are unwanted or for some to take priority.
+    {
+        const e_Action highestPrio = get_highest_packet_priority();
+        if (_packet->action > highestPrio)
+        {
+            remove_lower_prio_packets(_packet->action);
+        }
+        else if (_packet->action < highestPrio)
+        {
+            return;
+        }
+    }
+
     auto it = std::find_if(m_packets.begin(), m_packets.end(), [&interpreter](std::unique_ptr<Packets::s_PacketHeader>& _p)
         {
         return interpreter == _p->interpreter;
@@ -34,9 +61,34 @@ std::unique_ptr<Packets::s_PacketHeader> EventQuery::retrieve_next()
 	return std::unique_ptr<Packets::s_PacketHeader>(packet);
 }
 
+const e_Action EventQuery::get_highest_packet_priority() const
+{
+    e_Action highestAction = e_Action::SOFT_ACTION;
+
+    for(int i = 0; i < m_packets.size(); i++) 
+    {
+        const auto& packet = m_packets[i];
+        
+        if((uint8_t)packet->action > (uint8_t)highestAction) 
+        {
+            highestAction = packet->action;
+
+            if (highestAction == e_Action::HARD_ACTION)
+                break;
+        }
+    }
+
+    return highestAction;
+}
+
 const bool EventQuery::contains_packets() const
 {
     return m_packets.size() > 0;
+}
+
+void EventQuery::clear()
+{
+    m_packets.clear();
 }
 
 void EventQuery::move(EventQuery* query) 
@@ -46,5 +98,5 @@ void EventQuery::move(EventQuery* query)
         query->queue_packet(std::move(packet));
     }
 
-    m_packets.clear();
+    clear();
 }

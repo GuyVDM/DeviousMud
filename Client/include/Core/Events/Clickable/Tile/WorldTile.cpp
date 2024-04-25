@@ -38,14 +38,15 @@ void WorldTile::on_left_click()
 		static_cast<int32_t>(get_position().y)
 	};
 
-	Packets::s_EntityMovement m_pos;
-	m_pos.interpreter = PACKET_MOVE_ENTITY;
-	m_pos.x = worldPos.x;
-	m_pos.y = worldPos.y;
-	m_pos.isRunning = true;
+	Packets::s_EntityMovement movePacket;
+	movePacket.action = e_Action::MEDIUM_ACTION;
+	movePacket.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
+	movePacket.x = worldPos.x;
+	movePacket.y = worldPos.y;
+	movePacket.isRunning = true;
 
 	auto packetHandler = g_globals.packetHandler.lock();
-	packetHandler->send_packet<Packets::s_EntityMovement>(&m_pos, 0, 0);
+	packetHandler->send_packet<Packets::s_EntityMovement>(&movePacket, 0, 0);
 }
 
 bool WorldTile::handle_event(const SDL_Event* _event)

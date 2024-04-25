@@ -96,16 +96,16 @@ void ENetPacketHandler::process_packet()
 
 		case e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY:
 		{
-			Packets::s_Entity player;
-			PacketHandler::retrieve_packet_data<Packets::s_Entity>(player, &m_event);
+			Packets::s_CreateEntity player;
+			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(player, &m_event);
 			entityHandler->on_local_player_assigned.invoke(player.entityId);
 		}
 		break;
 
 		case e_PacketInterpreter::PACKET_REMOVE_ENTITY:
 		{
-			Packets::s_Entity entityData;
-			PacketHandler::retrieve_packet_data<Packets::s_Entity>(entityData, &m_event);
+			Packets::s_CreateEntity entityData;
+			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(entityData, &m_event);
 			entityHandler->remove_world_entity(entityData.entityId);
 		}
 		break;

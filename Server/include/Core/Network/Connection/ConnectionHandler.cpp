@@ -142,10 +142,10 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 	//Send a packet to the client so they can indentify their local player.
 	{
-		Packets::s_Entity player;
+		Packets::s_CreateEntity player;
 		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY;
 		player.entityId = newClient->playerId;
-		PacketHandler::send_packet<Packets::s_Entity>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
+		PacketHandler::send_packet<Packets::s_CreateEntity>(&player, newClient->peer, m_server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
@@ -164,11 +164,11 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	g_globals.entityHandler->logout_player(playerId);
 
 	//Multicast to all other players that a player has left.
-	Packets::s_Entity playerData;
+	Packets::s_CreateEntity playerData;
 	playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
 	playerData.entityId = m_clientInfo[_clienthandle]->playerId;
 	
-	PacketHandler::send_packet_multicast<Packets::s_Entity>
+	PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
 	(
 		&playerData, 
 		g_globals.networkHandler->get_server_host(), 

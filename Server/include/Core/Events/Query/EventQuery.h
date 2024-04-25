@@ -24,6 +24,12 @@ public:
 	std::unique_ptr<Packets::s_PacketHeader> retrieve_next();
 
 	/// <summary>
+	/// Returns the highest priority found currently in the queue.
+	/// </summary>
+	/// <returns></returns>
+	const e_Action get_highest_packet_priority() const;
+
+	/// <summary>
 	/// Returns whether the event query still has packets that need to get handled.
 	/// </summary>
 	const bool contains_packets() const;

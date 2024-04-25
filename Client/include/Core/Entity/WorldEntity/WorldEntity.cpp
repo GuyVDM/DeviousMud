@@ -112,6 +112,7 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
                 {
                     Packets::s_EntityFollow packet;
                     packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
+                    packet.action = e_Action::SOFT_ACTION;
                     packet.entityId = m_entityUUID;
 
                     auto packetHandler = g_globals.packetHandler.lock();

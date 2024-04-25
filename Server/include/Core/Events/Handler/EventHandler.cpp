@@ -101,7 +101,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 
 		switch(packet->interpreter) 
 		{
-			case PACKET_FOLLOW_ENTITY:
+		case e_PacketInterpreter::PACKET_FOLLOW_ENTITY:
 			{
 				auto pFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
 
@@ -143,6 +143,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 					// Queue movement packet with the target being next to the target entity.
 					{
 						Packets::s_EntityMovement packet;
+						packet.action = e_Action::SOFT_ACTION;
 						packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
 						packet.entityId = _client->playerId;
 						packet.x = target.x;
@@ -160,6 +161,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				//Queue recursive following packet.
 				{
 					Packets::s_EntityFollow packet;
+					packet.action = e_Action::SOFT_ACTION;
 					packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
 					packet.entityId = pFollow->entityId;
 
@@ -171,7 +173,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 			}
 			break;
 
-			case PACKET_MOVE_ENTITY:
+		case e_PacketInterpreter::PACKET_MOVE_ENTITY:
 			{
 				const PlayerUUID playerId = _client->playerId;
 
@@ -196,16 +198,18 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 				if (!reachedDest)
 				{
 					//Retrieve the current position after having moved the player.
-					Packets::s_EntityMovement m_position;
-					m_position.entityId = _client->playerId;
-					m_position.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
-					m_position.x = pMovement->x;
-					m_position.y = pMovement->y;
-					m_position.isRunning = pMovement->isRunning;
+					Packets::s_EntityMovement movementPacket;
+					movementPacket.action = e_Action::SOFT_ACTION;
+					movementPacket.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
+					movementPacket.entityId = _client->playerId;
+
+					movementPacket.x = pMovement->x;
+					movementPacket.y = pMovement->y;
+					movementPacket.isRunning = pMovement->isRunning;
 
 					_client->packetquery->queue_packet
 					(
-						std::make_unique<Packets::s_EntityMovement>(m_position)
+						std::make_unique<Packets::s_EntityMovement>(movementPacket)
 					);
 				}
 			}
