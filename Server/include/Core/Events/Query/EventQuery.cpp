@@ -22,6 +22,7 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
     // This allows us to cancel actions that are unwanted or for some to take priority.
     {
         const e_Action highestPrio = get_highest_packet_priority();
+
         if (_packet->action > highestPrio)
         {
             remove_lower_prio_packets(_packet->action);
@@ -32,19 +33,23 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
         }
     }
 
-    auto it = std::find_if(m_packets.begin(), m_packets.end(), [&interpreter](std::unique_ptr<Packets::s_PacketHeader>& _p)
+    /// We want only 1 action of a certain type, we check through the currently 
+    /// queued packets to see if there's a similar action, if so, overwrite that one.
+    {
+        auto it = std::find_if(m_packets.begin(), m_packets.end(), [&interpreter](std::unique_ptr<Packets::s_PacketHeader>& _p)
         {
-        return interpreter == _p->interpreter;
+            return interpreter == _p->interpreter;
         });
 
-    if (it != m_packets.end()) 
-    {
-        //If there's a packet with the same event, replace it, we only want 1 of each event type.
-        //TODO: In the future, i want some events to be whitelisted to happen multiple times within this queue
-        auto index = std::distance(m_packets.begin(), it);
-        m_packets[index].reset();
-        m_packets[index] = std::move(_packet);
-        return;
+        if (it != m_packets.end())
+        {
+            //If there's a packet with the same event, replace it, we only want 1 of each event type.
+            //TODO: In the future, i want some events to be whitelisted to happen multiple times within this queue
+            auto index = std::distance(m_packets.begin(), it);
+            m_packets[index].reset();
+            m_packets[index] = std::move(_packet);
+            return;
+        }
     }
 
     //Add the event if it doesn't exist yet.
@@ -65,11 +70,9 @@ const e_Action EventQuery::get_highest_packet_priority() const
 {
     e_Action highestAction = e_Action::SOFT_ACTION;
 
-    for(int i = 0; i < m_packets.size(); i++) 
+    for (const auto& packet : m_packets)
     {
-        const auto& packet = m_packets[i];
-        
-        if((uint8_t)packet->action > (uint8_t)highestAction) 
+        if (packet->action > highestAction)
         {
             highestAction = packet->action;
 
