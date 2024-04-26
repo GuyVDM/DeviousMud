@@ -25,17 +25,17 @@ void HUDLayer::init()
 	create_hud();
 }
 
-bool HUDLayer::handle_event(const SDL_Event* m_event)
+bool HUDLayer::handle_event(const SDL_Event* _event)
 {
 	//TODO: MOVE THIS DISGUSTING STUFF TO A INPUT CLASS AT SOME POINT.
 	static bool altDown = false;
 	static bool leftMouseDown = false;
 	static bool shouldOpenoptionsMenu = false;
 
-	switch (m_event->type)
+	switch (_event->type)
 	{
 		case SDL_KEYDOWN:
-		if (m_event->key.keysym.sym == SDLK_LALT || m_event->key.keysym.sym == SDLK_RALT)
+		if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
 		{
 			altDown = true;
 		}
@@ -43,22 +43,22 @@ bool HUDLayer::handle_event(const SDL_Event* m_event)
 
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			if (m_event->button.button == SDL_BUTTON_LEFT)
+			if (_event->button.button == SDL_BUTTON_LEFT)
 			{
-				leftMouseDown = m_event->button.button == SDL_BUTTON_LEFT;
+				leftMouseDown = _event->button.button == SDL_BUTTON_LEFT;
 			}
 		}
 		break;
 
 		case SDL_MOUSEBUTTONUP:
-		if (m_event->button.button == SDL_BUTTON_LEFT)
+		if (_event->button.button == SDL_BUTTON_LEFT)
 		{
 			leftMouseDown = false;
 		}
 		break;
 
 		case SDL_KEYUP:
-		if (m_event->key.keysym.sym == SDLK_LALT || m_event->key.keysym.sym == SDLK_RALT)
+		if (_event->key.keysym.sym == SDLK_LALT || _event->key.keysym.sym == SDLK_RALT)
 		{
 			altDown = false;
 		}
@@ -84,7 +84,7 @@ bool HUDLayer::handle_event(const SDL_Event* m_event)
 		                                altDown ? e_UIInteractionType::DISPLAY :
 		                                          e_UIInteractionType::INTERACT;
 
-	return m_canvas->handle_event(m_event);
+	return m_canvas->handle_event(_event);
 }
 
 void HUDLayer::create_hud()

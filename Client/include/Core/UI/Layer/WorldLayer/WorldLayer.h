@@ -14,7 +14,7 @@ namespace Graphics
 
 			virtual void update() override;
 
-			virtual bool handle_event(const SDL_Event* m_event) override;
+			virtual bool handle_event(const SDL_Event* _event) override;
 
 		public: //Implement Parent class constructor
 			using Layer::Layer;

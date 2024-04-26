@@ -23,7 +23,7 @@ namespace Graphics
 
 			virtual void init() override;
 
-			virtual bool handle_event(const SDL_Event* m_event) override;
+			virtual bool handle_event(const SDL_Event* _event) override;
 			
 			virtual void update() override;
 

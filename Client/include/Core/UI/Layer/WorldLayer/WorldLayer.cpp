@@ -39,11 +39,11 @@ void Graphics::UI::WorldLayer::update()
 	}
 }
 
-bool Graphics::UI::WorldLayer::handle_event(const SDL_Event* m_event)
+bool Graphics::UI::WorldLayer::handle_event(const SDL_Event* _event)
 {
 	for(const auto& tile : m_tiles) 
 	{
-		if(tile->handle_event(m_event)) 
+		if(tile->handle_event(_event))
 		{
 			return true;
 		}
