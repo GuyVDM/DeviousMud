@@ -27,9 +27,9 @@ namespace DM
                 std::random_device rd;
                 std::mt19937_64 gen(rd());
 
-                constexpr uint64_t max_value = ULLONG_MAX;
+                constexpr uint64_t maxValue = ULLONG_MAX;
 
-                std::uniform_int_distribution<uint64_t> dis(0, max_value);
+                std::uniform_int_distribution<uint64_t> dis(0, maxValue);
                 uint64_t randomBits = dis(gen);
 
                 // Combine timestamp and random bits
