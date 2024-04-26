@@ -32,5 +32,5 @@ private:
 
 private:
 	ENetHost* m_host;
-	ENetPeer* peer;
+	ENetPeer* m_peer;
 };

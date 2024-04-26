@@ -11,8 +11,7 @@
 #include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
 
 using namespace Utilities;
-using namespace Graphics;
-using namespace UI;
+using namespace Graphics::UI;
 
 e_UIInteractionType HUDLayer::s_InteractionType = e_UIInteractionType::INTERACT;
 
@@ -97,7 +96,7 @@ void HUDLayer::create_hud()
 	// HUD Tab Menu
 	{
 		Utilities::ivec2 viewportSize = Utilities::ivec2(0); 
-		renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
+		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 
 		component = UIComponent::create_component<HUDTabMenu>
 		(
@@ -134,7 +133,7 @@ void HUDLayer::update()
 
 	// Render loop
 	{	
-		base->render(renderer);
+		base->render(m_renderer);
 	}
 }
 

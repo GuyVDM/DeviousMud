@@ -109,7 +109,6 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
         {
             if (_event->button.button == SDL_BUTTON_RIGHT && m_eInteractionMode == e_InteractionMode::STATE_INTERACTABLE)
             {
-                ///TODO: This might not work due to the capturing???
                 const auto follow_entity = [this]()
                 {
                     Packets::s_EntityFollow packet;
@@ -119,7 +118,6 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
 
                     auto packetHandler = g_globals.packetHandler.lock();
                     packetHandler->send_packet<Packets::s_EntityFollow>(&packet, 0, ENET_PACKET_FLAG_RELIABLE);
-                    DEVIOUS_LOG("Trying to follow entity: " << m_entityUUID);
                 };
 
                 OptionArgs m_textArgs;
@@ -127,7 +125,6 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
                 m_textArgs.subjectStr = "Entity";
                 m_textArgs.actionCol = { 255, 255, 0, 255 };
                 m_textArgs.function = std::bind(follow_entity);
-
                 OptionsTab::add_option(m_textArgs);
             }
         }

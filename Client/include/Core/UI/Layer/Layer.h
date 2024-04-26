@@ -24,14 +24,14 @@ namespace Graphics
 
 			virtual void init();
 
-			virtual bool handle_event(const SDL_Event* m_event);
+			virtual bool handle_event(const SDL_Event* _event);
 
 		public:
 			explicit Layer();
 			virtual ~Layer() = default;
 
 		protected:
-			std::shared_ptr<Graphics::Renderer> renderer;
+			std::shared_ptr<Graphics::Renderer> m_renderer;
 		};
 	}
 }

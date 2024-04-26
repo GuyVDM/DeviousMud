@@ -15,13 +15,13 @@ enum class e_AnchorPreset : uint8_t
 	BOTTOM_RIGHT  = 0x08
 };
 
-typedef struct _Rect
+struct Rect
 {
 	Utilities::vec2 minPos;
 	Utilities::vec2 maxPos;
 
 	// Copy assignment operator
-	inline _Rect& operator+(const _Rect& _other)
+	inline Rect& operator+(const Rect& _other)
 	{
 		minPos = minPos + _other.minPos;
 		maxPos = maxPos + _other.maxPos;
@@ -38,7 +38,7 @@ typedef struct _Rect
 		 return Utilities::vec2(maxPos.x - minPos.x, maxPos.y - minPos.y);
 	 }
 
-}   Rect;
+};
 
 namespace Graphics 
 {

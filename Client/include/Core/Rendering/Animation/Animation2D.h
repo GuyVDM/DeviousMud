@@ -13,5 +13,5 @@ public:
 	virtual ~Animation2D() = default;
 	
 private:
-	std::vector<int> keyframes;
+	std::vector<int> m_keyframes;
 };

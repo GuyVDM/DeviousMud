@@ -9,7 +9,7 @@ public:
 
 public:
 	Camera();
-	Camera(Utilities::vec2 _pos, uint32_t _rd);
+	Camera(Utilities::vec2 _pos);
 	~Camera() = default;
 
 private:

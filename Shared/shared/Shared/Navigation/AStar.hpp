@@ -98,9 +98,9 @@ inline std::vector<Utilities::ivec2> AStar::find_path(const Utilities::ivec2 _st
 
 	while (open_list.size() > 0)
 	{
-		Utilities::ivec2 current = *std::min_element(open_list.begin(), open_list.end(), [_endPoint](const Utilities::ivec2& lhs, const Utilities::ivec2& rhs)
+		Utilities::ivec2 current = *std::min_element(open_list.begin(), open_list.end(), [_endPoint](const Utilities::ivec2& _lhs, const Utilities::ivec2& _rhs)
 			{
-				return get_cost(lhs, _endPoint) < get_cost(rhs, _endPoint);
+				return get_cost(_lhs, _endPoint) < get_cost(_rhs, _endPoint);
 			});
 
 		closed_list.push_back(current);
@@ -130,12 +130,12 @@ inline std::vector<Utilities::ivec2> AStar::find_path(const Utilities::ivec2 _st
 
 	//Start tracing and reversing the path so it's linear from the starting point.
 calculate_path:
-	std::vector<Utilities::ivec2> m_path;
+	std::vector<Utilities::ivec2> path;
 
 	Utilities::ivec2 current = _endPoint;
 	while (current != _startPoint)
 	{
-		m_path.push_back(current);
+		path.push_back(current);
 
 		if (parents.find(current) != parents.end())
 		{
@@ -146,9 +146,9 @@ calculate_path:
 		break;
 	}
 
-	std::reverse(m_path.begin(), m_path.end());
+	std::reverse(path.begin(), path.end());
 
-	return m_path;
+	return path;
 }
 
 #pragma endregion

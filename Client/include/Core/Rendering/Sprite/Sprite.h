@@ -58,10 +58,10 @@ namespace Graphics
 
 		bool bIsFlipped = false;
 	private:
-		DM::Utils::UUID uuid;
-		SpriteType		spriteType = SpriteType::NONE;
-		uint32_t		frameCount = 0;
-		Utilities::vec2 dimension;
+		DM::Utils::UUID m_uuid;
+		SpriteType		m_eSpriteType = SpriteType::NONE;
+		uint32_t		m_frameCount = 0;
+		Utilities::vec2 m_dimension;
 
 		friend class Renderer;
 

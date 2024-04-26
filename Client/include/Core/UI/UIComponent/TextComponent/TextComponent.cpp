@@ -81,13 +81,13 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 {
 	if (m_textTexture)
 	{
-		const Utilities::ivec2 m_position = Utilities::to_ivec2(get_position());
+		const Utilities::ivec2 position = Utilities::to_ivec2(get_position());
 		const Utilities::ivec2 size = Utilities::to_ivec2(get_size());
 
 		if (m_textArgs.bDropShadow)
 		{
 			const static int32_t dropShadowOffsetPx = 1;
-			const SDL_Rect dsRenderQuad = { m_position.x + dropShadowOffsetPx, m_position.y + dropShadowOffsetPx, size.x, size.y };
+			const SDL_Rect dsRenderQuad = { position.x + dropShadowOffsetPx, position.y + dropShadowOffsetPx, size.x, size.y };
 
 			SDL_SetTextureColorMod(m_textTexture, 0, 0, 0);
 			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
@@ -100,7 +100,7 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 
 		// Render the text.
 		{
-			const SDL_Rect renderQuad = { m_position.x, m_position.y, size.x, size.y };
+			const SDL_Rect renderQuad = { position.x, position.y, size.x, size.y };
 			SDL_RenderCopy(_renderer->renderer, m_textTexture, NULL, &renderQuad);
 		}
 	}

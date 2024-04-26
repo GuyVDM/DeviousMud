@@ -31,12 +31,12 @@ private:
 
 private:
 	ENetHost*				   m_host;
-	ENetPeer*				   peer;
+	ENetPeer*				   m_peer;
 	ENetEvent				   m_event;
 };
 
 template<class T>
-inline void ENetPacketHandler::send_packet(T* data, enet_uint8 channel, enet_uint32 flags)
+inline void ENetPacketHandler::send_packet(T* _data, enet_uint8 _channel, enet_uint32 _flags)
 {
-	PacketHandler::send_packet<T>(data, peer, m_host, channel, flags);
+	PacketHandler::send_packet<T>(_data, m_peer, m_host, _channel, _flags);
 }

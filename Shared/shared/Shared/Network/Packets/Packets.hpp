@@ -8,7 +8,9 @@
 enum class e_Action : uint8_t
 {
 	SOFT_ACTION   = 0x00,
+
 	MEDIUM_ACTION = 0x01, 
+
 	HARD_ACTION   = 0x02 
 };
 

@@ -14,7 +14,7 @@
 
 
 ENetPacketHandler::ENetPacketHandler(ENetHost* _host, ENetPeer* _peer) :
-	m_host(_host), peer(_peer)
+	m_host(_host), m_peer(_peer)
 {
 
 }

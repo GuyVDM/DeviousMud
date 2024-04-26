@@ -38,15 +38,15 @@ bool HUDTab::handle_event(const SDL_Event* _event)
 		{
 			if (_event->button.button == SDL_BUTTON_RIGHT)
 			{
-				OptionArgs m_textArgs;
-				m_textArgs.actionStr = "Open";
-				m_textArgs.actionCol = { 255, 255, 0, 255 };
+				OptionArgs optionArgs;
+				optionArgs.actionStr = "Open";
+				optionArgs.actionCol = { 255, 255, 0, 255 };
 
-				m_textArgs.subjectStr = "Tab";
-				m_textArgs.subjectCol = { 229, 165, 80, 255 };
-				m_textArgs.function = std::bind(&HUDTab::on_left_click, this);
+				optionArgs.subjectStr = "Tab";
+				optionArgs.subjectCol = { 229, 165, 80, 255 };
+				optionArgs.function = std::bind(&HUDTab::on_left_click, this);
 
-				OptionsTab::add_option(m_textArgs);
+				OptionsTab::add_option(optionArgs);
 			}
 		}
 		break;
@@ -75,9 +75,9 @@ void HUDTabMenu::init()
 {
 	m_bIsMovable = true;
 
-	float m_scale = 0.625f;
-	const Size tabSize  = Utilities::vec2(84.0f) * m_scale;
-	const Size m_iconSize = Utilities::vec2(42.0f) * m_scale;
+	float scale = 0.625f;
+	const Size tabSize  = Utilities::vec2(84.0f) * scale;
+	const Size m_iconSize = Utilities::vec2(42.0f) * scale;
 	std::shared_ptr<HUDTab> tab;
 	Position tabPos;
 	
@@ -229,7 +229,7 @@ void HUDTabMenu::init()
 		component = UIComponent::create_component<UIComponent>
 			(
 				get_position() - Position(tabSize.x / 2.0f, 0.0f),
-				Size(42.0f, 504.0f) * m_scale,
+				Size(42.0f, 504.0f) * scale,
 				SpriteType::HUD_FRAME
 			);
 		component->set_anchor(e_AnchorPreset::CENTER);
@@ -242,7 +242,7 @@ void HUDTabMenu::init()
 		component = UIComponent::create_component<UIComponent>
 			(
 				get_position() + Position(get_size().x, 0.0f),
-				Size(42.0f, 504.0f) * m_scale,
+				Size(42.0f, 504.0f) * scale,
 				SpriteType::HUD_FRAME
 			);
 		component->set_anchor(e_AnchorPreset::CENTER);

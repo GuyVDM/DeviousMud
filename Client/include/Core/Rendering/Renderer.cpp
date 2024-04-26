@@ -194,7 +194,7 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 	SDL_Texture* m_textTexture = sprites[_s.get_sprite_type()]->get_texture();
 
 	// Generate rect based on what part of the png we want our sprite to be 
-	const int32_t spriteWidth = (int32_t)_s.dimension.x / _s.get_framecount();
+	const int32_t spriteWidth = (int32_t)_s.m_dimension.x / _s.get_framecount();
 	const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
 
 	const SDL_Rect srcRect
@@ -202,7 +202,7 @@ void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2&
 		spriteWidth * frame,
 		0,
 		spriteWidth,
-		(int)_s.dimension.y,
+		(int)_s.m_dimension.y,
 	};
 
 	const SDL_Rect destRect
@@ -246,9 +246,9 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 		Sprite m_sprite;
 		m_sprite.color = SDL_Color{ 255, 255, 255, 255 };
 		m_sprite.frame = 0;
-		m_sprite.frameCount = 0;
-		m_sprite.spriteType = _spriteType;
-		m_sprite.dimension = Utilities::vec2(0.0f, 0.0f);
+		m_sprite.m_frameCount = 0;
+		m_sprite.m_eSpriteType = _spriteType;
+		m_sprite.m_dimension = Utilities::vec2(0.0f, 0.0f);
 		return m_sprite;
 	}
 
@@ -264,9 +264,9 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 	Sprite m_sprite;
 	m_sprite.color      = SDL_Color{ 255, 255, 255, 255 };
 	m_sprite.frame      = 0;
-	m_sprite.frameCount = m_details->get_framecount();
-	m_sprite.spriteType = _spriteType;
-	m_sprite.dimension  = Utilities::vec2((float)m_details->get_surface()->w, (float)m_details->get_surface()->h);
+	m_sprite.m_frameCount = m_details->get_framecount();
+	m_sprite.m_eSpriteType = _spriteType;
+	m_sprite.m_dimension  = Utilities::vec2((float)m_details->get_surface()->w, (float)m_details->get_surface()->h);
 	m_sprite.bIsFlipped = false;
 
 	return m_sprite;

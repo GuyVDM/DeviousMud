@@ -3,8 +3,6 @@
 
 #include "Shared/Utilities/EventListener.h"
 
-#include "Shared/Utilities/Actions.h"
-
 struct OptionArgs
 {
 	std::string actionStr;

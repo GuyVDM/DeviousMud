@@ -33,7 +33,6 @@ EntityHandler::EntityHandler()
 EntityHandler::~EntityHandler()
 {
 	m_worldEntities.clear();
-	m_players.clear();
 }
 
 void EntityHandler::create_world_entity(DM::Utils::UUID _uuid, uint8_t _npcId, Utilities::ivec2 _pos)

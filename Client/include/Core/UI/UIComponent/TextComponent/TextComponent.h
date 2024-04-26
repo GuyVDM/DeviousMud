@@ -21,12 +21,12 @@ struct TextArgs
 
 	const static TextArgs Default()
 	{
-		TextArgs m_textArgs{};
-		m_textArgs.color = { 255, 255, 255, 255 };
-		m_textArgs.size = 10;
-		m_textArgs.font = e_FontType::RUNESCAPE_UF;
-		m_textArgs.bDropShadow = false;
-		return m_textArgs;
+		TextArgs textArgs{};
+		textArgs.color = { 255, 255, 255, 255 };
+		textArgs.size = 10;
+		textArgs.font = e_FontType::RUNESCAPE_UF;
+		textArgs.bDropShadow = false;
+		return textArgs;
 	}
 };
 

@@ -30,5 +30,5 @@ private:
 
 	Graphics::Sprite m_sprite;
 
-	std::shared_ptr<Graphics::Renderer> renderer;
+	std::shared_ptr<Graphics::Renderer> m_renderer;
 };

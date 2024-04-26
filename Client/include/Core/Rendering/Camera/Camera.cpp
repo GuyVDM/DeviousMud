@@ -2,7 +2,7 @@
 #include "Camera.h"
 
 
-Camera::Camera(Utilities::vec2 _pos, uint32_t _rd) : m_pos(_pos)
+Camera::Camera(Utilities::vec2 _pos) : m_pos(_pos)
 {
 }
 

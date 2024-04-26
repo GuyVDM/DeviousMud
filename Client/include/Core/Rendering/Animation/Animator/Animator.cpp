@@ -25,17 +25,17 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 	{
 		AnimationController controller;
 		controller.uuid = _sprite.get_uuid();
-		controller.m_sprite = &_sprite;
+		controller.sprite = &_sprite;
 		controller.bPaused = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
 		controller.playbackSpeed = _playbackSpeed;
 		controller.keyframeIndex = 0;
-		controller.m_elapsedTime = 0.0f;
+		controller.elapsedTime = 0.0f;
 
 		//Register the animation controller
 		Animator::s_animators[controller.uuid] = controller;
-		controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 		return;
 	}
 
@@ -47,8 +47,8 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 		controller.bIsLooping = _bIsLooping;
 		controller.playbackSpeed = _playbackSpeed;
 		controller.keyframeIndex = 0;
-		controller.m_elapsedTime = 0.0f;
-		controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+		controller.elapsedTime = 0.0f;
+		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 
 		Animator::s_animators[controller.uuid] = controller;
 	}
@@ -96,11 +96,11 @@ void Animator::update()
 
 		if (!controller.bPaused) 
 		{
-			controller.m_elapsedTime += Config::get_deltaTime() * controller.playbackSpeed;
+			controller.elapsedTime += Config::get_deltaTime() * controller.playbackSpeed;
 
-			if (controller.m_elapsedTime > 1.0f)
+			if (controller.elapsedTime > 1.0f)
 			{
-				controller.m_elapsedTime = 0.0f;
+				controller.elapsedTime = 0.0f;
 				controller.keyframeIndex++;
 
 				//Set the first frame of the animation
@@ -129,7 +129,7 @@ void Animator::update()
 
 				// Set new animation frame.
 				{
-					controller.m_sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+					controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 				}
 			}
 		}

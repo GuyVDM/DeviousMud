@@ -35,12 +35,12 @@ void UIComponent::init()
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
 {
     const Utilities::ivec2 halfExtends = Utilities::to_ivec2(Utilities::vec2(get_size() / 2.0f));
-    const Utilities::ivec2 m_pos         = Utilities::to_ivec2(get_position());
+    const Utilities::ivec2 pos         = Utilities::to_ivec2(get_position());
 
     const Utilities::ivec2 transformedPos
     {
-        m_pos.x + halfExtends.x,
-        m_pos.y + halfExtends.y
+        pos.x + halfExtends.x,
+        pos.y + halfExtends.y
     };
 
     // Calculate sprite's bounding box
@@ -143,13 +143,13 @@ void UIComponent::remove_child(std::shared_ptr<UIComponent> _component)
 
 const Rect UIComponent::get_bounding_rect() const
 {
-    const Utilities::vec2 m_pos = get_position();
+    const Utilities::vec2 pos = get_position();
     const Utilities::vec2 size = get_size();
 
     Rect rect
     {
-        m_pos,
-        Utilities::vec2(m_pos.x + size.x, m_pos.y + size.y)
+        pos,
+        Utilities::vec2(pos.x + size.x, pos.y + size.y)
     };
 
     for (std::shared_ptr<UIComponent> child : m_children)
@@ -167,13 +167,13 @@ const Rect UIComponent::get_bounding_rect() const
 
 const Rect UIComponent::get_local_rect() const
 {
-    const Utilities::vec2 m_pos  = get_position();
+    const Utilities::vec2 pos = get_position();
     const Utilities::vec2 size = get_size();
 
     return Rect
     {
-        m_pos,
-        Utilities::vec2(m_pos.x + size.x, m_pos.y + size.y)
+        pos,
+        Utilities::vec2(pos.x + size.x, pos.y + size.y)
     };;
 }
 
@@ -189,17 +189,17 @@ void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
             const int outlineSizePx = 3;
             const SDL_Color yellow = { 255, 255, 0, 255 };
             const Rect boundingRect = get_bounding_rect();
-            const Utilities::vec2 m_pos = boundingRect.minPos;
+            const Utilities::vec2 pos = boundingRect.minPos;
             const Utilities::vec2 size = boundingRect.maxPos - boundingRect.minPos;
 
-            _renderer->draw_outline(m_pos, size, outlineSizePx, yellow);
+            _renderer->draw_outline(pos, size, outlineSizePx, yellow);
         }
 
         // Render UIComponent Sprite
         _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
         
 
-        for (auto child : m_children)
+        for (const auto& child : m_children)
         {
             child->render(_renderer);
         }

@@ -11,7 +11,7 @@
 
 Graphics::UI::Layer::Layer()
 {
-	renderer = g_globals.renderer.lock();
+	m_renderer = g_globals.renderer.lock();
 }
 
 void Graphics::UI::Layer::init()
@@ -24,7 +24,7 @@ void Graphics::UI::Layer::update()
 {
 }
 
-bool Graphics::UI::Layer::handle_event(const SDL_Event* m_event)
+bool Graphics::UI::Layer::handle_event(const SDL_Event* _event)
 {
 	return false;
 }

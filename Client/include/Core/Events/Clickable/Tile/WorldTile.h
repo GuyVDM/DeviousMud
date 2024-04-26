@@ -6,7 +6,7 @@
 class WorldTile final : public Clickable 
 {
 public:
-	static std::shared_ptr<WorldTile> create_tile(const Utilities::vec2& m_position);
+	static std::shared_ptr<WorldTile> create_tile(const Utilities::vec2& _position);
 
 public:
 	virtual void on_hover();

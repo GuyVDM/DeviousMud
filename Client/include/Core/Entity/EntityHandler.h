@@ -71,7 +71,6 @@ private:
 private:
 	std::unordered_map<DM::Utils::UUID, RefEntity>  m_worldEntities;
 
-	std::unordered_map<DM::Utils::UUID, Player> m_players; //TODO: merge with world entities.
 	uint64_t                                        m_localPlayerId;
 
 	friend Graphics::UI::EntityLayer;

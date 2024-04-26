@@ -16,9 +16,9 @@ void Graphics::UI::EntityLayer::init()
 {
 	//Set the player camera as the main camera within the renderer
 	{
-		renderer = g_globals.renderer.lock();
+		m_renderer = g_globals.renderer.lock();
 		m_playerCamera = std::make_shared<Camera>();
-		renderer->set_camera(m_playerCamera);
+		m_renderer->set_camera(m_playerCamera);
 	}
 
 	//Grab the player sprite from the renderer and cache it for rendering.
@@ -44,7 +44,7 @@ void Graphics::UI::EntityLayer::update()
 		const RefEntity& entity = worldEntity.second;
 		const SimPosition& entitySim = entity->get_simulated_data();
 		const Utilities::vec2 tileCenterOffset = Utilities::vec2(1.0f) - Utilities::vec2(0.25f, 0.15f);
-		renderer->plot_frame(entity->get_sprite(), entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size);
+		m_renderer->plot_frame(entity->get_sprite(), entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size);
 	}
 
 	if (m_bHasLocalPlayer)

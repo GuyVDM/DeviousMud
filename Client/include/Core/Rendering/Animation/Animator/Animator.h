@@ -14,13 +14,13 @@ namespace Graphics
 			struct AnimationController
 			{
 				DM::Utils::UUID uuid;
-				Sprite*                  m_sprite;
+				Sprite*                  sprite;
 				bool                     bPaused;
 				e_AnimationType          currentAnimation;
 				bool					 bIsLooping;
 				float					 playbackSpeed;
 				int32_t				     keyframeIndex;
-				float					 m_elapsedTime;
+				float					 elapsedTime;
 
 
 				e_AnimationType          defaultAnimation     = e_AnimationType::NO_ANIMATION;
@@ -31,7 +31,7 @@ namespace Graphics
 					if (defaultAnimation != e_AnimationType::NO_ANIMATION)
 					{
 						keyframeIndex    = 0;
-						m_elapsedTime      = 0.0f;
+						elapsedTime      = 0.0f;
 						bPaused          = false;
 						bIsLooping       = true;
 						currentAnimation = defaultAnimation;

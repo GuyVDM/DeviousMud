@@ -14,19 +14,19 @@ WorldTile::~WorldTile()
 {
 }
 
-std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& m_position)
+std::shared_ptr<WorldTile> WorldTile::create_tile(const Utilities::vec2& _position)
 {
 	//Scale each tile up to the specified cellsize within a grid.
-	const Utilities::vec2 m_scale
+	const Utilities::vec2 scale
 	(
 		Graphics::Renderer::GRID_CELL_PX_SIZE,
 		Graphics::Renderer::GRID_CELL_PX_SIZE
 	);
 
 	const std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
-	const Graphics::Sprite m_sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
+	const Graphics::Sprite sprite = renderer->get_sprite(Graphics::SpriteType::TILE_DEFAULT);
 
-	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(m_position, m_scale, m_sprite);
+	std::shared_ptr<WorldTile> tile = std::make_shared<WorldTile>(_position, scale, sprite);
 	return tile;
 }
 
@@ -59,12 +59,12 @@ bool WorldTile::handle_event(const SDL_Event* _event)
 			{
 				if (_event->button.button == SDL_BUTTON_RIGHT)
 				{
-					OptionArgs m_textArgs;
-					m_textArgs.actionStr = "Walk here";
-					m_textArgs.actionCol = { 255, 255, 0, 255 };
-					m_textArgs.function = std::bind(&WorldTile::on_left_click, this);
+					OptionArgs optionArgs;
+					optionArgs.actionStr = "Walk here";
+					optionArgs.actionCol = { 255, 255, 0, 255 };
+					optionArgs.function = std::bind(&WorldTile::on_left_click, this);
 
-					OptionsTab::add_option(m_textArgs);
+					OptionsTab::add_option(optionArgs);
 				}
 			}
 			break;

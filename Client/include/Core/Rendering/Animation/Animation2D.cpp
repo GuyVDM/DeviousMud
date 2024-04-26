@@ -6,18 +6,18 @@ Animation2D::Animation2D(int32_t _startSpriteIndex, int32_t _endSpriteIndex)
 {
 	for (int i = _startSpriteIndex; i <= _endSpriteIndex; ++i)
 	{
-		keyframes.push_back(i);
+		m_keyframes.push_back(i);
 	}
 }
 
 const std::vector<int>& Animation2D::get_keyframes() const
 {
-	return keyframes;
+	return m_keyframes;
 }
 
 const int32_t Animation2D::get_last_frame_index() const
 {
-	return keyframes.size() - 1;
+	return m_keyframes.size() - 1;
 }
 
 

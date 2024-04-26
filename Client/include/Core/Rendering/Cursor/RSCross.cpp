@@ -13,8 +13,8 @@ using namespace Animation;
 
 RSCross::RSCross(Utilities::vec2 _scale) : m_scale(_scale)
 {
-	renderer = g_globals.renderer.lock();
-	m_sprite = renderer->get_sprite(SpriteType::CROSS);
+	m_renderer = g_globals.renderer.lock();
+	m_sprite = m_renderer->get_sprite(SpriteType::CROSS);
 	m_sprite.frame = 12;
 }
 
@@ -33,5 +33,5 @@ void RSCross::click(Utilities::vec2 _position, e_InteractionType _interactionTyp
 
 void RSCross::update()
 {
-	renderer->plot_raw_frame(m_sprite, m_position, m_scale);
+	m_renderer->plot_raw_frame(m_sprite, m_position, m_scale);
 }
