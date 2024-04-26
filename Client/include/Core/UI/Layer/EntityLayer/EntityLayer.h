@@ -36,7 +36,7 @@ namespace Graphics
 		private:
 			bool m_bHasLocalPlayer = false;
 
-			Utilities::vec2 m_entitySize = Utilities::vec2(128.0f);
+			Utilities::vec2                     m_entitySize = Utilities::vec2(128.0f);
 
 			std::shared_ptr<Camera>		        m_playerCamera;
 

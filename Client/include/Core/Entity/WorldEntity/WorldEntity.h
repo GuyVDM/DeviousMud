@@ -49,6 +49,8 @@ private:
 private:
 	void update();
 
+	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
+
 private:
 	DM::Utils::UUID   m_entityUUID = -1;
 	e_InteractionMode m_eInteractionMode = e_InteractionMode::STATE_INTERACTABLE;

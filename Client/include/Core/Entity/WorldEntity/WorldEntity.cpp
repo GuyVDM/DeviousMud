@@ -14,6 +14,8 @@
 
 #include "Core/Network/Packets/ENetPacketHandler.h"
 
+#include "Core/Rendering/Camera/Camera.h"
+
 RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::Utils::UUID _uuid)
 {
     const NPCDef npcDef = get_npc_definition(_npcId);
@@ -145,5 +147,29 @@ void WorldEntity::update()
         m_simPos.update();
         return;
     }
+}
+
+const bool WorldEntity::overlaps_rect(const int& _x, const int& _y) const
+{
+    const Utilities::ivec2 camPos = Utilities::to_ivec2(g_globals.renderer.lock()->get_camera()->get_position());
+
+    Utilities::ivec2 viewportSize;
+    g_globals.renderer.lock()->get_viewport_size(&viewportSize.x, &viewportSize.y);
+    viewportSize.x /= 2;
+    viewportSize.y /= 2;
+
+    // Calculate sprite's screen coordinates
+    const Utilities::ivec2 halfExtends = Utilities::to_ivec2(get_size() / 2.0f);
+
+    const Utilities::ivec2 transformedPos = Utilities::to_ivec2(m_simPos.get_position() * Graphics::Renderer::GRID_CELL_PX_SIZE) - camPos
+                                          + (viewportSize + halfExtends);
+
+    // Calculate sprite's bounding box
+    const int32_t left   = transformedPos.x - halfExtends.x;
+    const int32_t right  = transformedPos.x + halfExtends.x;
+    const int32_t top    = transformedPos.y - halfExtends.y;
+    const int32_t bottom = transformedPos.y + halfExtends.y;
+
+    return (_x > left && _x < right && _y > top && _y < bottom);
 }
 
