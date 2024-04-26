@@ -109,8 +109,8 @@ void HUDLayer::create_hud()
 		const Rect boundingRect = component->get_bounding_rect();
 		const Utilities::vec2 size = boundingRect.get_size();
 		const Utilities::vec2 offset = component->get_position() - Utilities::vec2(boundingRect.minPos.x, boundingRect.minPos.y);
-		const Utilities::vec2 m_position = Utilities::to_vec2(viewportSize) - size + offset;
-		component->set_position(m_position);
+		const Utilities::vec2 position = Utilities::to_vec2(viewportSize) - size + offset;
+		component->set_position(position);
 		component->set_anchor(e_AnchorPreset::BOTTOM_RIGHT);
 		m_canvas->add_child(component);
 	}
