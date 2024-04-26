@@ -79,29 +79,24 @@ bool Clickable::handle_event(const SDL_Event* _event)
 
 const bool Clickable::overlaps_rect(const int& _x, const int& _y) const
 {
-    Utilities::vec2 camPos = g_globals.renderer.lock()->get_camera()->get_position();
+    const Utilities::ivec2 camPos = Utilities::to_ivec2(g_globals.renderer.lock()->get_camera()->get_position());
 
-    int32_t viewportWidth, viewportHeight;
-    g_globals.renderer.lock()->get_viewport_size(&viewportWidth, &viewportHeight);
-
-    viewportWidth /= 2;
-    viewportHeight /= 2;
+    Utilities::ivec2 viewportSize;
+    g_globals.renderer.lock()->get_viewport_size(&viewportSize.x, &viewportSize.y);
+    viewportSize.x /= 2;
+    viewportSize.y /= 2;
 
     // Calculate sprite's screen coordinates
-    int32_t halfExtendsWidth = static_cast<int32_t>(size.x / 2.0f);
-    int32_t halfExtendsHeight = static_cast<int32_t>(size.y / 2.0f);
+    const Utilities::ivec2 halfExtends = Utilities::to_ivec2(get_size() / 2.0f);
 
-    Utilities::ivec2 transformedPos;
-    transformedPos.x = (static_cast<int32_t>(m_pos.x) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.x + viewportWidth;
-    transformedPos.y = (static_cast<int32_t>(m_pos.y) * Graphics::Renderer::GRID_CELL_PX_SIZE) - (int32_t)camPos.y + viewportHeight;
-    transformedPos.x += halfExtendsWidth;
-    transformedPos.y += halfExtendsHeight;
+    const Utilities::ivec2 transformedPos = Utilities::to_ivec2(get_position() * Graphics::Renderer::GRID_CELL_PX_SIZE) - camPos
+        + (viewportSize + halfExtends);
 
     // Calculate sprite's bounding box
-    const int32_t left   = transformedPos.x - halfExtendsWidth;
-    const int32_t right  = transformedPos.x + halfExtendsWidth;
-    const int32_t top    = transformedPos.y - halfExtendsHeight;
-    const int32_t bottom = transformedPos.y + halfExtendsHeight;
+    const int32_t left = transformedPos.x - halfExtends.x;
+    const int32_t right = transformedPos.x + halfExtends.x;
+    const int32_t top = transformedPos.y - halfExtends.y;
+    const int32_t bottom = transformedPos.y + halfExtends.y;
 
     return (_x > left && _x < right && _y > top && _y < bottom);
 }
