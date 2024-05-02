@@ -118,12 +118,12 @@ void HUDLayer::create_hud()
 	//// Options Menu
 	{
 		component = UIComponent::create_component<OptionsTab>
-			(
-				UIComponent::Position(100.0f, 100.0f),
-				UIComponent::Size(100.0f, 50.0f),
-				SpriteType::HUD_OPTIONS_BOX,
-				true
-			);
+		(
+			UIComponent::Position(100.0f, 100.0f),
+			UIComponent::Size(100.0f, 50.0f),
+			SpriteType::HUD_OPTIONS_BOX,
+			true
+		);
 	}   m_canvas->add_child(component);
 }
 
