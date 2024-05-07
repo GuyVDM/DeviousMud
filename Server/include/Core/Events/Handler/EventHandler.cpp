@@ -1,9 +1,6 @@
 #include "precomp.h"
-#include "EventHandler.h"
 
-#include "Shared/Network/Packets/PacketHandler.hpp"
-
-#include "Shared/Navigation/AStar.hpp"
+#include "Core/Events/Handler/EventHandler.h"
 
 #include "Core/Globals/S_Globals.h"
 
@@ -15,6 +12,9 @@
 
 #include "Core/Game/Entity/EntityHandler.h"
 
+#include "Shared/Network/Packets/PacketHandler.hpp"
+
+#include "Shared/Navigation/AStar.hpp"
 
 using ivec2 = Utilities::ivec2;
 

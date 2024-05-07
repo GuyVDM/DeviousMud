@@ -65,6 +65,21 @@ namespace Packets
 		virtual ~s_PacketHeader() = default;
 	};
 
+	struct s_ActionPacket : public s_PacketHeader 
+	{
+		/// <summary>
+		/// The entity the client wants to perform a action on.
+		/// </summary>
+		uint64_t entityId;
+
+		template<class Archive>
+		void serialize(Archive& ar) 
+		{
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(entityId);
+		}
+	};
+
 	struct s_CreateEntity : public s_PacketHeader
 	{
 		/// <summary>

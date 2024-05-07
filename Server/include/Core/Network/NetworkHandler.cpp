@@ -18,27 +18,27 @@
 
 Globals g_globals;
 
-NetworkHandler NetworkHandler::create_local_host(int32_t maxconnections, int32_t channels, int32_t inc_bandwith, int32_t outg_bandwidth)
+NetworkHandler NetworkHandler::create_local_host(int32_t _maxconnections, int32_t _channels, int32_t _inc_bandwith, int32_t _outg_bandwidth)
 {
 	const char* ADRESS = "127.0.0.1";
 	constexpr static int32_t PORT = 1234;
-	return create_host(ADRESS, PORT, maxconnections, channels, inc_bandwith, outg_bandwidth);
+	return create_host(ADRESS, PORT, _maxconnections, _channels, _inc_bandwith, _outg_bandwidth);
 }
 
-NetworkHandler NetworkHandler::create_host(const char* address, int32_t port, int32_t maxconnections, int32_t channels, int32_t inc_bandwith, int32_t outg_bandwidth)
+NetworkHandler NetworkHandler::create_host(const char* _address, int32_t _port, int32_t _maxconnections, int32_t _channels, int32_t _inc_bandwith, int32_t _outg_bandwidth)
 {
 	//Set server host & Connection parameters
 	ENetAddress connection;
 	ENetHost*   server;
 
-	enet_address_set_host(&connection, address);
-	connection.port = port;
+	enet_address_set_host(&connection, _address);
+	connection.port = _port;
 
 	server = enet_host_create(&connection,
-							   maxconnections,
-							   channels,
-							   inc_bandwith,
-							   outg_bandwidth);
+							   _maxconnections,
+							   _channels,
+							   _inc_bandwith,
+							   _outg_bandwidth);
 
 	if (server == NULL)
 	{
@@ -46,7 +46,7 @@ NetworkHandler NetworkHandler::create_host(const char* address, int32_t port, in
 		exit(EXIT_FAILURE);
 	}
 
-	DEVIOUS_EVENT("Server listening on: [" << address << ":" << port << "].");
+	DEVIOUS_EVENT("Server listening on: [" << _address << ":" << _port << "].");
 	return NetworkHandler(server);
 }
 
@@ -128,7 +128,7 @@ NetworkHandler::~NetworkHandler()
 	enet_host_destroy(m_server);
 }
 
-NetworkHandler::NetworkHandler(ENetHost* m_server)
+NetworkHandler::NetworkHandler(ENetHost* _server)
 {
-	this->m_server = m_server;
+	this->m_server = _server;
 }

@@ -30,6 +30,12 @@ public:
 	const e_Action get_highest_packet_priority() const;
 
 	/// <summary>
+	/// Returns true in the case that the event query does contain a packet of the specified type. 
+	/// </summary>
+	/// <returns></returns>
+	const bool contains_packet_type(const e_PacketInterpreter _interpreter) const;
+
+	/// <summary>
 	/// Returns whether the event query still has packets that need to get handled.
 	/// </summary>
 	const bool contains_packets() const;

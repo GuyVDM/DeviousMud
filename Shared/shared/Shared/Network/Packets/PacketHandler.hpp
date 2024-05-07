@@ -16,13 +16,13 @@ class PacketHandler
 
 public:
 	template<class T>
-	constexpr static int send_packet(T* data, ENetPeer* peer, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags);
+	constexpr static int send_packet(T* _data, ENetPeer* _peer, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags);
 
 	template<class T>
-	constexpr static void send_packet_multicast(T* data, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags);
+	constexpr static void send_packet_multicast(T* _data, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags);
 
 	template<class T>
-	constexpr static void retrieve_packet_data(T& packet, ENetEvent* ev);
+	constexpr static void retrieve_packet_data(T& _packet, ENetEvent* _e);
 };
 
 /// <summary>
@@ -35,29 +35,29 @@ public:
 /// <param name="flags"></param>
 /// <returns></returns>
 template<class T>
-constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags)
+constexpr inline int PacketHandler::send_packet(T* _data, ENetPeer* _peer, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags)
 {	
 	//Check if the peer id is registered.
-	if (peer->connectID > 0) 
+	if (_peer->connectID > 0)
 	{
 		static_assert(std::is_base_of<Packets::s_PacketHeader, T>::value || std::is_same<Packets::s_PacketHeader, T>::value, "T must inherit from the packetheader.");
 
 		std::ostringstream os;
 		{
 			cereal::PortableBinaryOutputArchive ar(os);
-			ar(*data);
+			ar(*_data);
 		}
 
 		std::string stringdata = os.str();
-		ENetPacket* packet = enet_packet_create(stringdata.c_str(), sizeof(stringdata), flags);
+		ENetPacket* packet = enet_packet_create(stringdata.c_str(), sizeof(stringdata), _flags);
 
-		if (enet_peer_send(peer, channel, packet) == 0)
+		if (enet_peer_send(_peer, _channel, packet) == 0)
 		{
-			enet_host_flush(m_host);
+			enet_host_flush(_host);
 		}
 		else
 		{
-			DEVIOUS_ASSERT(peer != nullptr);
+			DEVIOUS_ASSERT(_peer != nullptr);
 			DEVIOUS_ASSERT(packet != nullptr);
 			fprintf(stderr, "Something went wrong with sending out a packet... \n");
 		}
@@ -69,25 +69,25 @@ constexpr inline int PacketHandler::send_packet(T* data, ENetPeer* peer, ENetHos
 }
 
 template<class T>
-inline constexpr void PacketHandler::send_packet_multicast(T* data, ENetHost* m_host, enet_uint8 channel, enet_uint32 flags)
+inline constexpr void PacketHandler::send_packet_multicast(T* _data, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags)
 {
-	for(int i = 0; i < m_host->peerCount; i++)
+	for(int i = 0; i < _host->peerCount; i++)
 	{
-		ENetPeer* client = &m_host->peers[i];
-		send_packet<T>(data, client, m_host, channel, flags);
+		ENetPeer* peer = &_host->peers[i];
+		send_packet<T>(_data, peer, _host, _channel, _flags);
 	}
 }
 
 template<class T>
-constexpr inline void PacketHandler::retrieve_packet_data(T& packet, ENetEvent* ev)
+constexpr inline void PacketHandler::retrieve_packet_data(T& _packet, ENetEvent* _e)
 {
 	static_assert(std::is_base_of<Packets::s_PacketHeader, T>::value || std::is_same<Packets::s_PacketHeader, T>::value, "T must inherit from the packetheader.");
 
-	std::string st((const char*)ev->packet->data, ev->packet->dataLength);
+	std::string st((const char*)_e->packet->data, _e->packet->dataLength);
 	
 	std::istringstream is(st);
 	{
 		cereal::PortableBinaryInputArchive ar(is);
-		ar(packet);
+		ar(_packet);
 	}
 }

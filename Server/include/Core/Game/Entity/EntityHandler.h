@@ -22,7 +22,7 @@ namespace Server
 	{
 	public:
 		/// <summary>
-		/// Registers the player internally and sends out a RPC to create a avatar client sided.
+		/// Registers a player.
 		/// </summary>
 		/// <param name="_playerId"></param>
 		void register_player(const EntityUUID _playerId);
@@ -30,7 +30,7 @@ namespace Server
 
 
 		/// <summary>
-		/// Removes the player data and removes the avatar representing the player from all clients.
+		/// Removes a player their data.
 		/// </summary>
 		/// <param name="_playerId"></param>
 		void logout_player(const EntityUUID _playerId);

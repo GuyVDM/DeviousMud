@@ -18,7 +18,7 @@ public:
 	/// <param name="inc_bandwith"></param>
 	/// <param name="outg_bandwidth"></param>
 	/// <returns></returns>
-	static NetworkHandler create_local_host(int32_t maxconnections = 10, int32_t channels = 2, int32_t inc_bandwith = 0, int32_t outg_bandwidth = 0);
+	static NetworkHandler create_local_host(int32_t _maxconnections = 10, int32_t _channels = 2, int32_t _inc_bandwith = 0, int32_t _outg_bandwidth = 0);
 
 	/// <summary>
 	/// Create a listening server with the specified parameters.
@@ -30,12 +30,12 @@ public:
 	/// <param name="inc_bandwith"></param>
 	/// <param name="outg_bandwidth"></param>
 	/// <returns></returns>
-	static NetworkHandler create_host(const char* adress,
-		                              int32_t port, 
-		                              int32_t maxconnections, 
-		                              int32_t channels = 2, 
-		                              int32_t inc_bandwith = 0,
-		                              int32_t outg_bandwidth = 0);
+	static NetworkHandler create_host(const char* _adress,
+		                              int32_t _port, 
+		                              int32_t _maxconnections, 
+		                              int32_t _channels = 2, 
+		                              int32_t _inc_bandwith = 0,
+		                              int32_t _outg_bandwidth = 0);
 
 public:
 	ENetHost* get_server_host();
@@ -47,7 +47,7 @@ public:
 	~NetworkHandler();
 
 protected:
-	NetworkHandler(ENetHost* m_server);
+	NetworkHandler(ENetHost* _server);
 	void destroy();
 
 private:

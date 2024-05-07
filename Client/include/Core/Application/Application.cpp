@@ -54,6 +54,7 @@ void Application::load_sprites()
 {
 	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
+	//TODO: Remove all of this and move it to a static const map.
 	// Miscelaneous sprites
 	{
 		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);

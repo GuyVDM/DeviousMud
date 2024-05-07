@@ -182,7 +182,8 @@ void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
     if (m_bIsActive) 
     {
         const bool renderOutline = (Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::DISPLAY ||
-            Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) && m_bIsMovable;
+                                    Graphics::UI::HUDLayer::get_interaction_type() == e_UIInteractionType::MOVE) &&
+                                    m_bIsMovable;
 
         if (renderOutline)
         {

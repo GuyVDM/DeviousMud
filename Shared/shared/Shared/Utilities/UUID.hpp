@@ -18,7 +18,7 @@ namespace DM
         public:
             inline static UUID generate()
             {
-                uint64_t m_identifyer;
+                uint64_t identifyer;
 
                 // Get current timestamp
                 uint64_t timestamp = static_cast<uint64_t>(std::time(nullptr));
@@ -33,8 +33,8 @@ namespace DM
                 uint64_t randomBits = dis(gen);
 
                 // Combine timestamp and random bits
-                m_identifyer = (timestamp << 32) | (randomBits & 0xFFFFFFFF);
-                return UUID(m_identifyer);
+                identifyer = (timestamp << 32) | (randomBits & 0xFFFFFFFF);
+                return UUID(identifyer);
             }
 
             inline UUID() 

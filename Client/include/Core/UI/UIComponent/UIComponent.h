@@ -188,7 +188,6 @@ private:
 	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable);
 
 	friend UIComponent;
-
 	friend Graphics::UI::HUDLayer;
 	friend std::shared_ptr<UIComponent>;
 

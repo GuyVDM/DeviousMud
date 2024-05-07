@@ -1,5 +1,6 @@
 #include "precomp.h"
-#include "EventQuery.h"
+
+#include "Core/Events/Query/EventQuery.h"
 
 void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
 {
@@ -9,7 +10,7 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
     {
         for(int i = m_packets.size() - 1; i >= 0; --i) 
         {
-            e_Action packetAction = m_packets[i]->action;
+            const e_Action packetAction = m_packets[i]->action;
 
             if(packetAction < _action)
             {
@@ -19,17 +20,18 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
     };
 
     // Make sure that only the highest priority packets remain.
-    // This allows us to cancel actions that are unwanted or for some to take priority.
+    // This allows us to cancel any lower priority actions.
     {
         const e_Action highestPrio = get_highest_packet_priority();
 
+        if (_packet->action < highestPrio)
+        {
+            return;
+        }
+        else
         if (_packet->action > highestPrio)
         {
             remove_lower_prio_packets(_packet->action);
-        }
-        else if (_packet->action < highestPrio)
-        {
-            return;
         }
     }
 
@@ -82,6 +84,16 @@ const e_Action EventQuery::get_highest_packet_priority() const
     }
 
     return highestAction;
+}
+
+const bool EventQuery::contains_packet_type(const e_PacketInterpreter _interpreter) const
+{
+    const auto it = std::find_if(m_packets.begin(), m_packets.end(), [_interpreter](const std::unique_ptr<Packets::s_PacketHeader>& _packet)
+    {
+        return _packet->interpreter == _interpreter;
+    });
+
+    return it != m_packets.end();
 }
 
 const bool EventQuery::contains_packets() const

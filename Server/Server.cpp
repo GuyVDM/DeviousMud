@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 
 	atexit(enet_deinitialize);
 
-	NetworkHandler m_server = NetworkHandler::create_local_host();
-	m_server.start_ticking();
+	NetworkHandler server = NetworkHandler::create_local_host();
+	server.start_ticking();
 
 	return EXIT_SUCCESS;
 }

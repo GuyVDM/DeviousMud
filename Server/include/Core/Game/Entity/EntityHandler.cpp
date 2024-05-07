@@ -106,20 +106,20 @@ bool Server::EntityHandler::move_player_towards(const EntityUUID _playerId, cons
 	if (playerPos == _target) 
 		return true;
 
-	const std::vector<Utilities::ivec2> m_path = DM::Path::AStar::find_path(playerPos, _target);
+	const std::vector<Utilities::ivec2> path = DM::Path::AStar::find_path(playerPos, _target);
 
 	//Check if there's a path to the destination.
-	if (m_path.size() > 0)
+	if (path.size() > 0)
 	{
 		Utilities::ivec2 nextPos;
 
-		if (_isRunning && m_path.size() > 1)
+		if (_isRunning && path.size() > 1)
 		{
-			nextPos = m_path[1];
+			nextPos = path[1];
 		}
 		else
 		{
-			nextPos = m_path[0];
+			nextPos = path[0];
 		}
 
 		//Move the player one position.
@@ -170,12 +170,12 @@ void Server::EntityHandler::create_entity(uint8_t npcId, Utilities::ivec2 _pos)
 		packet.posY = _pos.y;
 
 		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
-			(
-				&packet,
-				g_globals.networkHandler->get_server_host(),
-				0,
-				ENET_PACKET_FLAG_RELIABLE
-			);
+		(
+			&packet,
+			g_globals.networkHandler->get_server_host(),
+			0,
+			ENET_PACKET_FLAG_RELIABLE
+		);
 	}
 }
 
@@ -187,14 +187,14 @@ bool Server::EntityHandler::move_entity_towards(NPC& _npc, Utilities::ivec2 _tar
 	if (entityPos == _target)
 		return true;
 
-	const std::vector<Utilities::ivec2> m_path = DM::Path::AStar::find_path(entityPos, _target);
+	const std::vector<Utilities::ivec2> path = DM::Path::AStar::find_path(entityPos, _target);
 
 	//Check if there's a path to the destination.
-	if (m_path.size() > 0)
+	if (path.size() > 0)
 	{
 		Utilities::ivec2 nextPos;
 		{
-			nextPos = m_path[0];
+			nextPos = path[0];
 		}
 
 		//Move the player one position.
@@ -202,11 +202,13 @@ bool Server::EntityHandler::move_entity_towards(NPC& _npc, Utilities::ivec2 _tar
 	}
 
 	Packets::s_EntityMovement entity;
-	entity.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
-	entity.entityId = _npc.uuid;
-	entity.x = _npc.position.x;
-	entity.y = _npc.position.y;
-	entity.isRunning = false;
+	{
+		entity.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
+		entity.entityId = _npc.uuid;
+		entity.x = _npc.position.x;
+		entity.y = _npc.position.y;
+		entity.isRunning = false;
+	}
 
 	PacketHandler::send_packet_multicast<Packets::s_EntityMovement>
 	(
