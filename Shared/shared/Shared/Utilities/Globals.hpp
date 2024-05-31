@@ -1,9 +1,10 @@
 #pragma once
 #include <random>
 
+#include <cmath>
+
 namespace DM
 {
-#include <cmath>
 	namespace GLOBALS
 	{
 		namespace GAMECONFIG 

@@ -45,10 +45,10 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 		controller.bPaused = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
-		controller.playbackSpeed = _playbackSpeed;
 		controller.keyframeIndex = 0;
 		controller.elapsedTime = 0.0f;
 		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
+		controller.playbackSpeed = _playbackSpeed > 0.0f ? _playbackSpeed : controller.playbackSpeed;
 
 		Animator::s_animators[controller.uuid] = controller;
 	}

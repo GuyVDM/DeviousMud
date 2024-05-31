@@ -39,7 +39,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
-			toDisconnect.push_back(clientInfo->clientId);
+			toDisconnect.push_back((enet_uint32)clientInfo->clientId);
 			DEVIOUS_LOG("Registered client: " << clientInfo->clientId << " for disconnect.");
 			continue;
 		}
@@ -65,7 +65,7 @@ void Server::ConnectionHandler::update_idle_timers()
 			if (clientInfo->ticksSinceLastResponse >= MAX_TICK_INTERVAL_NO_RESPONSE)
 			{
 				DEVIOUS_LOG("Couldnt retrieve any sign of connection from " << clientInfo->clientId << ". Disconnecting...");
-				toDisconnect.push_back(clientInfo->clientId);
+				toDisconnect.push_back((enet_uint32)clientInfo->clientId);
 				continue;
 			}
 		}
@@ -91,22 +91,27 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		return;
 	}
 
-	auto newClient = std::make_shared<ClientInfo>();
-	newClient->peer					  = _peer;
-	newClient->clientId			      = clientId;
-	newClient->playerId			      = DM::Utils::UUID::generate();
-	newClient->bAwaitingPing	      = false;
-	newClient->idleticks			  = 0;
-	newClient->ticksSinceLastResponse = 0;
-	newClient->packetquery			  = new EventQuery();
+	RefClientInfo newClient = std::make_shared<ClientInfo>();
+	{
+		newClient->peer = _peer;
+		newClient->clientId = (uint64_t)clientId;
+		newClient->playerId = DM::Utils::UUID::generate();
+		newClient->bAwaitingPing = false;
+		newClient->idleticks = 0;
+		newClient->ticksSinceLastResponse = 0;
+		newClient->packetquery = new EventQuery();
+	}
 
-	m_clientInfo[clientId] = newClient;  //Generate Client info
-	m_clientHandles.push_back(clientId); //Register client handle
+	//Generate Client info & Register the handle.
+	{
+		m_clientInfo[clientId] = newClient;
+		m_clientHandles.push_back(clientId); 
+	}
 
 	std::shared_ptr<Server::EntityHandler> eHandler = g_globals.entityHandler;
 
 	//Register our player in the player handler.
-	eHandler->register_player(newClient->playerId);
+	eHandler->register_player(newClient->clientId);
 
 	ENetHost* server = g_globals.networkHandler->get_server_host();
 
@@ -114,44 +119,13 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	{
 		Packets::s_CreateEntity packet;
 		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
-		packet.entityId = newClient->playerId;
+		packet.entityId    = newClient->playerId;
 		packet.npcId = 0;
-		packet.posX = 0;
-		packet.posY = 0;
+		packet.posX  = 0;
+		packet.posY  = 0;
 
 		//Sign to all clients that are already connected that a new player has joined.
 		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>(&packet, server, 0, ENET_PACKET_FLAG_RELIABLE);
-	}
-
-	//Send all existing players over to the registered player.
-	for (enet_uint32 handle : m_clientHandles)
-	{
-		if (clientId == handle) //If it's our own client, skip.
-			continue;
-		{
-			const RefClientInfo clientInfo = m_clientInfo[handle];
-			const Utilities::ivec2 playerPos = eHandler->get_player_position(clientInfo->playerId);
-
-			Packets::s_CreateEntity packet;
-			packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
-			packet.entityId = clientInfo->playerId;
-			packet.npcId = 0;
-			packet.posX = playerPos.x;
-			packet.posY = playerPos.y;
-			PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
-		}
-	}
-
-	//Send all existing entities over to the registered player.
-	for (const auto& entity : eHandler->get_world_entities())
-	{
-		Packets::s_CreateEntity packet;
-		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
-		packet.entityId = entity.first;
-		packet.npcId = entity.second->npcId;
-		packet.posX = entity.second->position.x;
-		packet.posY = entity.second->position.y;
-		PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
 	//Send a packet to the client so they can indentify their local player.
@@ -160,6 +134,41 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		player.interpreter = e_PacketInterpreter::PACKET_ASSIGN_LOCAL_PLAYER_ENTITY;
 		player.entityId = newClient->playerId;
 		PacketHandler::send_packet<Packets::s_CreateEntity>(&player, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+	}
+
+	//Send all existing players over to the registered player.
+	for (const enet_uint32 handle : m_clientHandles)
+	{
+		if (clientId == handle) //If it's our own client, skip.
+			continue;
+
+		if (auto optPlayer = eHandler->get_entity((uint64_t)handle); optPlayer.has_value())
+		{
+			// Send creation packet
+			{
+				Packets::s_CreateEntity packet;
+				packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
+				packet.entityId = optPlayer.value()->uuid;
+				packet.npcId = 0;
+				packet.posX = optPlayer.value()->position.x;
+				packet.posY = optPlayer.value()->position.y;
+
+				PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			}
+		}
+	}
+
+	//Send all existing npcs over to the registered player.
+	for (const auto& entity : eHandler->get_world_npcs())
+	{
+		Packets::s_CreateEntity packet;
+		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
+		packet.entityId = entity->uuid;
+		packet.npcId    = entity->npcId;
+		packet.posX     = entity->position.x;
+		packet.posY     = entity->position.y;
+
+		PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 }
 
@@ -174,27 +183,30 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 	enet_peer_disconnect_now(m_clientInfo[_clienthandle]->peer, NULL);
 
 	//Logout the player
-	const uint64_t playerId = m_clientInfo[_clienthandle]->playerId;
-	g_globals.entityHandler->logout_player(playerId);
+	{
+		g_globals.entityHandler->logout_player(m_clientInfo[_clienthandle]->clientId);
+	}
 
 	//Multicast to all other players that a player has left.
-	Packets::s_CreateEntity playerData;
-	playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
-	playerData.entityId = m_clientInfo[_clienthandle]->playerId;
-	
-	PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
-	(
-		&playerData, 
-		g_globals.networkHandler->get_server_host(), 
-		0,
-		ENET_PACKET_FLAG_RELIABLE
-	);
+	{
+		Packets::s_CreateEntity playerData;
+		playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
+		playerData.entityId = m_clientInfo[_clienthandle]->playerId;
+
+		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
+		(
+			&playerData,
+			g_globals.networkHandler->get_server_host(),
+			0,
+			ENET_PACKET_FLAG_RELIABLE
+		);
+	}
 
 	//Find and remove the clienthandle of the client that we're disconnecting.
-	auto it = std::find_if(m_clientHandles.begin(), m_clientHandles.end(), [&_clienthandle](const enet_uint32& _handle)
-		{
-			return _clienthandle == _handle;
-		});
+	const auto it = std::find_if(m_clientHandles.begin(), m_clientHandles.end(), [&_clienthandle](const enet_uint32& _handle)
+	{
+		return _clienthandle == _handle;
+	});
 
 	if (it != m_clientHandles.end())
 	{

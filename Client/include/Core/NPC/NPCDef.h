@@ -36,9 +36,9 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 		/// THESE ANIMATIONS NEEDS TO GET GRABBED FROM THE PLAYER HANDLER IN THE FUTURE.
 		///
 		/// 
-		npc.idleAnim = e_AnimationType::PLAYER_IDLE;
+		npc.idleAnim    = e_AnimationType::PLAYER_IDLE;
 		npc.walkingAnim = e_AnimationType::PLAYER_WALKING;
-		npc.attackAnim = e_AnimationType::PLAYER_WALKING;
+		npc.attackAnim  = e_AnimationType::PLAYER_ATTACKING;
 		break;
 
 	case 1:

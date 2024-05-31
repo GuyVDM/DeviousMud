@@ -59,7 +59,7 @@ void Application::load_sprites()
 	{
 		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
 		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
-		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 13);
+		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 14);
 	}
 
 	// Load in all HUD elements.
@@ -68,6 +68,11 @@ void Application::load_sprites()
 		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
 		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
 		renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
+	}
+
+	// Load in misc.
+	{
+		renderer->load_and_bind_surface("hitsplat.png", Graphics::SpriteType::HITSPLAT);
 	}
 
 	// Load in all icons.

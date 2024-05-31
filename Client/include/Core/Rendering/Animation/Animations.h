@@ -5,17 +5,22 @@
 
 enum class e_AnimationType : uint8_t
 {
-    NO_ANIMATION           = 0x00,
-	ANIMATION_CLICK_YELLOW = 0x01,
-	ANIMATION_CLICK_RED    = 0x02,
-    PLAYER_IDLE            = 0x03,
-    PLAYER_WALKING         = 0x04,
+    NO_ANIMATION = 0x00,
+
+    //Clicking cross sprite
+	ANIMATION_CLICK_YELLOW,
+	ANIMATION_CLICK_RED,
+
+    //Player
+    PLAYER_IDLE,
+    PLAYER_WALKING,
+    PLAYER_ATTACKING,
 
     //Entities
-    GOBLIN_IDLE            = 0x05,
-    GOBLIN_WALK            = 0x06,
-    GOBLIN_ATTACK          = 0x07,
-    GOBLIN_DEATH           = 0x08
+    GOBLIN_IDLE,
+    GOBLIN_WALK,
+    GOBLIN_ATTACK,
+    GOBLIN_DEATH
 };
 
 struct Animations
@@ -26,10 +31,11 @@ struct Animations
     {
         static const AnimationMap animations = 
         {
-             { e_AnimationType::ANIMATION_CLICK_YELLOW,  Animation2D(0 , 5 )},
-             { e_AnimationType::ANIMATION_CLICK_RED,     Animation2D(6 , 12)},
+             { e_AnimationType::ANIMATION_CLICK_YELLOW,  Animation2D(0 , 6 )},
+             { e_AnimationType::ANIMATION_CLICK_RED,     Animation2D(7 , 13)},
              { e_AnimationType::PLAYER_IDLE,             Animation2D(0 , 4 )},
              { e_AnimationType::PLAYER_WALKING,          Animation2D(5 , 12)},
+             { e_AnimationType::PLAYER_ATTACKING,        Animation2D(17 , 20)},
 
              //Entities
              { e_AnimationType::GOBLIN_IDLE,             Animation2D(0 , 19)},

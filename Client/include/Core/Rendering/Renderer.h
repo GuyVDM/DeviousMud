@@ -42,16 +42,16 @@ namespace Graphics
 			SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _maxframecount);
 			virtual ~SDL_SpriteDetails();
 
-			const uint32_t& get_framecount() const;
+			const uint8_t& get_framecount() const;
 
 			SDL_Surface* get_surface() const;
 
 			SDL_Texture* get_texture();
 
 		private:
-			uint32_t     framecount;
-			SDL_Surface* surface;
-			SDL_Texture* m_textTexture;
+			uint8_t          m_framecount;
+			SDL_Surface*     m_surface;
+			SDL_Texture*     m_texture;
 		};
 
 	public:
@@ -77,15 +77,19 @@ namespace Graphics
 
 		void start_frame();
 
-		void draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color = { 255, 255, 255, 255 });
+		void end_frame();
 
-		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize = GRID_CELL_PX_SIZE);
+		void draw_rect(const Utilities::vec2 _pos, const Utilities::vec2 _size, SDL_Color _color = { 255, 255, 255, 255 }, uint8_t _zOrder = 0, bool _bScreenspace = true);
+
+		void draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color = { 255, 255, 255, 255 }, uint8_t _zOrder = 0, bool _bScreenspace = true);
+
+		void plot_texture(SpriteRenderData& _data, int32_t _zOrder);
+
+		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size);
 
 		void plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size);
 
 		void get_viewport_size(int32_t* _w, int32_t* _h);
-
-		void end_frame();
 
 		Sprite get_sprite(const SpriteType& _spritetype);
 
@@ -98,15 +102,19 @@ namespace Graphics
 		Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path);
 	
 	private:
-		std::shared_ptr<Camera> camera;
+		/// All render queries get stacked into 
+		/// The Key represents the Z render order, going through what to render first.
+		std::map<int8_t, std::vector<Graphics::SpriteRenderData>> m_renderQueue;
 
-		std::string assetsPath;
+		std::shared_ptr<Camera> m_camera;
 
-		std::unordered_map<SpriteType, SDL_SpriteDetails*> sprites;
+		std::string m_assetsPath;
 
-		SDL_Window* window;
+		std::unordered_map<SpriteType, SDL_SpriteDetails*> m_sprites;
 
-		SDL_Renderer* renderer;
+		SDL_Window* m_window;
+
+		SDL_Renderer* m_renderer;
 
 		friend class TextComponent;
 	};

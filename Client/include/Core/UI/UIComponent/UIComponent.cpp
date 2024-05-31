@@ -1,8 +1,8 @@
 #include "precomp.h"
 
-#include "Core/UI/Layer/HUDLayer/HUDLayer.h"
-
 #include "Core/UI/UIComponent/UIComponent.h"
+
+#include "Core/UI/Layer/HUDLayer/HUDLayer.h"
 
 #include "Core/Rendering/Renderer.h"
 
@@ -10,6 +10,14 @@
 
 UIComponent*    UIComponent::s_draggedComponent = nullptr;
 Utilities::vec2 UIComponent::s_dragOffset       = Utilities::vec2(0.0f);
+
+void UIComponent::init()
+{
+}
+
+void UIComponent::update()
+{
+}
 
 const int32_t UIComponent::get_child_count() const
 {
@@ -22,14 +30,46 @@ void UIComponent::set_active(bool _bIsActive)
     m_bIsActive = _bIsActive;
 }
 
+void UIComponent::render()
+{
+    render(g_globals.renderer.lock());
+}
+
+void UIComponent::recursiveUpdateCleanup()
+{
+    on_cleanup();
+
+    update();
+
+    for(const auto& child : m_children) 
+    {
+        child->on_cleanup();
+
+        child->update();
+    }
+}
+
+UIComponent::~UIComponent()
+{
+    on_render_call.clear();
+}
+
 UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite) :
     Clickable(_pos, _size, g_globals.renderer.lock()->get_sprite(_sprite))
 {
     set_position(_pos);
 }
 
-void UIComponent::init()
+void UIComponent::on_cleanup()
 {
+    for (int i = toRemove.size() - 1; i >= 0; i--)
+    {
+        if(toRemove[i]) 
+        {
+            remove_child(toRemove[i]);
+            toRemove.erase(toRemove.begin() + i);
+        }
+    }
 }
 
 const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
@@ -50,6 +90,11 @@ const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
     const int32_t bottom = transformedPos.y + halfExtends.y;
 
     return (_x > left && _x < right && _y > top && _y < bottom);
+}
+
+void UIComponent::set_asset_name(std::string _debugName)
+{
+    m_assetName = _debugName;
 }
 
 Utilities::vec2 UIComponent::get_anchor_position(e_AnchorPreset _preset, Rect _rect)
@@ -88,6 +133,10 @@ Utilities::vec2 UIComponent::get_anchor_position(e_AnchorPreset _preset, Rect _r
     return Utilities::vec2(0.0f);
 }
 
+void UIComponent::set_z_order(int32_t _zOrder)
+{
+    m_sprite.zRenderPriority = _zOrder;
+}
 
 const UIComponent* UIComponent::get_root() const
 {
@@ -103,7 +152,32 @@ const UIComponent* UIComponent::get_root() const
 
 void UIComponent::set_parent(UIComponent* _parent)
 {
-    m_parent = _parent;
+    m_parent      = _parent;
+
+    // Copy some parent essentials.
+    {
+        m_eRenderMode = m_parent->m_eRenderMode;
+        m_sprite.zRenderPriority = _parent->m_sprite.zRenderPriority;
+
+        for (auto& child : m_children)
+        {
+            child->m_eRenderMode = m_eRenderMode;
+            child->m_sprite.zRenderPriority = m_sprite.zRenderPriority;
+        }
+    }
+}
+
+void UIComponent::unparent()
+{
+    if(m_parent) 
+    {
+        m_parent->toRemove.push_back(this);
+    }
+}
+
+void UIComponent::set_render_mode(e_RenderMode _eRenderMode)
+{
+    m_eRenderMode = _eRenderMode;
 }
 
 void UIComponent::set_anchor(e_AnchorPreset _anchorPreset)
@@ -125,20 +199,23 @@ void UIComponent::add_child(std::shared_ptr<UIComponent> _component)
         return;
     }
 
-    DEVIOUS_WARN("The given UIComponent is already a child of this object!");
+    DEVIOUS_WARN("The specified UIComponent is already a child of this object.");
 }
 
-void UIComponent::remove_child(std::shared_ptr<UIComponent> _component)
+void UIComponent::remove_child(UIComponent* _component)
 {
     auto it = std::find_if(m_children.begin(), m_children.end(), [_component](const std::shared_ptr<UIComponent> _other)
         {
-            return _component == _other;
+            return _component == _other.get();
         });
 
     if (it != m_children.end())
     {
         m_children.erase(it);
+        return;
     }
+
+    DEVIOUS_ERR("Failed to remove component.");
 }
 
 const Rect UIComponent::get_bounding_rect() const
@@ -197,8 +274,16 @@ void UIComponent::render(std::shared_ptr<Graphics::Renderer> _renderer)
         }
 
         // Render UIComponent Sprite
-        _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
-        
+        switch(m_eRenderMode) 
+        {
+        case e_RenderMode::SCREENSPACE:
+            _renderer->plot_raw_frame(get_sprite(), get_position(), get_size());
+            break;
+
+        case e_RenderMode::WORLDSPACE:
+            _renderer->plot_frame(get_sprite(), get_position(), get_size());
+            break;
+        }
 
         for (const auto& child : m_children)
         {

@@ -7,10 +7,12 @@
 
 ClientInfo::ClientInfo()
 {
-	peer = nullptr;
-	playerId    = 0;
-	idleticks   = 0;
-	packetquery = nullptr; 
+	peer		  = nullptr;
+	playerId      = 0;
+	idleticks     = 0;
+	clientId      = 0;
+	bAwaitingPing = false;
+	packetquery   = nullptr; 
 }
 
 ClientInfo::~ClientInfo()

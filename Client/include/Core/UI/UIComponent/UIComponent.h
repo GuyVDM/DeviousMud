@@ -2,6 +2,8 @@
 
 #include "Core/Events/Clickable/Clickable.h"
 
+#include "Shared/Utilities/EventListener.h"
+
 enum class e_AnchorPreset : uint8_t
 {
 	TOP_LEFT      = 0x00,
@@ -50,9 +52,18 @@ namespace Graphics
 	}
 }
 
-class UIComponent : public Clickable 
+class UIComponent : public Clickable
 {
 public:
+	/// <summary>
+	/// How this UI element should be rendered based on its position.
+	/// </summary>
+	enum e_RenderMode 
+	{
+		SCREENSPACE = 0,
+		WORLDSPACE
+	};
+
 	using Position = Utilities::vec2;
 	using Size     = Utilities::vec2;
 
@@ -60,11 +71,23 @@ public:
 	static std::shared_ptr<T> create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable = false);
 
 	/// <summary>
+	/// Allows for indentification of asset whilest debugging.
+	/// </summary>
+	/// <param name="_debugName"></param>
+	void set_asset_name(std::string _debugName);
+
+	/// <summary>
 	/// Generates a anchor based on the preset and the parents transform.
 	/// </summary>
 	/// <param name="_preset"></param>
 	/// <returns></returns>
 	static Utilities::vec2 get_anchor_position(e_AnchorPreset _preset, Rect _rect);
+
+	/// <summary>
+	/// Rendering priority of the sprite on the z axis.
+	/// </summary>
+	/// <param name="_zOrder"></param>
+	void set_z_order(int32_t _zOrder);
 
 	/// <summary>
 	/// Returns the top object in the hierarchy.
@@ -82,7 +105,15 @@ public:
 	/// Attempts to remove the component from the children if it's valid.
 	/// </summary>
 	/// <param name="_component"></param>
-	void remove_child(std::shared_ptr<UIComponent> _component);
+	void remove_child(UIComponent* _component);
+
+	/// <summary>
+	/// Will try and return the first derived UIComponent of a certain type. 
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <returns></returns>
+	template<typename T>
+	std::optional<std::shared_ptr<T>> get_component_in_children();
 
 	/// <summary>
 	/// Set the anchor of the UI element.
@@ -135,7 +166,37 @@ public:
 	/// <param name="_bIsActive"></param>
 	void set_active(bool _bIsActive);
 
-	virtual ~UIComponent() = default;
+	/// <summary>
+	/// Wrapper function for rendering.
+	/// </summary>
+	void render();
+
+	/// <summary>
+	/// Unchilds and destroys the object.
+	/// </summary>
+	void unparent();
+
+	/// <summary>
+	/// Whether you want to render the UI screen or worldspace.
+	/// </summary>
+	/// <param name="_eRenderMode"></param>
+	void set_render_mode(e_RenderMode _eRenderMode);
+
+	/// <summary>
+	/// Makes the transform of this object relative to the parent.
+	/// </summary>
+	/// <param name="_parent"></param>
+	void set_parent(UIComponent* _parent);
+
+	/// <summary>
+	/// Main loop call.
+	/// </summary>
+	/// <returns></returns>
+	void recursiveUpdateCleanup();
+
+
+	virtual ~UIComponent();
+
 	UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::SpriteType _sprite);
 
 protected:
@@ -149,13 +210,17 @@ protected:
 	/// </summary>
 	virtual void init();
 	
-	/// <summary>
-	/// Makes the transform of this object relative to the parent.
-	/// </summary>
-	/// <param name="_parent"></param>
-	void set_parent(UIComponent* _parent);
-
 private:
+	/// <summary>
+	/// Happens every frame.
+	/// </summary>
+	virtual void update();
+	
+	/// <summary>
+	/// At the end of each frame, deparents any removed children.
+	/// </summary>
+	void on_cleanup();
+
 	/// <summary>
 	/// Renders the UI element.
 	/// </summary>
@@ -188,33 +253,51 @@ private:
 	friend std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable);
 
 	friend UIComponent;
-	friend Graphics::UI::HUDLayer;
 	friend std::shared_ptr<UIComponent>;
+	friend Graphics::UI::HUDLayer;
 
 protected:
+	std::string                                m_assetName = "Null";
+
 	bool                                       m_bIsActive     = true;
 	bool                                       m_bIsMovable    = false;
 	bool									   m_bInteractable = true;
 	UIComponent*                               m_parent;
 	std::vector<std::shared_ptr<UIComponent>>  m_children;
+	e_RenderMode                               m_eRenderMode = e_RenderMode::SCREENSPACE;
 	
 private:
-	e_AnchorPreset                             m_anchor = e_AnchorPreset::TOP_LEFT;
+	std::vector<UIComponent*> toRemove;
+
+	e_AnchorPreset                             m_anchor      = e_AnchorPreset::TOP_LEFT;
 };
 
 template<typename T>
 inline std::shared_ptr<T> UIComponent::create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable)
 {
 	static_assert(std::is_base_of<UIComponent, T>::value, "T must inherit from the UIComponent.");
-	
+
 	T* component = new T(_pos, _size, _sprite);
 
 	// Cast back to base so we can call the init function since the base is a friend.
-	{
-		UIComponent* base = dynamic_cast<UIComponent*>(component);
-		base->m_bInteractable = _bInteractable;
-		base->init();
-	}
+
+	UIComponent* base = dynamic_cast<UIComponent*>(component);
+	base->m_bInteractable = _bInteractable;
+	base->init();
 
 	return std::shared_ptr<T>(component);
+}
+
+template<typename T>
+inline std::optional<std::shared_ptr<T>> UIComponent::get_component_in_children() 
+{
+	for(std::shared_ptr<UIComponent> component : m_children) 
+	{
+		if(std::shared_ptr<T> derivedComponent = std::dynamic_pointer_cast<T>(component)) 
+		{
+			return derivedComponent;
+		}
+	}
+
+	return std::nullopt;
 }

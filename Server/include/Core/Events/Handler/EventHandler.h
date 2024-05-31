@@ -29,10 +29,10 @@ namespace Server
 
 		static void queue_incoming_event(ENetEvent* _event, RefClientInfo& _clientinfo);
 
-		static void handle_queud_events(ENetHost* m_host);
+		static void handle_queud_events();
 
 	private:
-		static void handle_client_specific_packets(RefClientInfo& _client, ENetHost* _host);
+		static void handle_client_specific_packets(RefClientInfo& _client);
 	};
 
 	template<typename T>

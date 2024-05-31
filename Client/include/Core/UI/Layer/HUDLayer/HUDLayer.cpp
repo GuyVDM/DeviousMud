@@ -1,3 +1,4 @@
+
 #include "precomp.h"
 
 #include "Core/Rendering/Renderer.h"
@@ -90,6 +91,7 @@ bool HUDLayer::handle_event(const SDL_Event* _event)
 void HUDLayer::create_hud()
 {
 	m_canvas = Canvas::create_canvas();
+	m_canvas->set_z_order(10);
 
 	std::shared_ptr<UIComponent> component;
 
@@ -130,6 +132,11 @@ void HUDLayer::create_hud()
 void HUDLayer::update()
 {
 	std::shared_ptr<UIComponent> base = std::dynamic_pointer_cast<UIComponent>(m_canvas);
+
+	// Update Loop
+	{
+		base->recursiveUpdateCleanup();
+	}
 
 	// Render loop
 	{	

@@ -23,7 +23,6 @@ namespace Server
 		/// <summary>
 		/// Registers the client to the server.
 		/// </summary>
-		/// <param name="_clienthandle"></param>
 		/// <param name="_peer"></param>
 		void register_client(ENetPeer* _peer);
 

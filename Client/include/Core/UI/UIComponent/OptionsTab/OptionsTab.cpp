@@ -49,13 +49,13 @@ void OptionsTab::init()
 
 	//Set up visuals
 	{
-		m_sprite.color = { 0, 0, 0, 0 };
+		m_sprite.color = { 0, 0, 0, 255 };
 		std::shared_ptr<UIComponent> component;
 		//Create options header 
 		{
 			TextArgs m_textArgs;
 			{
-				m_textArgs.color = { 93, 84, 71 , 255 };
+				m_textArgs.color = { 110, 109, 104, 255 };
 				m_textArgs.font = e_FontType::RUNESCAPE_UF;
 				m_textArgs.size = 25;
 			}
@@ -181,7 +181,7 @@ void OptionsTab::show()
 				set_position(Utilities::to_vec2(mousePos) - offset);
 			}   
 
-			clampToViewport();
+			clamp_to_viewport();
 
 			regenerate_option_box();
 
@@ -216,20 +216,20 @@ bool OptionsTab::handle_event(const SDL_Event* _event)
 void OptionsTab::renderOutlines(std::shared_ptr<Graphics::Renderer> _renderer)
 {
 	const int pxOutline = 2;
-	const SDL_Color outlineColor = { 93, 84, 71, 255 };
-	const SDL_Color optionsOutlineColor = { 0, 0, 0, 255 };
+	const SDL_Color outlineColor = { 90, 89, 84, 255 };
+	const SDL_Color optionsOutlineColor = { 1, 1, 1, 255 };
 
 	//Outline around entire options tab.
-	_renderer->draw_outline(get_position(), get_bounding_rect().get_size(), pxOutline, outlineColor);
+	_renderer->draw_outline(get_position(), get_bounding_rect().get_size(), pxOutline, outlineColor, m_sprite.zRenderPriority);
 
 	//Render outline around the options header.
-	_renderer->draw_outline(get_position(), get_local_rect().get_size(), pxOutline, outlineColor);
-	
+	_renderer->draw_outline(get_position(), get_local_rect().get_size(), pxOutline, outlineColor, m_sprite.zRenderPriority);
+	//
 	//We only want to render when there are options available.
 	if (get_child_count() > 1)
 	{
 		//Render bounding rectangle around the options specifically.
-		_renderer->draw_outline(m_boundingRectOptionsUI.minPos, m_boundingRectOptionsUI.get_size(), -pxOutline, optionsOutlineColor);
+		_renderer->draw_outline(m_boundingRectOptionsUI.minPos + Utilities::vec2(pxOutline, -pxOutline), m_boundingRectOptionsUI.get_size() - Utilities::vec2(pxOutline * 2, 0), pxOutline, optionsOutlineColor, m_sprite.zRenderPriority);
 	}
 }
 
@@ -238,7 +238,7 @@ void OptionsTab::set_options_delete_flag()
 	m_flagToClose = true;
 }
 
-void OptionsTab::clampToViewport()
+void OptionsTab::clamp_to_viewport()
 {
 	auto renderer = g_globals.renderer.lock();
 
@@ -316,7 +316,7 @@ void Option::set_option(OptionArgs _optionArgs)
 
 		}	add_child(textComponent);
 
-		//Create Subject Text
+		//Create Subject Textcomponent
 		{
 			textArgs.color = m_optionArgs.subjectCol;
 

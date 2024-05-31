@@ -46,8 +46,6 @@ public:
 
 	EventListener<uint64_t> on_entity_removed;
 
-	EventListener<void> on_entity_update;
-
 	RefEntity get_local_player_data();
 
 	void create_world_entity(DM::Utils::UUID _uuid, uint8_t _npcId, Utilities::ivec2 _pos);
@@ -57,6 +55,8 @@ public:
 	void update();
 
 	std::optional<RefEntity> get_entity(DM::Utils::UUID _id) const;
+
+	const std::unordered_map<DM::Utils::UUID, RefEntity>& get_entities();
 
 public:
 	EntityHandler();

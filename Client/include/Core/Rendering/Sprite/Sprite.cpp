@@ -9,7 +9,7 @@ const Graphics::SpriteType Graphics::_Sprite::get_sprite_type() const
 	return m_eSpriteType;
 }
 
-const uint32_t Graphics::_Sprite::get_framecount() const
+const uint8_t Graphics::_Sprite::get_framecount() const
 {
 	return m_frameCount;
 }

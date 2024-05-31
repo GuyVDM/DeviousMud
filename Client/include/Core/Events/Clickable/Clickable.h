@@ -10,11 +10,11 @@ class Clickable : public EventReceiver
 public:
 	virtual bool handle_event(const SDL_Event* _event) override;
 
-	const Graphics::Sprite& get_sprite() const;
+	Graphics::Sprite& get_sprite();
 
-	const Utilities::vec2&  get_position() const;
+	const Utilities::vec2 get_position() const;
 
-	const Utilities::vec2&  get_size() const;
+	const Utilities::vec2 get_size() const;
 
 	virtual void set_position(Utilities::vec2 _pos);
 

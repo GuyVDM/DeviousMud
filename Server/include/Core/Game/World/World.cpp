@@ -14,7 +14,7 @@ void Server::World::init()
 	for (const NPCSpawn& spawn : get_world_spawns())
 	{
 		//TODO: Handle respawning
-		g_globals.entityHandler->create_entity(spawn.npcId, spawn.spawnCoords);
+		g_globals.entityHandler->create_world_npc(spawn.npcId, spawn.spawnCoords);
 		DEVIOUS_EVENT("Spawned NPC ID: " << spawn.npcId << " into the world at: " << spawn.spawnCoords.x << ", " << spawn.spawnCoords.y << ".")
 	}
 }

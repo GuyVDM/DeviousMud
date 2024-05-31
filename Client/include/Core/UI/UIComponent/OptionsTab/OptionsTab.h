@@ -92,7 +92,7 @@ protected:
 private:
 	void set_options_delete_flag();
 
-	void clampToViewport();
+	void clamp_to_viewport();
 
 	/// <summary>
 	/// Callback that's subscribed to the 'on_option_added' event.

@@ -16,23 +16,30 @@ enum class e_Action : uint8_t
 
 enum class e_PacketInterpreter : uint8_t
 {
-	PACKET_NONE                        = 0x00,
+	PACKET_NONE = 0x00,
 
-	PACKET_PING                        = 0x01,
+	PACKET_PING = 0x01,
 
-	PACKET_CREATE_ENTITY               = 0x02,
+	PACKET_CREATE_ENTITY = 0x02,
 
-	PACKET_ASSIGN_LOCAL_PLAYER_ENTITY  = 0x03,
+	PACKET_ASSIGN_LOCAL_PLAYER_ENTITY = 0x03,
 
-	PACKET_REMOVE_ENTITY               = 0x04,
+	PACKET_REMOVE_ENTITY = 0x04,
 
-	PACKET_MOVE_ENTITY                 = 0x05,
+	PACKET_MOVE_ENTITY = 0x05,
 
-	PACKET_TIMEOUT_WARNING             = 0x06,
+	PACKET_TIMEOUT_WARNING = 0x06,
 
-	PACKET_PLAYER_PATH                 = 0x07,
+	PACKET_PLAYER_PATH = 0x07,
 
-	PACKET_FOLLOW_ENTITY               = 0x08
+	PACKET_FOLLOW_ENTITY = 0x08,
+
+	PACKET_ENGAGE_ENTITY = 0x09,
+
+	PACKET_ENTITY_HIT    = 0x0A,
+
+	PACKET_ENTITY_SKILL_UPDATE = 0x0B
+
 };
 
 namespace Packets
@@ -70,7 +77,7 @@ namespace Packets
 		/// <summary>
 		/// The entity the client wants to perform a action on.
 		/// </summary>
-		uint64_t entityId;
+		uint64_t entityId = -1;
 
 		template<class Archive>
 		void serialize(Archive& ar) 
@@ -116,13 +123,47 @@ namespace Packets
 		/// Pass connection Id if it's from client to server, else the server will pass the playerId instead towards the client.
 		/// This id is either the playerUUID or the Client UUID
 		/// </summary>
-		uint64_t entityId = -1;
+		uint64_t entityId = 0;
 
 		template<class Archive>
 		void serialize(Archive& ar)
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
+		}
+	};
+
+	struct s_UpdateSkill : public s_PacketHeader 
+	{
+		uint64_t entityId     =  0;
+		uint8_t  skillType    = -1;
+		int32_t  level        = -1;
+		int32_t  levelBoosted = -1;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(entityId);
+			ar(skillType);
+			ar(level);
+			ar(levelBoosted);
+		}
+	};
+
+	struct s_EntityHit : public s_PacketHeader
+	{
+		uint64_t fromEntityId = 0;
+		uint64_t toEntityId   = 0;
+		int32_t  hitAmount    = -1;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_PacketHeader>(this));
+			ar(fromEntityId);
+			ar(toEntityId);
+			ar(hitAmount);
 		}
 	};
 

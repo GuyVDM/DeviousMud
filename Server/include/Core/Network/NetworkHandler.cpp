@@ -59,7 +59,7 @@ void NetworkHandler::start_ticking()
 {
 	auto connectionHandler = std::make_shared<Server::ConnectionHandler>();
 	auto entityHandler     = std::make_shared<Server::EntityHandler>();
-	auto world = std::make_shared<Server::World>();
+	auto world			   = std::make_shared<Server::World>();
 
 	bool is_running = true;
 
@@ -84,36 +84,38 @@ void NetworkHandler::start_ticking()
 		{
 			switch (e.type)
 			{
-			case ENET_EVENT_TYPE_CONNECT:
-			{
-				connectionHandler->register_client(e.peer);
-			}
-			break;
+				case ENET_EVENT_TYPE_CONNECT:
+				{
+					connectionHandler->register_client(e.peer);
+				}
+				break;
 
-			case ENET_EVENT_TYPE_DISCONNECT:
-			{
-				connectionHandler->disconnect_client(e.peer->connectID);
-			}
-			break;
+				case ENET_EVENT_TYPE_DISCONNECT:
+				{
+					connectionHandler->disconnect_client(e.peer->connectID);
+				}
+				break;
 
-			case ENET_EVENT_TYPE_RECEIVE:
-			{
-				RefClientInfo clientInfo = connectionHandler->get_client_info(e.peer->connectID);
-				Server::EventHandler::queue_incoming_event(&e, clientInfo);
-				enet_packet_destroy(e.packet);
-			}
-			break;
+				case ENET_EVENT_TYPE_RECEIVE:
+				{
+					RefClientInfo clientInfo = connectionHandler->get_client_info(e.peer->connectID);
+					Server::EventHandler::queue_incoming_event(&e, clientInfo);
+					enet_packet_destroy(e.packet);
+				}
+				break;
 			}
 		}
 
 		if(ticktimer > m_tickDuration) 
 		{
 			ticktimer = 0.0f;
-			Server::EventHandler::handle_queud_events(m_server);
 
-			//Check for timeouts.
-			connectionHandler->update_idle_timers();
-			entityHandler->entities_tick();
+			//Tick
+			{
+				Server::EventHandler::handle_queud_events();
+				connectionHandler->update_idle_timers();
+				entityHandler->entities_tick();
+			}
 		}
 	}
 }
@@ -130,5 +132,5 @@ NetworkHandler::~NetworkHandler()
 
 NetworkHandler::NetworkHandler(ENetHost* _server)
 {
-	this->m_server = _server;
+	m_server = _server;
 }

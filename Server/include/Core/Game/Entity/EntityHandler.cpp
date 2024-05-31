@@ -26,94 +26,68 @@ using Path = std::vector<Utilities::ivec2>;
 
 Server::EntityHandler::~EntityHandler() 
 {
-	m_players.clear();
 	m_entities.clear();
 }
 
-void Server::EntityHandler::register_player(const EntityUUID _playerId)
+const int32_t Server::EntityHandler::get_distance(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 {
-	if (m_entities.find(_playerId) != m_entities.end())
+	const Utilities::ivec2 delta = _b->position - _a->position;
+	return std::max<int32_t>(std::abs(delta.x), std::abs(delta.y));
+}
+
+void Server::EntityHandler::register_player(const uint64_t _clientId)
+{
+	if (m_entities.find(_clientId) != m_entities.end())
 	{
-		DEVIOUS_WARN("A player already exists with this handle. " << _playerId);
+		DEVIOUS_WARN("A player already exists with this handle. " << _clientId);
 		return;
 	}
 
-	m_players[_playerId] = std::make_shared<Player>();
+	auto client = g_globals.connectionHandler->get_client_info((enet_uint32)_clientId);
 
-	DEVIOUS_EVENT("Player " << _playerId << " has logged in.");
+	m_entities[_clientId]       = std::make_shared<Player>();
+	m_entities[_clientId]->uuid = client->playerId;
+	m_playerToClientHandles[client->playerId] = _clientId;
+	DEVIOUS_EVENT("Player " << _clientId << " has logged in.");
 }
 
-void Server::EntityHandler::logout_player(const EntityUUID _playerId)
+void Server::EntityHandler::logout_player(const uint64_t _clientId)
 {
-	if (m_entities.find(_playerId) == m_entities.end())
+	if (auto player = get_entity(_clientId); player.has_value())
 	{
-		DEVIOUS_WARN("Couldn't logout player: " << _playerId);
+		m_playerToClientHandles.erase(player.value()->uuid);
+		m_entities.erase(_clientId);
+		DEVIOUS_EVENT("Player: " << _clientId << " has logged out.");
 		return;
 	}
-
-	DEVIOUS_EVENT("Player: " << _playerId << " has logged out.");
-	m_entities.erase(_playerId);
+	else 
+	{
+		DEVIOUS_WARN("Couldn't logout player: " << _clientId);
+	}
 }
 
-//void Server::EntityHandler::add_experience(const EntityUUID _playerId, const DM::SKILLS::e_skills _skilltype, const uint32_t _experience)
-//{
-//	if(m_entities.find(_playerId) == m_entities.end())
-//	{
-//   		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
-//		return;
-//	}
-//
-//	//Get player reference.
-//	std::shared_ptr<PlayerData> player = m_players[_playerId];
-//
-//	//Grab skill
-//	DM::SKILLS::Skill* Skill = &player->skills[_skilltype];
-//
-//	//Calculate total exp
-//	int32_t exp = Skill->experience + _experience;
-//
-//	//Prevent exp from going over the experience cap.
-//	exp = min(exp, DM::GLOBALS::GAMECONFIG::EXPERIENCE_CAP);
-//
-//	//Apply the experience
-//	Skill->experience = exp;
-//
-//	//Check if there's a level up.
-//	if(Skill->level < DM::GLOBALS::GAMECONFIG::get_level(exp))
-//	{
-//		Skill->level++;
-//
-//		if(Skill->levelboosted < Skill->level) 
-//		{
-//			Skill->levelboosted++;
-//		}
-//
-//		DEVIOUS_EVENT("Player " << _playerId << "has leveled up a skill.");
-//	}
-//}
-
-bool Server::EntityHandler::move_player_towards(const EntityUUID _playerId, const Utilities::ivec2 _target, const bool& _isRunning)
+bool Server::EntityHandler::move_entity_towards(const EntityUUID _entityId, const Utilities::ivec2 _target, const bool _bIsRunning)
 {
-	if (m_players.find(_playerId) == m_players.end())
+	if (m_entities.find(_entityId) == m_entities.end())
 	{
-		DEVIOUS_WARN("No player data was found with the handle: " << _playerId);
+		DEVIOUS_WARN("No entity data was found with the handle: " << _entityId);
 		return false;
 	}
 
-	const Utilities::ivec2 playerPos = m_players[_playerId]->position;
+	const Utilities::ivec2 entityPos = m_entities[_entityId]->position;
 	
 	//Check if we already gave a destination that's equal to our current position.
-	if (playerPos == _target) 
+	if (entityPos == _target)
 		return true;
 
-	const std::vector<Utilities::ivec2> path = DM::Path::AStar::find_path(playerPos, _target);
+	const std::vector<Utilities::ivec2> path = DM::Path::AStar::find_path(entityPos, _target);
 
 	//Check if there's a path to the destination.
 	if (path.size() > 0)
 	{
 		Utilities::ivec2 nextPos;
 
-		if (_isRunning && path.size() > 1)
+		if (_bIsRunning && path.size() > 1)
 		{
 			nextPos = path[1];
 		}
@@ -122,36 +96,27 @@ bool Server::EntityHandler::move_player_towards(const EntityUUID _playerId, cons
 			nextPos = path[0];
 		}
 
-		//Move the player one position.
-		set_player_position(_playerId, nextPos);
+		//Move the Entity.
+		m_entities[_entityId]->position = nextPos;
+
+		//Send packet
+		{
+			Packets::s_EntityMovement packet;
+			{
+				packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
+				packet.entityId = m_entities[_entityId]->uuid;
+				packet.x = nextPos.x;
+				packet.y = nextPos.y;
+			}
+
+			PacketHandler::send_packet_multicast<Packets::s_EntityMovement>(&packet, g_globals.networkHandler->get_server_host(), 0, 0);
+		}
 	}
 
-	return m_players[_playerId]->position == _target;
+	return m_entities[_entityId]->position == _target;
 }
 
-void Server::EntityHandler::set_player_position(const EntityUUID _playerId, const Utilities::ivec2 _target)
-{
-	if (m_players.find(_playerId) == m_players.end())
-	{
-		DEVIOUS_WARN("No player data was found with the handle: " << _playerId << ".");
-		return;
-	}
-
-	m_players[_playerId]->position = _target;
-}
-
-const Utilities::ivec2 Server::EntityHandler::get_player_position(const EntityUUID _playerId)
-{
-	if (m_players.find(_playerId) == m_players.end())
-	{
-		DEVIOUS_ERR("No player data was found with the handle given");
-		return { Utilities::ivec2(0) };
-	}
-
-	return m_players[_playerId]->position;
-}
-
-void Server::EntityHandler::create_entity(uint8_t npcId, Utilities::ivec2 _pos)
+void Server::EntityHandler::create_world_npc(uint8_t npcId, Utilities::ivec2 _pos)
 {
 	NPC data = get_entity_data(npcId);
 	data.uuid = DM::Utils::UUID::generate();
@@ -159,6 +124,7 @@ void Server::EntityHandler::create_entity(uint8_t npcId, Utilities::ivec2 _pos)
 	data.startingPosition = _pos;
 
 	m_entities[data.uuid] = std::make_shared<NPC>(data);
+	m_npcHandles.push_back(data.uuid);
 
 	//Notice to clients that a new entity has spawned.
 	{
@@ -179,51 +145,52 @@ void Server::EntityHandler::create_entity(uint8_t npcId, Utilities::ivec2 _pos)
 	}
 }
 
-bool Server::EntityHandler::move_entity_towards(NPC& _npc, Utilities::ivec2 _target)
+const std::vector<std::shared_ptr<NPC>> Server::EntityHandler::get_world_npcs()
 {
-	const Utilities::ivec2 entityPos = _npc.position;
+	std::vector<std::shared_ptr<NPC>> npcs;
 
-	//Check if we already gave a destination that's equal to our current position.
-	if (entityPos == _target)
-		return true;
-
-	const std::vector<Utilities::ivec2> path = DM::Path::AStar::find_path(entityPos, _target);
-
-	//Check if there's a path to the destination.
-	if (path.size() > 0)
+	for(const EntityUUID handle : m_npcHandles) 
 	{
-		Utilities::ivec2 nextPos;
+		if(m_entities.find(handle) != m_entities.end()) 
 		{
-			nextPos = path[0];
+			npcs.push_back
+			(
+				std::dynamic_pointer_cast<NPC>(m_entities.at(handle))
+			);
 		}
-
-		//Move the player one position.
-		_npc.position = nextPos;
 	}
 
-	Packets::s_EntityMovement entity;
-	{
-		entity.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
-		entity.entityId = _npc.uuid;
-		entity.x = _npc.position.x;
-		entity.y = _npc.position.y;
-		entity.isRunning = false;
-	}
-
-	PacketHandler::send_packet_multicast<Packets::s_EntityMovement>
-	(
-		&entity,
-		g_globals.networkHandler->get_server_host(), 
-		0,
-		ENET_PACKET_FLAG_RELIABLE
-	);
-
-	return _npc.position == _target;
+	return npcs;
 }
 
-const std::unordered_map<EntityUUID, std::shared_ptr<NPC>>& Server::EntityHandler::get_world_entities()
+std::optional<std::shared_ptr<Entity>> Server::EntityHandler::get_entity(const DM::Utils::UUID& _id)
 {
-	return m_entities;
+	//If the handle turns out to be a playerhandle, transpose it to the client handle and find the appropriate player.
+	if(m_playerToClientHandles.find(_id) != m_playerToClientHandles.end())
+	{
+		uint64_t clientHandle = m_playerToClientHandles[_id];
+		return m_entities[clientHandle];
+	}
+
+	//Try finding a NPC with this indentifier.
+	{
+		if(m_entities.find(_id) != m_entities.end()) 
+		{
+			return m_entities[_id];
+		}
+	}
+
+	return std::nullopt;
+}
+
+const std::optional<uint64_t> Server::EntityHandler::transpose_player_to_client_handle(DM::Utils::UUID _uuid) const
+{
+	if(m_playerToClientHandles.find(_uuid) != m_playerToClientHandles.end()) 
+	{
+		return m_playerToClientHandles.at(_uuid);
+	}
+
+	return std::nullopt;
 }
 
 void Server::EntityHandler::entities_tick()

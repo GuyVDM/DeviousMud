@@ -12,12 +12,19 @@
 
 #include <enet/enet.h> 
 
+/// We ignore the initialization warning since the ENetEvent doesn't need to get initialized.
+///
+/// 
+#pragma warning(push)
+#pragma warning(disable: 4700)
 
 ENetPacketHandler::ENetPacketHandler(ENetHost* _host, ENetPeer* _peer) :
 	m_host(_host), m_peer(_peer)
 {
 
 }
+
+#pragma warning(pop)
 
 ENetPacketHandler::~ENetPacketHandler()
 {
@@ -73,7 +80,7 @@ void ENetPacketHandler::process_packet()
 				return;
 			}
 
-			DEVIOUS_WARN("Tried to move non existing entity.");
+			DEVIOUS_WARN("Tried to move non existing entity. " << entityData.entityId);
 		}
 		break;
 
@@ -114,6 +121,45 @@ void ENetPacketHandler::process_packet()
 		case e_PacketInterpreter::PACKET_TIMEOUT_WARNING:
 		{
 			DEVIOUS_WARN("You have been idle for a while, you will get disconnected soon if you stay idle.");
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_HIT:
+		{
+			Packets::s_EntityHit packet;
+			PacketHandler::retrieve_packet_data<Packets::s_EntityHit>(packet, &m_event);
+
+			if(auto instigatorEnttOpt = g_globals.entityHandler.lock()->get_entity(packet.fromEntityId); instigatorEnttOpt.has_value())
+			{
+				RefEntity instigatorEntt = instigatorEnttOpt.value();
+				instigatorEntt->attack();
+				instigatorEntt->turn_to(packet.toEntityId);
+			}
+
+			if (auto victimEnttOpt = g_globals.entityHandler.lock()->get_entity(packet.toEntityId); victimEnttOpt.has_value())
+			{
+				RefEntity victimEntt = victimEnttOpt.value();
+				victimEntt->hit(packet.fromEntityId, packet.hitAmount);
+				DEVIOUS_LOG("Licked");
+			}
+			else 
+			{
+				DEVIOUS_WARN("Couldn't find the entity taking the hit. UUID: " << packet.toEntityId);
+			}
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_SKILL_UPDATE:
+		{
+			Packets::s_UpdateSkill packet;
+			PacketHandler::retrieve_packet_data<Packets::s_UpdateSkill>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->update_skill(packet.skillType, packet.level, packet.levelBoosted);
+				return;
+			}
 		}
 		break;
 	}

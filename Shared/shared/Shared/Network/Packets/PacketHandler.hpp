@@ -69,7 +69,7 @@ constexpr inline int PacketHandler::send_packet(T* _data, ENetPeer* _peer, ENetH
 }
 
 template<class T>
-inline constexpr void PacketHandler::send_packet_multicast(T* _data, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags)
+constexpr inline void PacketHandler::send_packet_multicast(T* _data, ENetHost* _host, enet_uint8 _channel, enet_uint32 _flags)
 {
 	for(int i = 0; i < _host->peerCount; i++)
 	{

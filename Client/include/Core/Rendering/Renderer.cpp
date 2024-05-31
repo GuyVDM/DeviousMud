@@ -29,23 +29,24 @@ Graphics::Renderer* Graphics::Renderer::create_renderer(const char* _title, cons
 void Graphics::Renderer::set_camera(std::shared_ptr<Camera>& _camera)
 {
 	DEVIOUS_ASSERT(_camera != nullptr);
-	camera = _camera;
+	m_camera = _camera;
 }
 
 std::shared_ptr<Camera>& Graphics::Renderer::get_camera()
 {
-	return camera;
+	return m_camera;
 }
 
 Graphics::Renderer::Renderer(SDL_Window* _window, SDL_Renderer* _renderer, const std::string& _texture_path) :
-	window(_window), renderer(_renderer), assetsPath(_texture_path)
+	m_window(_window), m_renderer(_renderer), m_assetsPath(_texture_path)
 {
 	//Make the window resizable
 	SDL_SetWindowResizable(_window, SDL_bool(true));
+	SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
 	std::cout << "[SDL_Renderer] Succesfully created renderer." << std::endl;
 
-	camera = std::make_shared<Camera>();
+	m_camera = std::make_shared<Camera>();
 }
 
 Graphics::Renderer::~Renderer()
@@ -56,13 +57,15 @@ Graphics::Renderer::~Renderer()
 void Graphics::Renderer::free()
 {
 	//Clean up all textures & surfaces
-	for (std::pair<SpriteType, SDL_SpriteDetails*> m_details : sprites)
+	for (std::pair<SpriteType, SDL_SpriteDetails*> m_details : m_sprites)
 	{
 		delete m_details.second;
-	}   sprites.clear();
+	}   m_sprites.clear();
 
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(renderer);
+	m_renderQueue.clear();
+
+	SDL_DestroyWindow(m_window);
+	SDL_DestroyRenderer(m_renderer);
 }
 
 /// <summary>
@@ -73,13 +76,13 @@ void Graphics::Renderer::free()
 /// <param name="_maxframecount"></param>
 void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _maxframecount)
 {
-	std::string m_path = assetsPath;
+	std::string m_path = m_assetsPath;
 	m_path.append("/sprites/");
 	m_path.append(_file);
 
 	const char* asset_path = m_path.c_str();
 
-	assert(sprites.find(_spritetype) == sprites.end());
+	assert(m_sprites.find(_spritetype) == m_sprites.end());
 	SDL_Surface* surface = IMG_Load(asset_path);
 
 	//Check if the image got loaded correctly.
@@ -90,145 +93,195 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 	}
 
 	//Store the surface details and lock it behind the sprite type.
-	SDL_Texture* m_textTexture = SDL_CreateTextureFromSurface(renderer, surface);
-	sprites[_spritetype] = new SDL_SpriteDetails(surface, m_textTexture, _maxframecount);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	m_sprites[_spritetype] = new SDL_SpriteDetails(surface, texture, _maxframecount);
 }
 
 void Graphics::Renderer::start_frame()
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+	SDL_RenderClear(m_renderer);
 }
 
-void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color)
+void Graphics::Renderer::draw_rect(const Utilities::vec2 _pos, const Utilities::vec2 _size, SDL_Color _color, uint8_t _zOrder, bool _bScreenspace)
 {
-	Utilities::ivec2 iPos = Utilities::to_ivec2(_pos);
+	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, _size.x, _size.y);
+
+	//Create rect texture.
+	{
+		const Utilities::ivec2 pos  = Utilities::to_ivec2(_pos);
+		const Utilities::ivec2 size = Utilities::to_ivec2(_size);
+
+		const SDL_Rect rect = 
+		{
+			0,
+			0,
+			size.x,
+			size.y
+		};
+
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderTarget(m_renderer, texture);
+		SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+
+		SDL_RenderClear(m_renderer);
+
+		SDL_SetRenderDrawColor(m_renderer, _color.r, _color.g, _color.b, _color.a);
+
+		SDL_RenderFillRect(m_renderer, &rect);
+
+		SDL_SetRenderTarget(m_renderer, NULL);
+	}
+
+	//Render flags
+	uint8_t flags = 0;
+	{
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
+	}
+
+	if (!_bScreenspace)
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
+
+	SpriteRenderData data;
+	data.position = _pos;
+	data.size = _size;
+	data.texture = texture;
+	data.frameCount = 0;
+	data.frame = 0;
+	data.renderFlags = flags;
+
+	m_renderQueue[_zOrder].push_back(std::move(data));
+}
+
+void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color, uint8_t _zOrder, bool _bScreenspace)
+{
 	Utilities::ivec2 iSize = Utilities::to_ivec2(_size);
 
-	SDL_Rect topRect = { iPos.x - _borderWidth, iPos.y - _borderWidth, iSize.x + _borderWidth * 2, _borderWidth };
-	SDL_Rect bottomRect = { iPos.x - _borderWidth, iPos.y + iSize.y, iSize.x + _borderWidth * 2, _borderWidth };
-	SDL_Rect leftRect = { iPos.x - _borderWidth, iPos.y, _borderWidth, iSize.y };
-	SDL_Rect rightRect = { iPos.x + iSize.x, iPos.y, _borderWidth, iSize.y };
-	
-	SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
-	
-	SDL_RenderFillRect(renderer, &topRect);
-	SDL_RenderFillRect(renderer, &bottomRect);
-	SDL_RenderFillRect(renderer, &leftRect);
-	SDL_RenderFillRect(renderer, &rightRect);
+	// Create a texture with the desired size and format
+	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, iSize.x + (2 * _borderWidth), iSize.y + (2 * _borderWidth));
+	{
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderTarget(m_renderer, texture);
+		SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+
+		SDL_RenderClear(m_renderer);
+
+		SDL_SetRenderDrawColor(m_renderer, _color.r, _color.g, _color.b, _color.a);
+
+		SDL_Rect topRect    = { 0, 0, iSize.x + 2 * _borderWidth, _borderWidth };
+		SDL_Rect bottomRect = { 0, iSize.y + _borderWidth, iSize.x + 2 * _borderWidth, _borderWidth };
+		SDL_Rect leftRect   = { 0, _borderWidth, _borderWidth, iSize.y };
+		SDL_Rect rightRect  = { iSize.x + _borderWidth, _borderWidth, _borderWidth, iSize.y };
+
+		SDL_RenderFillRect(m_renderer, &topRect);
+		SDL_RenderFillRect(m_renderer, &bottomRect);
+		SDL_RenderFillRect(m_renderer, &leftRect);
+		SDL_RenderFillRect(m_renderer, &rightRect);
+
+		SDL_SetRenderTarget(m_renderer, NULL);
+	}
+
+	//Set flags
+	uint8_t flags = 0;
+	{
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
+
+		if (!_bScreenspace)
+			flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
+	}
+
+	// Reset the rendering target to the default
+	SDL_SetRenderTarget(m_renderer, NULL);
+
+	SpriteRenderData data;
+	data.position = _pos;
+	data.size = _size;
+	data.texture = texture;
+	data.frameCount = 0;
+	data.frame = 0;
+	data.renderFlags = flags;
+
+	m_renderQueue[_zOrder].push_back(std::move(data));
+}
+
+void Graphics::Renderer::plot_texture(SpriteRenderData& _data, int32_t _zOrder)
+{
+	m_renderQueue[_zOrder].push_back
+	(
+		std::move(_data)
+	);
 }
 
 /// <summary>
+/// NOTE: Plotting the frame is relative to the camera, were using worldspace coordinates.
 /// This function plots the given sprite ontop of the canvas, call endframe when you have build the final frame that you want to render.
 /// </summary>
 /// <param name="(s)">, Sprite that you want to render ontop of the canvas.</param>
 /// <param name="(pos)"></param>
 /// <param name="(scale)"></param>
-void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size, const int32_t _gridsize)
+void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size)
 {
 	if (_s.get_sprite_type() == SpriteType::NONE)
 		return;
 
-	if (camera)
+	uint8_t flags = 0;
+	flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
+
+	if (_s.bIsFlipped)
 	{
-		// Get the viewport size.
-		int32_t windowSize_w, windowSize_h;
-		{
-			get_viewport_size(&windowSize_w, &windowSize_h);
-		}
-
-		const float vpWidthHalfExtends = (float)windowSize_w / 2.0f;
-		const float vpHeightHalfExtends = (float)windowSize_h / 2.0f;
-
-		// Create a new rect with the given size and transformed position.
-		const Utilities::vec2 camPos = camera->get_position();
-		const SDL_Rect destRect
-		{
-			(int32_t)roundf((_pos.x * (float)_gridsize) - camPos.x + vpWidthHalfExtends),
-			(int32_t)roundf((_pos.y * (float)_gridsize) - camPos.y + vpHeightHalfExtends),
-			(int32_t)roundf(_size.x),
-			(int32_t)roundf(_size.y)
-		};
-
-		//Get texture
-		SDL_Texture* m_textTexture = sprites[_s.get_sprite_type()]->get_texture();
-
-		// Get texture width and height.
-		int32_t imageWidth, imageHeight;
-		{
-			SDL_QueryTexture(m_textTexture, NULL, NULL, &imageWidth, &imageHeight);
-		}
-
-		// Generate rect based on what part of the png we want our sprite to be 
-		const int32_t spriteWidth = imageWidth / _s.get_framecount();
-		const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
-
-		const SDL_Rect srcRect
-		{
-			spriteWidth * frame,
-			0,
-			spriteWidth,
-			imageHeight,
-		};
-
-		//Set colors.
-		SDL_SetTextureColorMod(m_textTexture, _s.color.r, _s.color.b, _s.color.g);
-		SDL_SetTextureAlphaMod(m_textTexture, _s.color.a);
-
-		//Copy it over to the final frame.
-		SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-		SDL_RenderCopyEx(renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
-
-		//Reset to default colors after rendering.
-		SDL_SetTextureColorMod(m_textTexture, 255, 255, 255);
-		SDL_SetTextureAlphaMod(m_textTexture, 255);
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE;
 	}
+
+	SpriteRenderData renderData =
+	{
+		_pos,
+		_size,
+		m_sprites[_s.get_sprite_type()]->get_texture(),
+		_s.get_framecount(),
+		_s.color,
+		_s.frame,
+		flags
+	};
+
+	m_renderQueue[_s.zRenderPriority].push_back
+	(
+		renderData
+	);
 }
 
 void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size)
 {
 	if (_s.get_sprite_type() == SpriteType::NONE)
 		return;
+	
+	uint8_t flags = 0;
 
-	//Get texture
-	SDL_Texture* m_textTexture = sprites[_s.get_sprite_type()]->get_texture();
+	if (_s.bIsFlipped)
+		flags = SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE;
 
-	// Generate rect based on what part of the png we want our sprite to be 
-	const int32_t spriteWidth = (int32_t)_s.m_dimension.x / _s.get_framecount();
-	const int32_t frame = CLAMP(_s.frame, 0, _s.get_framecount());
-
-	const SDL_Rect srcRect
+	SpriteRenderData renderData =
 	{
-		spriteWidth * frame,
-		0,
-		spriteWidth,
-		(int)_s.m_dimension.y,
+		_pos,
+		_size,
+		m_sprites[_s.get_sprite_type()]->get_texture(),
+		_s.get_framecount(),
+		_s.color,
+		_s.frame,
+		flags
 	};
 
-	const SDL_Rect destRect
-	{
-		(int32_t)roundf(_pos.x),
-		(int32_t)roundf(_pos.y),
-		(int32_t)roundf(_size.x),
-		(int32_t)roundf(_size.y)
-	};
-
-	//Set colors.
-	SDL_SetTextureColorMod(m_textTexture, _s.color.r, _s.color.b, _s.color.g);
-	SDL_SetTextureAlphaMod(m_textTexture, _s.color.a);
-
-	//Copy it over to the final frame.
-	SDL_RendererFlip flipFlags = _s.bIsFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-	SDL_RenderCopyEx(renderer, m_textTexture, &srcRect, &destRect, 0, NULL, flipFlags);
-
-	//Reset to default colors after rendering.
-	SDL_SetTextureColorMod(m_textTexture, 255, 255, 255);
-	SDL_SetTextureAlphaMod(m_textTexture, 255);
+	m_renderQueue[_s.zRenderPriority].push_back
+	(
+		std::move(renderData)
+	);
 }
 
 void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
 {
-	SDL_GetWindowSize(window, _w, _h);
+	SDL_GetWindowSize(m_window, _w, _h);
 }
 
 /// <summary>
@@ -236,67 +289,149 @@ void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
 /// </summary>
 void Graphics::Renderer::end_frame()
 {
-	SDL_RenderPresent(renderer);
+	if (m_camera)
+	{
+		for (auto& [zRenderOrder, queue] : m_renderQueue)
+		{
+			for (const SpriteRenderData& data : queue)
+			{
+				SDL_Rect destRect{};
+
+				///	Check if we need to render in screen or worldspace.
+				/// Worldspace  == Relative to the camera, and exists within gridspace, defined by GRID_CELL_PX_SIZE.
+				/// Screenspace == just uses direct screen coordinates.
+				if (data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE)
+				{
+					// Get the viewport size.
+					int32_t windowSize_w, windowSize_h;
+					{
+						get_viewport_size(&windowSize_w, &windowSize_h);
+					}
+
+					const float vpWidthHalfExtends = (float)windowSize_w / 2.0f;
+					const float vpHeightHalfExtends = (float)windowSize_h / 2.0f;
+					const Utilities::vec2 camPos = m_camera->get_position();
+
+					// Create a new rect with the given size and transformed position.
+					destRect =
+					{
+						(int32_t)roundf((data.position.x * (float)GRID_CELL_PX_SIZE) - camPos.x + vpWidthHalfExtends),
+						(int32_t)roundf((data.position.y * (float)GRID_CELL_PX_SIZE) - camPos.y + vpHeightHalfExtends),
+						(int32_t)roundf(data.size.x),
+						(int32_t)roundf(data.size.y)
+					};
+				}
+				else 
+				{
+					const Utilities::ivec2 spritePos  = Utilities::to_ivec2(data.position);
+					const Utilities::ivec2 spriteSize = Utilities::to_ivec2(data.size);
+					destRect = { spritePos.x, spritePos.y, spriteSize.x, spriteSize.y };
+				}
+
+				// Get texture width and height.
+				int32_t imageWidth, imageHeight;
+				{
+					SDL_QueryTexture(data.texture, NULL, NULL, &imageWidth, &imageHeight);
+				}
+
+				// Generate rect based on what part of the png we want our sprite to be 
+				const int32_t spriteWidth = data.frameCount == 0 ? imageWidth : imageWidth / data.frameCount;
+				const int32_t frame = CLAMP(data.frame, 0, data.frameCount);
+
+				const SDL_Rect srcRect
+				{
+					frame == 0 ? 0 : spriteWidth * frame,
+					0,
+					spriteWidth,
+					imageHeight,
+				};
+
+				///---------------------
+				/// Building of the frame
+				///
+				{
+					SDL_SetTextureColorMod(data.texture, data.color.r, data.color.g, data.color.b);
+					SDL_SetTextureAlphaMod(data.texture, data.color.a);
+
+					const SDL_RendererFlip flipFlags = data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE ? SDL_RendererFlip::SDL_FLIP_HORIZONTAL:
+																																	  SDL_RendererFlip::SDL_FLIP_NONE;
+					SDL_RenderCopyEx(m_renderer, data.texture, &srcRect, &destRect, 0, NULL, flipFlags);
+
+					//Reset to default colors after copying it over to the surface.
+					SDL_SetTextureColorMod(data.texture, 255, 255, 255);
+				}
+
+				if(data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE)
+				{
+					SDL_DestroyTexture(data.texture);
+				}
+			}
+
+			queue.clear();
+		}
+	}
+
+	//Present the final frame.
+	SDL_RenderPresent(m_renderer);
 }
 
 Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 {
 	if(_spriteType == SpriteType::NONE) 
 	{
-		Sprite m_sprite;
-		m_sprite.color = SDL_Color{ 255, 255, 255, 255 };
-		m_sprite.frame = 0;
-		m_sprite.m_frameCount = 0;
-		m_sprite.m_eSpriteType = _spriteType;
-		m_sprite.m_dimension = Utilities::vec2(0.0f, 0.0f);
-		return m_sprite;
+		Sprite sprite;
+		sprite.color = SDL_Color{ 255, 255, 255, 255 };
+		sprite.frame = 0;
+		sprite.m_frameCount = 0;
+		sprite.m_eSpriteType = _spriteType;
+		sprite.m_dimension = Utilities::vec2(0.0f, 0.0f);
+		return sprite;
 	}
 
-	auto s_iterator = sprites.find(_spriteType);
-	DEVIOUS_ASSERT(s_iterator != sprites.end())
+	auto it = m_sprites.find(_spriteType);
+	DEVIOUS_ASSERT(it != m_sprites.end())
 
 	//Default sprite color.
 	const SDL_Color color = { 255, 255, 255, 255 };
 
 	//Grab the surface details
-	const SDL_SpriteDetails* m_details = sprites[_spriteType];
+	const SDL_SpriteDetails* details = m_sprites[_spriteType];
 
-	Sprite m_sprite;
-	m_sprite.color      = SDL_Color{ 255, 255, 255, 255 };
-	m_sprite.frame      = 0;
-	m_sprite.m_frameCount = m_details->get_framecount();
-	m_sprite.m_eSpriteType = _spriteType;
-	m_sprite.m_dimension  = Utilities::vec2((float)m_details->get_surface()->w, (float)m_details->get_surface()->h);
-	m_sprite.bIsFlipped = false;
+	Sprite sprite;
+	sprite.color      = SDL_Color{ 255, 255, 255, 255 };
+	sprite.frame      = 0;
+	sprite.m_frameCount = details->get_framecount();
+	sprite.m_eSpriteType = _spriteType;
+	sprite.m_dimension  = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
+	sprite.bIsFlipped = false;
 
-	return m_sprite;
+	return sprite;
 }
 
-Graphics::Renderer::SDL_SpriteDetails::SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _framecount) 
-	: surface(_surface), framecount(_framecount), m_textTexture(_texture)
+Graphics::Renderer::SDL_SpriteDetails::SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _framecount)
+	: m_surface(_surface), m_framecount(_framecount), m_texture(_texture)
 {
-
 }
 
 Graphics::Renderer::SDL_SpriteDetails::~SDL_SpriteDetails()
 {
-	SDL_DestroyTexture(m_textTexture);
-	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(m_texture);
+	SDL_FreeSurface(m_surface);
 }
 
-const uint32_t& Graphics::Renderer::SDL_SpriteDetails::get_framecount() const
+const uint8_t& Graphics::Renderer::SDL_SpriteDetails::get_framecount() const
 {
-	return framecount;
+	return m_framecount;
 }
 
 SDL_Surface* Graphics::Renderer::SDL_SpriteDetails::get_surface() const
 {
-	return surface;
+	return m_surface;
 }
 
 SDL_Texture* Graphics::Renderer::SDL_SpriteDetails::get_texture()
 {
-	return m_textTexture;
+	return m_texture;
 }
 
 

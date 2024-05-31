@@ -41,10 +41,24 @@ inline DM::Utils::UUID EventListener<Parameter>::add_listener(Listener _listener
 template<typename Parameter>
 inline void EventListener<Parameter>::invoke(Parameter _param)
 {
-	for (const auto& listener : m_listeners)
+	std::vector<DM::Utils::UUID> toRemove;
+
+	for (const auto& [uuid, listener] : m_listeners)
 	{
-		auto& function = listener.second;
-		function(_param);
+		if (listener)
+		{
+			listener(_param);
+		}
+		else
+		{
+			toRemove.push_back(uuid);
+		}
+	}
+
+	for (DM::Utils::UUID& uuid : toRemove)
+	{
+		m_listeners.erase(uuid);
+		DEVIOUS_ERR("WE REMOVED YES YES YES");
 	}
 }
 
@@ -70,19 +84,30 @@ public:
 
 	inline void invoke() 
 	{
-		for (const auto& listener : m_listeners)
+		for(DM::Utils::UUID& uuid : m_toRemove) 
 		{
-			auto& function = listener.second;
-			function();
+			m_listeners.erase(uuid);
 		}
+
+		m_toRemove.clear();
+
+		for (const auto&[uuid, listener] : m_listeners)
+		{
+			if(listener) 
+			{
+				listener();
+			}
+			else 
+			{
+				m_toRemove.push_back(uuid);
+			}
+		}
+
 	}
 
 	inline void remove_listener(DM::Utils::UUID _id) 
 	{
-		if(m_listeners.find(_id) != m_listeners.end()) 
-		{
-			m_listeners.erase(_id);
-		}
+		m_toRemove.push_back(_id);
 	}
 
 	inline void clear()
@@ -91,6 +116,7 @@ public:
 	}
 
 private:
+	std::vector<DM::Utils::UUID> m_toRemove;
 	std::unordered_map<DM::Utils::UUID, Listener> m_listeners;
 };
 

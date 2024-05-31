@@ -122,17 +122,17 @@ const bool Clickable::is_hovered() const
     return m_bIsHovered;
 }
 
-const Graphics::Sprite& Clickable::get_sprite() const
+Graphics::Sprite& Clickable::get_sprite()
 {
     return m_sprite;
 }
 
-const Utilities::vec2& Clickable::get_position() const
+const Utilities::vec2 Clickable::get_position() const
 {
     return m_pos;
 }
 
-const Utilities::vec2& Clickable::get_size() const
+const Utilities::vec2 Clickable::get_size() const
 {
     return size;
 }

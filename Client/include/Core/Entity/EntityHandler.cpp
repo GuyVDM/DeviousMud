@@ -64,6 +64,11 @@ std::optional<RefEntity> EntityHandler::get_entity(DM::Utils::UUID _id) const
 	return m_worldEntities.at(_id);
 }
 
+const std::unordered_map<DM::Utils::UUID, RefEntity>& EntityHandler::get_entities()
+{
+	return m_worldEntities;
+}
+
 RefEntity EntityHandler::get_local_player_data()
 {
 	DEVIOUS_ASSERT(m_worldEntities.find(m_localPlayerId) != m_worldEntities.end());
@@ -82,5 +87,8 @@ void EntityHandler::register_local_player(uint64_t _localPlayerId)
 
 void EntityHandler::update()
 {
-	on_entity_update.invoke();
+	for(auto& [uuid, entity] : get_entities())
+	{
+		entity->update();
+	}
 }

@@ -38,6 +38,9 @@
     <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
     <ClCompile Include="include\Core\Entity\Simulation\SimPosition.cpp" />
+    <ClCompile Include="include\Core\Util\Timer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -128,6 +131,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Util\TimerHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

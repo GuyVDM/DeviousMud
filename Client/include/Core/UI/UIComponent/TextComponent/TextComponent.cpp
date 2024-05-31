@@ -18,7 +18,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
 		//Create font path
-		std::string fontPath = renderer->assetsPath;
+		std::string fontPath = renderer->m_assetsPath;
 		{
 			fontPath.append("/fonts/");
 			fontPath.append(Fonts::FontMap().at(_args.font));
@@ -33,14 +33,16 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 		DEVIOUS_ASSERT(textSurface != NULL);
 
 		textComponent = UIComponent::create_component<TextComponent>
-			(
-				_pos,
-				Utilities::vec2((float)textSurface->w, (float)textSurface->h),
-				Graphics::SpriteType::NONE
-			);
+		(
+			_pos,
+			Utilities::vec2((float)textSurface->w, (float)textSurface->h),
+			Graphics::SpriteType::NONE
+		);
 
 		//Create texture from surface.
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->m_renderer, textSurface);
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
 		DEVIOUS_ASSERT(texture != NULL);
 
 		//Cleanup the font and surface.
@@ -49,7 +51,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 
 		//Set text texture.
 		textComponent->m_textTexture = texture;
-		textComponent->m_textArgs = _args;
+		textComponent->m_textArgs    = _args;
 	}
 	else 
 	{
@@ -61,6 +63,7 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 		);
 	}
 
+	textComponent->set_asset_name("TextComponent");
 	return textComponent;
 }
 
@@ -81,27 +84,41 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 {
 	if (m_textTexture)
 	{
-		const Utilities::ivec2 position = Utilities::to_ivec2(get_position());
-		const Utilities::ivec2 size = Utilities::to_ivec2(get_size());
+		const Utilities::vec2 position = get_position();
+		const Utilities::vec2 size     = get_size();
 
-		if (m_textArgs.bDropShadow)
+		float dropShadowOffsetPx = 1.0f;
+
+		uint8_t flags = 0;
+		if (m_eRenderMode == e_RenderMode::WORLDSPACE)
 		{
-			const static int32_t dropShadowOffsetPx = 1;
-			const SDL_Rect dsRenderQuad = { position.x + dropShadowOffsetPx, position.y + dropShadowOffsetPx, size.x, size.y };
-
-			SDL_SetTextureColorMod(m_textTexture, 0, 0, 0);
-			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
-
-			SDL_RenderCopy(_renderer->renderer, m_textTexture, NULL, &dsRenderQuad);
-
-			SDL_SetTextureColorMod(m_textTexture, m_textArgs.color.r, m_textArgs.color.g, m_textArgs.color.b);
-			SDL_SetTextureAlphaMod(m_textTexture, m_textArgs.color.a);
+			flags |= e_RenderMode::WORLDSPACE;
+			dropShadowOffsetPx = 1.0f / (float)Renderer::GRID_CELL_PX_SIZE;
 		}
 
-		// Render the text.
+		// Render the shadow text.
+		if (m_textArgs.bDropShadow)
 		{
-			const SDL_Rect renderQuad = { position.x, position.y, size.x, size.y };
-			SDL_RenderCopy(_renderer->renderer, m_textTexture, NULL, &renderQuad);
+			SpriteRenderData data{};
+			data.color       = { 1, 1, 1, 255 };
+			data.position    = position + Utilities::vec2(dropShadowOffsetPx);
+			data.size        = size;
+			data.texture     = m_textTexture;
+			data.renderFlags = flags;
+
+			_renderer->plot_texture(data, m_sprite.zRenderPriority);
+		}
+
+		// Render the main text.
+		{
+			SpriteRenderData data{};
+			data.color       = m_textArgs.color;
+			data.position    = position;
+			data.size        = size;
+			data.texture     = m_textTexture;
+			data.renderFlags = flags;
+
+			_renderer->plot_texture(data, m_sprite.zRenderPriority);
 		}
 	}
 }

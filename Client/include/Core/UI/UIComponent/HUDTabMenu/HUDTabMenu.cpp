@@ -25,6 +25,7 @@ void HUDTab::set_icon(SpriteType _sprite, vec2 _iconSize)
 {
 	auto renderer = g_globals.renderer.lock();
 	m_icon = renderer->get_sprite(_sprite);
+	m_icon.zRenderPriority = m_sprite.zRenderPriority;
 	m_iconSize = _iconSize;
 }
 

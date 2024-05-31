@@ -18,6 +18,8 @@
 
 #include "Core/Entity/EntityHandler.h"
 
+#include "Core/Util/TimerHandler.h"
+
 #include "Core/UI/Layer/Layer.h"
 
 #include "Shared/Utilities/vec3.hpp"
@@ -123,9 +125,11 @@ void Client::start_ticking()
 	//Entityhandler creation.
 	auto entityHandler = std::make_shared<EntityHandler>();
 
+	auto timerHandler = std::make_shared<TimerHandler>();
+
 	//Renderer creation
 	const std::string texture_path = "assets";
-	const Utilities::ivec2 window_size = Utilities::ivec2(1000, 1000);
+	const Utilities::ivec2 window_size = Utilities::ivec2(800, 800);
 
 	auto renderer = std::shared_ptr<Graphics::Renderer>
 	(
@@ -137,6 +141,7 @@ void Client::start_ticking()
 		g_globals.renderer = renderer;
 		g_globals.packetHandler = packetHandler;
 		g_globals.entityHandler = entityHandler;
+		g_globals.timerHandler = timerHandler;
 	}
 
 	//Create application
@@ -152,6 +157,8 @@ void Client::start_ticking()
 		packetHandler->update();
 
 		application->update();
+
+		timerHandler->update();
 
 		entityHandler->update();
 
