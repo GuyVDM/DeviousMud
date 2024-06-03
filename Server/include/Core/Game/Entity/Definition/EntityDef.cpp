@@ -56,7 +56,7 @@ void NPC::tick()
 	{
 		int32_t distance = Utilities::ivec2::get_distance(startingPosition, position);
 
-		if(Utilities::ivec2::get_distance(position, target->position) > static_cast<int32_t>(maxWanderingDistance)) 
+		if(distance > static_cast<int32_t>(maxWanderingDistance)) 
 		{
 			m_target.reset();
 		}
