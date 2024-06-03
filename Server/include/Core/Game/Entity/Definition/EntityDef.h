@@ -15,7 +15,8 @@ public:
 	DM::SKILLS::SkillMap skills;
 	Utilities::ivec2     position;
 	uint32_t             tickCounter = 0;
-	DM::Utils::UUID      uuid        = -1;
+	DM::Utils::UUID      uuid        = 0;
+
 
 	/// <summary>
 	/// Non overridable fixed update that happens every cycle.
@@ -30,7 +31,17 @@ public:
 	/// <summary>
 	/// Make the NPC aggressive to the following target.
 	/// </summary>
-	virtual void set_target(std::shared_ptr<Entity> _entity);
+	virtual void try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated = false);
+
+	/// <summary>
+	/// Occurs when the target dies.
+	/// </summary>
+	virtual void disengage();
+
+	/// <summary>
+	/// Returns the interval the entity can attack in.
+	/// </summary>
+	virtual int get_attack_speed();
 
 	/// <summary>
 	/// Returns the attack range of the entity.
@@ -65,17 +76,12 @@ public:
 	/// <summary>
 	/// How far the entity can max follow someone
 	/// </summary>
-	uint8_t maxWanderingDistance = 5;
+	uint8_t maxWanderingDistance = 3;
 
 	/// <summary>
 	/// The attack range of this NPC.
 	/// </summary>
 	uint8_t attackRange = 1;
-
-	/// <summary>
-	/// Tick counter for the NPC to perform certain actions.
-	/// </summary>
-	uint32_t tickCounter = 0;
 
 	/// <summary>
 	/// Whether this NPC is aggressive to players.
@@ -95,10 +101,15 @@ public:
 	/// <summary>
 	/// Make the NPC aggressive to the following target.
 	/// </summary>
-	virtual void set_target(std::shared_ptr<Entity> _entity) override;
+	virtual void try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated) override;
+
+	/// <summary>
+	/// Sets target to null after it's been defeated.
+	/// </summary>
+	virtual void disengage() override;
 
 private:
-	std::shared_ptr<Entity> m_target;
+	std::weak_ptr<Entity>   m_target;
 	Utilities::ivec2        m_targetPos = Utilities::ivec2(0, 0);
 	bool                    m_bIsMoving = false;
 };

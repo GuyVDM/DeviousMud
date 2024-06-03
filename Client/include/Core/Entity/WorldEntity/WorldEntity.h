@@ -39,7 +39,6 @@ public:
 	/// <returns></returns>
 	const bool in_combat() const;
 
-
 	/// <summary>
 	/// Make entity face towards another entity horizontally.
 	/// </summary>

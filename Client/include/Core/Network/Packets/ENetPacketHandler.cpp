@@ -71,8 +71,6 @@ void ENetPacketHandler::process_packet()
 		case e_PacketInterpreter::PACKET_MOVE_ENTITY: 
 		{
 			Packets::s_EntityMovement entityData;
-			DEVIOUS_LOG("Moving to: " << entityData.x << ", " << entityData.y << ".");
-
 			PacketHandler::retrieve_packet_data<Packets::s_EntityMovement>(entityData, &m_event);
 
 			if (auto entityOpt = entityHandler->get_entity(entityData.entityId); entityOpt != std::nullopt)

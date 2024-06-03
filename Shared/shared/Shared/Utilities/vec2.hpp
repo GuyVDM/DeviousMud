@@ -104,6 +104,12 @@ namespace Utilities
             return (x < _other.x) || (x == _other.x && y < _other.y);
         }
 
+        inline static int32_t get_distance(const _ivec2& _a, const _ivec2& _b)
+        {
+            const Utilities::ivec2 delta = _b - _a;
+            return std::max<int32_t>(std::abs(delta.x), std::abs(delta.y));
+        }
+
     } ivec2;
 
 #pragma endregion
@@ -202,6 +208,12 @@ namespace Utilities
                 a.x + (b.x - a.x) * timeline,
                 a.y + (b.y - a.y) * timeline 
             };
+        }
+
+        inline const float get_distance(const _vec2& _a, const _vec2& _b) const
+        {
+            const Utilities::_vec2 delta = _b - _a;
+            return std::max<float>(std::abs(delta.x), std::abs(delta.y));
         }
 
     } vec2;

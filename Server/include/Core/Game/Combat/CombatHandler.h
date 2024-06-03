@@ -26,7 +26,7 @@ public:
 private:
 	static void queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _targetUUID);
 
-	static bool in_range(std::shared_ptr<Player>& _a, std::shared_ptr<Entity>& _b, int32_t& attackRange);
+	static bool in_range(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b, int32_t& attackRange);
 
 
 };

@@ -25,11 +25,13 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 	// In this case we check if either of them are already dead.
 	//*
 	{
-		const int32_t hpEngager = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-		const int32_t hpVictim  = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		const int32_t hpEngager = _a->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		const int32_t hpVictim =  _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
 
-		if(hpEngager <= 0 || hpVictim <= 0)
+		if (hpEngager <= 0 || hpVictim <= 0)
+		{
 			return false;
+		}
 	}
 
 	//*
@@ -44,7 +46,7 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 
 		const uint64_t playerHandle = g_globals.entityHandler->transpose_player_to_client_handle(_a->uuid).value();
 
-		int32_t attackRange = 0;
+		int32_t attackRange = _a->get_attack_range();
 
 		//*----------------------------------------
 		//Check if _A is in attacking distance of _B
@@ -84,35 +86,50 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 
 const bool CombatHandler::engage(std::shared_ptr<NPC> _a, std::shared_ptr<Entity> _b)
 {
-	if (_b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted <= 0)
-		return false;
-
-	if (Server::EntityHandler::get_distance(_a, _b) <= _a->get_attack_range())
+	//*
+	// Check if either entities are eligible to engage in combat.
+	// In this case we check if either of them are already dead.
+	//*
 	{
-		if (_a->tickCounter <= 0)
+		const int32_t hpEngager = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		const int32_t hpVictim  = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+
+		if (hpEngager <= 0 || hpVictim <= 0)
 		{
-			_a->tickCounter = _a->tickCounter++;
-
-			hit(_a, _b);
-
-			if (_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted >= 0)
-			{
-				DEVIOUS_EVENT("Entity of ID: " << _b->uuid << " has died.");
-			}
-
-			return true;
-		}
-		else
-		{
-			_a->tickCounter--;
 			return false;
 		}
+	}
 
+	int32_t attackRange = _a->get_attack_range();
+
+	//*----------------------------------------
+	//Check if _A is in attacking distance of _B
+	//*
+	if (!in_range(_a, _b, attackRange))
+	{
+		g_globals.entityHandler->move_towards_entity(_a->uuid, _b->uuid, false);
+
+		//If we're still not in range even after moving, we don't want to register a hit.
+		if (!in_range(_a, _b, attackRange))
+		{
+			return false;
+		}
+	}
+
+	//*--------------------------------------------------------------------------------------------------------------------
+	// TODO: In the future when we introduce items, we want to make the attack range dependent on attack style and weapons.
+	// For NPC's this would be predefined based on the attack they do.
+	//*      
+	if (_a->tickCounter <= 0)
+	{
+		_a->tickCounter = _a->get_attack_speed();
+		
+		hit(_a, _b);
+
+		return true;
 	}
 	
-	g_globals.entityHandler->move_entity_to(_a->uuid, _b->position);
 	return false;
-
 }
 
 void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
@@ -126,6 +143,14 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 	{
 		int32_t* hp = &_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
 		*hp = CLAMP(*hp - maxHit, 0, INT32_MAX);
+
+		//Try make other entity retaliate.
+		_b->try_set_target(_a, true);
+
+		if(*hp <= 0) 
+		{
+			_a->disengage();
+		}
 	}
 
 	//*------------------
@@ -183,7 +208,7 @@ void CombatHandler::queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _
 	);
 }
 
-bool CombatHandler::in_range(std::shared_ptr<Player>& _a, std::shared_ptr<Entity>& _b, int32_t& attackRange)
+bool CombatHandler::in_range(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b, int32_t& attackRange)
 {
 	bool bRequireAdjacent = false; //If true, means the attacking entity has to be adjacent of the target.
 

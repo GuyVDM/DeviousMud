@@ -8,19 +8,21 @@
 
 void SimPosition::set_target(const Utilities::vec2 _target)
 {
-	//Skip setting new target if the target was the same as the previous one.
+	//*----------------------------------------------------------------------
+	// Skip setting new target if the target was the same as the previous one.
+	//*
 	if (Utilities::to_ivec2(_target) == Utilities::to_ivec2(m_endPos))
 		return;
 
 	m_bIsDirty = true;
 	m_elapsedTime = 0.0f;
 
-	// Update positions
+	//*-----------------
+	//  Update positions
+	//*
 	{
 		m_startPos = m_currentPos;
 		m_endPos = _target;
-
-		m_path.clear();
 
 		if (Utilities::to_ivec2(m_startPos) != Utilities::to_ivec2(m_endPos))
 		{
@@ -44,24 +46,24 @@ void SimPosition::set_current_position(const Utilities::vec2 _pos)
 
 void SimPosition::update()
 {
-	if (m_path.size() == 0)
-	{
-		return;
-	}
-
-	const static float MAX_TIMELINE = 1.0f;
-	const float DURATION_TO_TILE = 1.0f / m_path.size();
-
 	m_elapsedTime += RATE * DM::CLIENT::Config::get_deltaTime();
 
-	float timeline = CLAMP(m_elapsedTime, 0.0f, 1.0f);
+	const static float MAX_TIMELINE     = 1.0f;
+	const float        DURATION_TO_TILE = 1.0f / m_path.size();
 
-	//Calculate which tile we're walking towards.
-	uint32_t targetTileIndex = static_cast<uint32_t>
+	float              timeline = CLAMP(m_elapsedTime, 0.0f, 1.0f);
+
+	//*
+	// Calculate which tile we're walking towards.
+	//*
+	const int32_t targetTileIndex = static_cast<uint32_t>
 	(
-		CLAMP(ceilf(timeline / (1.0f / m_path.size())) - 1.0f, 0, UINT32_MAX)
+		CLAMP(ceilf(timeline / (1.0f / m_path.size())) - 1.0f, 0, INT_FAST32_MAX)
 	);
+
+	//*
 	// Calculate the current position.
+	//*
 	{
 		//Check whether we already passed by one of the tiles, if not, use the start position.
 		const Utilities::vec2 START_TILE = targetTileIndex == 0 ? m_startPos : Utilities::to_vec2(m_path[targetTileIndex - 1]);

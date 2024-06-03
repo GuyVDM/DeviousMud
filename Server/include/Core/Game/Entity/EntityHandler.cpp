@@ -178,7 +178,7 @@ bool Server::EntityHandler::move_towards_entity(const EntityUUID _entityA, const
 		const Utilities::ivec2 target = get_shortest_neighbouring_tile();
 
 		//Move the entity to the target adjacent tile.
-		return g_globals.entityHandler->move_entity_to(_enttA, target);
+		return g_globals.entityHandler->move_entity_to(_enttA, target, _BIsRunning);
 	}
 
 	return false;
@@ -266,7 +266,5 @@ void Server::EntityHandler::entities_tick()
 	for(const auto&[uuid, entity] : m_entities) 
 	{
 		entity->update();
-		
-		
 	}
 }
