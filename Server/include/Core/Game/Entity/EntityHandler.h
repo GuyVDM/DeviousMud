@@ -55,8 +55,19 @@ namespace Server
 		/// <param name="_target"></param>
 		/// <param name="_isRunning"></param>
 		/// <returns></returns>
-		bool move_entity_towards(const EntityUUID _entityId,
+		bool move_entity_to(const EntityUUID _entityId,
 			                     const Utilities::ivec2 _target, const bool _bIsRunning = false);
+
+
+		/// <summary>
+		/// Moves the player to any nearest adjacent square of the target.
+		/// </summary>
+		/// <param name="_entityA"></param>
+		/// <param name="_entityB"></param>
+		/// <param name="_BIsRunning"></param>
+		/// <returns></returns>
+		bool move_towards_entity(const EntityUUID _entityA, 
+			                     const EntityUUID _entityB, const bool _BIsRunning = false);
 
 		/// <summary>
 		/// Adds a new entity to the world.

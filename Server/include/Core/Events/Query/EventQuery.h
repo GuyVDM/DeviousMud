@@ -15,7 +15,7 @@ public:
 	/// If the event type is already apparent within the stack then that event gets replaced by
 	/// the latest one. Each packet has a action priority, if a packet gets added and it has a lower priority than packets already
 	/// existing within the queue, it won't get added. In other sense, if a higher priority packet gets added to the queue, any 
-	/// already existing packet within the queue that's lower priority will get wiped from it.
+	/// already existing packet within the queue that's a lower priority will get wiped from it.
 	/// </summary>
 	void queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet);
 

@@ -20,12 +20,21 @@
 
 const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Entity> _b)
 {
-	if (_b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted <= 0)
-		return false;
+	//*
+	// Check if either entities are eligible to engage in combat.
+	// In this case we check if either of them are already dead.
+	//*
+	{
+		const int32_t hpEngager = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		const int32_t hpVictim  = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
 
-	DEVIOUS_EVENT("Entities are engaging! Player vs entity.");
+		if(hpEngager <= 0 || hpVictim <= 0)
+			return false;
+	}
 
-	//Try transpose playerUUID to indentify which clienthandle owns it.
+	//*
+	// Try transpose playerUUID to indentify which clienthandle owns it.
+	//*
 	if (std::optional<uint64_t> optHandle = g_globals.entityHandler->transpose_player_to_client_handle(_a->uuid); optHandle.has_value())
 	{
 		RefClientInfo client = g_globals.connectionHandler->get_client_info
@@ -33,62 +42,41 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 			static_cast<enet_uint32>(optHandle.value())
 		);
 
-		//Queue looping combat packet
+		const uint64_t playerHandle = g_globals.entityHandler->transpose_player_to_client_handle(_a->uuid).value();
+
+		int32_t attackRange = 0;
+
+		//*----------------------------------------
+		//Check if _A is in attacking distance of _B
+		//*
+		if (!in_range(_a, _b, attackRange))
 		{
-			Packets::s_ActionPacket packet;
-			packet.interpreter = e_PacketInterpreter::PACKET_ENGAGE_ENTITY;
-			packet.action      = e_Action::SOFT_ACTION;
-			packet.entityId    = _b->uuid;
-
-			client->packetquery->queue_packet
-			(
-				std::make_unique<Packets::s_ActionPacket>(packet)
-			);
+			g_globals.entityHandler->move_towards_entity(playerHandle, _b->uuid, true);
+			
+			//If we're still not in range even after moving, we don't want to register a hit.
+			if(!in_range(_a, _b, attackRange)) 
+			{
+				queue_combat_packet(client, _b->uuid);
+				return false;
+			}
 		}
+		
+		queue_combat_packet(client, _b->uuid);
 
-		//TODO: In the future when we introduce items, we want to make the attack range dependent on attack style and weapons.
-		//      For NPC's this would be predefined based on the attack they do.
-		if (Server::EntityHandler::get_distance(_a, _b) > 1)
-		{
-			uint64_t playerHandle = g_globals.entityHandler->transpose_player_to_client_handle(_a->uuid).value();
-			g_globals.entityHandler->move_entity_towards(playerHandle, _b->position);
-
-			return false;
-		}
-
+		//*--------------------------------------------------------------------------------------------------------------------
+		// TODO: In the future when we introduce items, we want to make the attack range dependent on attack style and weapons.
+		// For NPC's this would be predefined based on the attack they do.
+		//*      
 		if (_a->tickCounter <= 0)
 		{
-			const int32_t tempAttackDelayTicks = 1;
+			const int32_t tempAttackDelayTicks = 2;
 
 			_a->tickCounter = tempAttackDelayTicks;
 
 			hit(_a, _b);
-		}
-		else
-		{
-			_a->tickCounter--;
-			return false;
-		}
 
-		//*
-		//	If the Target Entity still has health left.
-		//*
-		if (_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted >= 0)
-		{
-			Packets::s_ActionPacket packet;
-			{
-				packet.interpreter = e_PacketInterpreter::PACKET_ENGAGE_ENTITY;
-				packet.action = e_Action::SOFT_ACTION;
-				packet.entityId = _b->uuid;
-
-				client->packetquery->queue_packet
-				(
-					std::make_unique<Packets::s_ActionPacket>(packet)
-				);
-			}
+			return true;
 		}
-
-		return true;
 	}
 
 	return false;
@@ -109,7 +97,7 @@ const bool CombatHandler::engage(std::shared_ptr<NPC> _a, std::shared_ptr<Entity
 
 			if (_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted >= 0)
 			{
-				DEVIOUS_EVENT("Died.");
+				DEVIOUS_EVENT("Entity of ID: " << _b->uuid << " has died.");
 			}
 
 			return true;
@@ -122,7 +110,7 @@ const bool CombatHandler::engage(std::shared_ptr<NPC> _a, std::shared_ptr<Entity
 
 	}
 	
-	g_globals.entityHandler->move_entity_towards(_a->uuid, _b->position);
+	g_globals.entityHandler->move_entity_to(_a->uuid, _b->position);
 	return false;
 
 }
@@ -132,13 +120,17 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 	//TODO: remove this and calculate this dynamically.
 	const int32_t maxHit = 1;
 
-	int32_t* hp = &_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-	
-	*hp = CLAMP(*hp - maxHit, 0, INT32_MAX);
+	//*-----------------------------------------
+	// Apply the damage to the entity its health.
+	//*
+	{
+		int32_t* hp = &_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		*hp = CLAMP(*hp - maxHit, 0, INT32_MAX);
+	}
 
-	DEVIOUS_LOG("Entity now currently has: " << *hp << " hitpoints remaining.");
-
-	//Send hitData over.
+	//*------------------
+	// Send hitData over.
+	//* 
 	{
 		Packets::s_EntityHit packet;
 		packet.interpreter  = e_PacketInterpreter::PACKET_ENTITY_HIT;
@@ -156,14 +148,16 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 			);
 	}
 
-	//Update entity skill clientsided.
+	//*-------------------------------
+	// Update entity skill clientsided.
+	//*
 	{
 		Packets::s_UpdateSkill packet;
 		packet.interpreter = e_PacketInterpreter::PACKET_ENTITY_SKILL_UPDATE;
-		packet.action = e_Action::SOFT_ACTION;
-		packet.entityId = _b->uuid;
-		packet.skillType = (uint8_t)DM::SKILLS::e_skills::HITPOINTS;
-		packet.level = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].level;
+		packet.action       = e_Action::SOFT_ACTION;
+		packet.entityId     = _b->uuid;
+		packet.skillType    = (uint8_t)DM::SKILLS::e_skills::HITPOINTS;
+		packet.level        = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].level;
 		packet.levelBoosted = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
 
 		PacketHandler::send_packet_multicast<Packets::s_UpdateSkill>
@@ -174,4 +168,60 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 				ENET_PACKET_FLAG_RELIABLE
 			);
 	}
+}
+
+void CombatHandler::queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _targetUUID)
+{
+	Packets::s_ActionPacket packet;
+	packet.interpreter = e_PacketInterpreter::PACKET_ENGAGE_ENTITY;
+	packet.action      = e_Action::SOFT_ACTION;
+	packet.entityId    = _targetUUID;
+
+	_client->packetquery->queue_packet
+	(
+		std::make_unique<Packets::s_ActionPacket>(packet)
+	);
+}
+
+bool CombatHandler::in_range(std::shared_ptr<Player>& _a, std::shared_ptr<Entity>& _b, int32_t& attackRange)
+{
+	bool bRequireAdjacent = false; //If true, means the attacking entity has to be adjacent of the target.
+
+	const int32_t distance = Server::EntityHandler::get_distance(_a, _b);
+
+	int32_t attRange = attackRange;
+
+	if (attRange == 0)
+	{
+		attRange = 1;
+		bRequireAdjacent = true;
+	}
+
+	if (distance <= attRange && distance != 0)
+	{
+		if (bRequireAdjacent)
+		{
+			return CombatHandler::is_adjacent(_a, _b);
+		}
+		else
+		{
+			return true;
+		}
+
+	}
+
+	return false;
+}
+
+bool CombatHandler::is_adjacent(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
+{
+	const Utilities::ivec2 pos       = _a->position;
+	const Utilities::ivec2 targetPos = _b->position;
+
+	if (pos == (targetPos + Utilities::ivec2(1,   0))) return true; //Right
+	if (pos == (targetPos + Utilities::ivec2(-1,  0))) return true; //Left
+	if (pos == (targetPos + Utilities::ivec2(0,   1))) return true; //Down
+	if (pos == (targetPos + Utilities::ivec2(0,  -1))) return true; //Up
+	
+	return false;
 }

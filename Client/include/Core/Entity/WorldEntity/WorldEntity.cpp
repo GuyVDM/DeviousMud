@@ -26,8 +26,11 @@
 
 RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::Utils::UUID _uuid)
 {
-    const NPCDef npcDef = get_npc_definition(_npcId);
 
+    //*
+    // Create the entity and register a shared pointer for it.
+    //*
+    const NPCDef npcDef = get_npc_definition(_npcId);
     WorldEntity* entity = new WorldEntity
     (
         Utilities::to_vec2(_pos)                        * static_cast<float>(Graphics::Renderer::GRID_CELL_PX_SIZE),
@@ -37,7 +40,9 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
 
     std::shared_ptr<WorldEntity> shrdEntity = std::shared_ptr<WorldEntity>(entity);
     
+    //*
     // Register UI elements and entity specific data.
+    //*
     {
         const int8_t playerUI_zOrder = 5;
         entity->m_simPos.m_currentPos = Utilities::to_vec2(_pos);
@@ -49,12 +54,17 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
         entity->m_canvas->set_asset_name("Canvas - Entity");
     }
     
-    // Register healthbar for the entity.
+    //*
+    //  Register healthbar for the entity.
+    //*
     {
         auto healthbar = Healthbar::create_hp_bar(Utilities::vec2(50.0f, 7.0f), shrdEntity);
         entity->m_canvas->add_child(healthbar);
     }
 
+    //*
+    // Set default idle animation for the entity.
+    //*
     Graphics::Animation::Animator::set_default_animation(entity->m_sprite, npcDef.idleAnim, 8.0f);
 
     return shrdEntity;
@@ -173,15 +183,11 @@ DM::SKILLS::SkillMap& WorldEntity::get_skills()
 void WorldEntity::move_to(const Utilities::ivec2 _pos)
 {
     // We only want to move if the target is NOT the same as the current one.
-    if (_pos != Utilities::to_ivec2(get_position())) 
+    if (_pos != Utilities::to_ivec2(m_simPos.m_endPos)) 
     {
-        if (!m_simPos.is_dirty()) //Play animation only if it just started walking.
-        {
-            Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
-        }
-
-        m_sprite.bIsFlipped = _pos.x < get_position().x;
         m_simPos.set_target(Utilities::to_vec2(_pos));
+        Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
+        m_sprite.bIsFlipped = _pos.x < get_position().x;
         set_position(Utilities::to_vec2(_pos));
     }
 }

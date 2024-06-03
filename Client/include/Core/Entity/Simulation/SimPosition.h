@@ -24,7 +24,7 @@ private:
 
 	void update();
 
-	void set_target(const Utilities::vec2& _details);
+	void set_target(const Utilities::vec2 _details);
 
 	void set_current_position(const Utilities::vec2 _pos);
 
@@ -37,6 +37,11 @@ private:
 
 	bool  m_bIsDirty = false;
 	float m_elapsedTime = 0.0f;
+
+	/// <summary>
+	/// How many seconds should pass within the animation relative to a real second.
+	/// </summary>
+	const float RATE = 1.66666667f;
 
 	friend class WorldEntity;
 };

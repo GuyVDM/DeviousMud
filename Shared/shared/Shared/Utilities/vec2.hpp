@@ -68,10 +68,12 @@ namespace Utilities
 
         inline _ivec2 operator/(const _ivec2& _other) //TODO: Possibly broken, needs unit test
         {
+            _ivec2 a = { this->x, this->y };
+
             try 
             {
-                x /= _other.x;
-                y /= _other.y;
+                a.x = x /= _other.x;
+                a.y = y /= _other.y;
             }
             // catch block catches exception if any 
             // of type Exception 
@@ -84,7 +86,7 @@ namespace Utilities
             }
 
 
-            return *this;
+            return a;
         }
 
         inline bool operator==(const _ivec2& a) const

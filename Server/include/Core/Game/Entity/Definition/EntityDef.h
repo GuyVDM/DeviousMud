@@ -18,6 +18,11 @@ public:
 	DM::Utils::UUID      uuid        = -1;
 
 	/// <summary>
+	/// Non overridable fixed update that happens every cycle.
+	/// </summary>
+	void update();
+
+	/// <summary>
 	/// Internal game cycle for Entities's
 	/// </summary>
 	virtual void tick();

@@ -66,7 +66,7 @@ void Server::EntityHandler::logout_player(const uint64_t _clientId)
 	}
 }
 
-bool Server::EntityHandler::move_entity_towards(const EntityUUID _entityId, const Utilities::ivec2 _target, const bool _bIsRunning)
+bool Server::EntityHandler::move_entity_to(const EntityUUID _entityId, const Utilities::ivec2 _target, const bool _bIsRunning)
 {
 	if (m_entities.find(_entityId) == m_entities.end())
 	{
@@ -109,11 +109,79 @@ bool Server::EntityHandler::move_entity_towards(const EntityUUID _entityId, cons
 				packet.y = nextPos.y;
 			}
 
-			PacketHandler::send_packet_multicast<Packets::s_EntityMovement>(&packet, g_globals.networkHandler->get_server_host(), 0, 0);
+			PacketHandler::send_packet_multicast<Packets::s_EntityMovement>(&packet, g_globals.networkHandler->get_server_host(), 0, ENET_PACKET_FLAG_RELIABLE);
 		}
 	}
 
 	return m_entities[_entityId]->position == _target;
+}
+
+bool Server::EntityHandler::move_towards_entity(const EntityUUID _entityA, const EntityUUID _entityB, const bool _BIsRunning)
+{
+	uint64_t _enttA, _enttB;
+
+	//*
+	// See if any of these UUID's is relevant to a client.
+	//*
+	{
+		if (auto optHandle = transpose_player_to_client_handle(_entityA); optHandle.has_value())
+		{
+			_enttA = optHandle.value();
+		}
+		else _enttA = _entityA;
+
+		if (auto optHandle = transpose_player_to_client_handle(_entityB); optHandle.has_value())
+		{
+			_enttB = optHandle.value();
+		}
+		else _enttB = _entityB;
+	}
+
+	auto optEntityA = g_globals.entityHandler->get_entity(_enttA);
+	auto optEntityB = g_globals.entityHandler->get_entity(_enttB);
+
+	//*
+	// Check if both handles are actually valid.
+	//*
+	if (optEntityA.has_value() && optEntityB.has_value())
+	{
+		const Utilities::ivec2 startPos = optEntityA.value()->position;
+		const Utilities::ivec2 entityPos = optEntityB.value()->position;
+
+		//Calculate the nearest adjacent tile to the target entity.
+		const auto get_shortest_neighbouring_tile = [&startPos, &entityPos]()
+		{
+			const std::array<Utilities::ivec2, 4> neighbours
+			{
+				Utilities::ivec2(entityPos.x,     entityPos.y - 1), //Up
+				Utilities::ivec2(entityPos.x,     entityPos.y + 1), //Down
+				Utilities::ivec2(entityPos.x + 1, entityPos.y),     //Right
+				Utilities::ivec2(entityPos.x - 1, entityPos.y)      //Left
+			};
+
+			std::pair<int32_t, int> closest = std::make_pair<int32_t, int>(0, INT_MAX);
+
+			for (int32_t i = 0; i < neighbours.size(); i++)
+			{
+				const Utilities::ivec2 node = neighbours[i];
+				const int cost = abs(startPos.x - node.x) + abs(startPos.y - node.y);
+
+				if (cost < closest.second)
+				{
+					closest = { i, cost };
+				}
+			}
+
+			return neighbours[closest.first];
+		};
+
+		const Utilities::ivec2 target = get_shortest_neighbouring_tile();
+
+		//Move the entity to the target adjacent tile.
+		return g_globals.entityHandler->move_entity_to(_enttA, target);
+	}
+
+	return false;
 }
 
 void Server::EntityHandler::create_world_npc(uint8_t npcId, Utilities::ivec2 _pos)
@@ -195,8 +263,10 @@ const std::optional<uint64_t> Server::EntityHandler::transpose_player_to_client_
 
 void Server::EntityHandler::entities_tick()
 {
-	for(const auto& entity : m_entities) 
+	for(const auto&[uuid, entity] : m_entities) 
 	{
-		entity.second->tick();
+		entity->update();
+		
+		
 	}
 }

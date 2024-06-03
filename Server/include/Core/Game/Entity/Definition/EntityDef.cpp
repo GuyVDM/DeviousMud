@@ -10,6 +10,14 @@
 
 #include <random>
 
+void Entity::update() 
+{
+	if(tickCounter > 0) 
+	{
+		tickCounter--;
+	}
+}
+
 void Entity::tick()
 {
 	/// Override in child classes.
@@ -62,7 +70,7 @@ void NPC::tick()
 
 	if(m_bIsMoving) 
 	{
-		g_globals.entityHandler->move_entity_towards(uuid, m_targetPos);
+		g_globals.entityHandler->move_entity_to(uuid, m_targetPos);
 
 		if(m_targetPos == position) 
 		{

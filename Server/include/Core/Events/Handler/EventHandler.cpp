@@ -125,74 +125,20 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 			{
 				auto packetFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));
 
-				auto optEntityA = g_globals.entityHandler->get_entity(_client->clientId);
-				auto optEntityB = g_globals.entityHandler->get_entity(packetFollow->entityId);
+				g_globals.entityHandler->move_towards_entity(_client->clientId, packetFollow->entityId, true);
 
-				if (optEntityA.has_value() && optEntityB.has_value())
+				//Queue looping following packet.
 				{
-					const Utilities::ivec2 startPos  = optEntityA.value()->position;
-					const Utilities::ivec2 entityPos = optEntityB.value()->position;
+					Packets::s_EntityFollow packet;
+					packet.action = e_Action::SOFT_ACTION;
+					packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
+					packet.entityId = packetFollow->entityId;
 
-					const auto get_shortest_neighbouring_tile = [&startPos, &entityPos]()
-					{
-						const std::array<Utilities::ivec2, 4> neighbours
-						{
-							Utilities::ivec2(entityPos.x,     entityPos.y - 1), //Up
-							Utilities::ivec2(entityPos.x,     entityPos.y + 1), //Down
-							Utilities::ivec2(entityPos.x + 1, entityPos.y),     //Right
-							Utilities::ivec2(entityPos.x - 1, entityPos.y)      //Left
-						};
-
-						std::pair<int32_t, int> closest = std::make_pair<int32_t, int>(0, INT_MAX);
-
-						for (int32_t i = 0; i < neighbours.size(); i++)
-						{
-							const Utilities::ivec2 node = neighbours[i];
-							const int cost = abs(startPos.x - node.x) + abs(startPos.y - node.y);
-
-							if (cost < closest.second)
-							{
-								closest = { i, cost };
-							}
-						}
-
-						return neighbours[closest.first];
-					};
-
-					const Utilities::ivec2 target = get_shortest_neighbouring_tile();
-
-					if (startPos != target)
-					{
-						// Queue movement packet with the target being next to the target entity.
-						{
-							Packets::s_EntityMovement packet;
-							packet.action = e_Action::SOFT_ACTION;
-							packet.interpreter = e_PacketInterpreter::PACKET_MOVE_ENTITY;
-							packet.entityId = _client->clientId;
-							packet.x = target.x;
-							packet.y = target.y;
-							packet.isRunning = true;
-
-							_client->packetquery->queue_packet
-							(
-								std::move(std::make_unique<Packets::s_EntityMovement>(packet))
-							);
-						}
-					}
-
-					//Queue looping following packet.
-					{
-						Packets::s_EntityFollow packet;
-						packet.action = e_Action::SOFT_ACTION;
-						packet.interpreter = e_PacketInterpreter::PACKET_FOLLOW_ENTITY;
-						packet.entityId = packetFollow->entityId;
-
-						_client->packetquery->queue_packet
-						(
-							std::move(std::make_unique<Packets::s_EntityFollow>(packet))
-						);
-					}
-				}
+					_client->packetquery->queue_packet
+					(
+						std::move(std::make_unique<Packets::s_EntityFollow>(packet))
+					);
+				}				
 			}
 			break;
 
@@ -200,7 +146,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 		{
 			auto enttPacket = transform_packet<Packets::s_EntityMovement>(std::move(packet));
 
-			const bool bReachedDest = g_globals.entityHandler->move_entity_towards
+			const bool bReachedDest = g_globals.entityHandler->move_entity_to
 			(
 				_client->clientId, 
 				ivec2(enttPacket->x, enttPacket->y),

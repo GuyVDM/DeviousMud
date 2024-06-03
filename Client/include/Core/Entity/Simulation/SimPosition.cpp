@@ -6,7 +6,7 @@
 
 #include "Shared/Navigation/AStar.hpp"
 
-void SimPosition::set_target(const Utilities::vec2& _target)
+void SimPosition::set_target(const Utilities::vec2 _target)
 {
 	//Skip setting new target if the target was the same as the previous one.
 	if (Utilities::to_ivec2(_target) == Utilities::to_ivec2(m_endPos))
@@ -20,11 +20,20 @@ void SimPosition::set_target(const Utilities::vec2& _target)
 		m_startPos = m_currentPos;
 		m_endPos = _target;
 
-		m_path = AStar::find_path
-		(
-			Utilities::to_ivec2(m_startPos),
-			Utilities::to_ivec2(m_endPos)
-		);
+		m_path.clear();
+
+		if (Utilities::to_ivec2(m_startPos) != Utilities::to_ivec2(m_endPos))
+		{
+			m_path = AStar::find_path
+			(
+				Utilities::to_ivec2(m_startPos),
+				Utilities::to_ivec2(m_endPos)
+			);
+		}
+		else 
+		{
+			m_path = std::vector<Utilities::ivec2>{ Utilities::to_ivec2(m_endPos) };
+		}
 	}
 }
 
@@ -35,16 +44,23 @@ void SimPosition::set_current_position(const Utilities::vec2 _pos)
 
 void SimPosition::update()
 {
-	const float MAX_TIMELINE = 1.0f;
+	if (m_path.size() == 0)
+	{
+		return;
+	}
+
+	const static float MAX_TIMELINE = 1.0f;
 	const float DURATION_TO_TILE = 1.0f / m_path.size();
 
-	m_elapsedTime += DM::CLIENT::Config::get_deltaTime();
+	m_elapsedTime += RATE * DM::CLIENT::Config::get_deltaTime();
 
 	float timeline = CLAMP(m_elapsedTime, 0.0f, 1.0f);
 
 	//Calculate which tile we're walking towards.
-	uint32_t targetTileIndex = (uint32_t)ceilf(timeline / (1.0f / m_path.size())) - 1;
-
+	uint32_t targetTileIndex = static_cast<uint32_t>
+	(
+		CLAMP(ceilf(timeline / (1.0f / m_path.size())) - 1.0f, 0, UINT32_MAX)
+	);
 	// Calculate the current position.
 	{
 		//Check whether we already passed by one of the tiles, if not, use the start position.

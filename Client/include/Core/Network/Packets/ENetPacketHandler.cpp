@@ -71,6 +71,8 @@ void ENetPacketHandler::process_packet()
 		case e_PacketInterpreter::PACKET_MOVE_ENTITY: 
 		{
 			Packets::s_EntityMovement entityData;
+			DEVIOUS_LOG("Moving to: " << entityData.x << ", " << entityData.y << ".");
+
 			PacketHandler::retrieve_packet_data<Packets::s_EntityMovement>(entityData, &m_event);
 
 			if (auto entityOpt = entityHandler->get_entity(entityData.entityId); entityOpt != std::nullopt)
@@ -86,7 +88,6 @@ void ENetPacketHandler::process_packet()
 
 		case e_PacketInterpreter::PACKET_PING:
 		{
-			//Respond to the ping if we can to let the server know we are still here.
 			Packets::s_PacketHeader packet;
 			packet.interpreter = e_PacketInterpreter::PACKET_PING;
 			send_packet<Packets::s_PacketHeader>(&packet, 0, ENET_PACKET_FLAG_RELIABLE);
@@ -140,11 +141,6 @@ void ENetPacketHandler::process_packet()
 			{
 				RefEntity victimEntt = victimEnttOpt.value();
 				victimEntt->hit(packet.fromEntityId, packet.hitAmount);
-				DEVIOUS_LOG("Licked");
-			}
-			else 
-			{
-				DEVIOUS_WARN("Couldn't find the entity taking the hit. UUID: " << packet.toEntityId);
 			}
 		}
 		break;
