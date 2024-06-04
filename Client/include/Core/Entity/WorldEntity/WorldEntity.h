@@ -34,6 +34,22 @@ public:
 	void set_interaction_mode(e_InteractionMode _interactionMode);
 
 	/// <summary>
+	/// To make the entity instantly teleport.
+	/// </summary>
+	/// <param name="_destination"></param>
+	void teleport_to(Utilities::vec2 _destination);
+
+	/// <summary>
+	/// Plays the death animation;
+	/// </summary>
+	void die();
+
+	/// <summary>
+	/// Makes the entity interactable and visible again.
+	/// </summary>
+	void respawn();
+
+	/// <summary>
 	/// Whether this Entity is in combat.
 	/// </summary>
 	/// <returns></returns>
@@ -85,6 +101,16 @@ public:
 	/// <returns></returns>
 	const Utilities::vec2 get_position() const;
 
+	/// <summary>
+	/// Whether this entity should get rendered.
+	/// </summary>
+	/// <returns></returns>
+	const bool is_visible() const;
+
+	/// <summary>
+	/// Whether this entity should get hidden.
+	/// </summary>
+	void set_visibility(bool _bShouldHide);
 
 	/// <summary>
 	/// Updates a specified skill for visual purposes, usually to represent server side variables..
@@ -118,6 +144,8 @@ private:
 	friend std::shared_ptr<WorldEntity>;
 
 private:	
+	bool                    m_bShouldHide = false;
+	bool                    m_bIsDead = false;
 	DM::SKILLS::SkillMap    m_skills;
 	NPCDef                  m_NPCDefinition;
 	SimPosition             m_simPos;

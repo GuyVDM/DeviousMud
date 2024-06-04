@@ -71,10 +71,11 @@ namespace Server
 
 		/// <summary>
 		/// Adds a new entity to the world.
+		/// If the respawn timer is negative, the entity won't ever respawn.
 		/// </summary>
 		/// <param name="npcId"></param>
 		/// <param name="_pos"></param>
-		void create_world_npc(uint8_t npcId, Utilities::ivec2 _pos);
+		void create_world_npc(uint8_t npcId, Utilities::ivec2 _pos, int32_t _respawnTimer = -1);
 
 
 		/// <summary>

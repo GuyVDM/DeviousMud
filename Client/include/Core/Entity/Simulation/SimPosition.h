@@ -41,7 +41,7 @@ private:
 	/// <summary>
 	/// How many seconds should pass within the animation relative to a real second.
 	/// </summary>
-	const float RATE = 1.66666667f;
+	const float RATE = 1.6667f;
 
 	friend class WorldEntity;
 };

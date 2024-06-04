@@ -16,6 +16,17 @@ using namespace Utils;
 // All registered controllers.
 std::unordered_map<DM::Utils::UUID, Animator::AnimationController> Animator::s_animators;
 
+bool Graphics::Animation::Animator::is_playing(Sprite& _sprite, e_AnimationType _animation)
+{
+	if(s_animators.find(_sprite.get_uuid()) != s_animators.end()) 
+	{
+		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
+		return controller.currentAnimation == _animation;
+	}
+
+	return false;
+}
+
 void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animationType, const bool& _bIsLooping, const float& _playbackSpeed)
 {
 	////Set the first frame of the animation
@@ -27,6 +38,7 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 		controller.uuid = _sprite.get_uuid();
 		controller.sprite = &_sprite;
 		controller.bPaused = false;
+		controller.bHoldOnLastFrame = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
 		controller.playbackSpeed = _playbackSpeed;
@@ -43,6 +55,7 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 	{
 		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
 		controller.bPaused = false;
+		controller.bHoldOnLastFrame = false;
 		controller.currentAnimation = _animationType;
 		controller.bIsLooping = _bIsLooping;
 		controller.keyframeIndex = 0;
@@ -52,6 +65,14 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 
 		Animator::s_animators[controller.uuid] = controller;
 	}
+}
+
+void Graphics::Animation::Animator::play_animation_oneshot(Sprite& _sprite, const e_AnimationType& _animation, const float& _playbackSpeed)
+{
+	play_animation(_sprite, _animation, false, _playbackSpeed);
+
+	AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
+	controller.bHoldOnLastFrame = true;
 }
 
 void Graphics::Animation::Animator::set_default_animation(Sprite& _sprite, const e_AnimationType& _animation, const float& _playbackSpeed)
@@ -90,10 +111,8 @@ void Graphics::Animation::Animator::stop_current_animation(Sprite& _sprite)
 
 void Animator::update()
 {
-	for (auto& pair : s_animators)
+	for (auto&[uuid, controller] : s_animators)
 	{
-		AnimationController& controller = pair.second;
-
 		if (!controller.bPaused) 
 		{
 			controller.elapsedTime += Config::get_deltaTime() * controller.playbackSpeed;
@@ -103,12 +122,22 @@ void Animator::update()
 				controller.elapsedTime = 0.0f;
 				controller.keyframeIndex++;
 
-				//Set the first frame of the animation
+				//*
+				// Set the first frame of the animation
+				//*
 				const Animation2D animation = Animations::animationMap().at(controller.currentAnimation);
 
+				//* 
 				// Check if we reached the end of the animation.
+				//* 
 				if (controller.keyframeIndex > animation.get_last_frame_index())
 				{
+					if (controller.bHoldOnLastFrame) 
+					{
+						controller.bPaused = true;
+						continue;
+					}
+
 					if (controller.bIsLooping)
 					{
 						controller.keyframeIndex = 0;
@@ -127,7 +156,9 @@ void Animator::update()
 					}
 				}
 
+				//* 
 				// Set new animation frame.
+				//* 
 				{
 					controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
 				}

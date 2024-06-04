@@ -76,7 +76,10 @@ WorldEntity::WorldEntity(const Utilities::vec2& _pos, const Utilities::vec2& _si
     {
         auto stop_curr_anim_func = [this]()
         {
-            Graphics::Animation::Animator::stop_current_animation(m_sprite);
+            if(!m_bIsDead) 
+            {
+                Graphics::Animation::Animator::stop_current_animation(m_sprite);
+            }
         };  
 
         m_simPos.on_reached_dest.add_listener(stop_curr_anim_func);
@@ -102,6 +105,18 @@ void WorldEntity::set_interaction_mode(e_InteractionMode _interactionMode)
     m_eInteractionMode = _interactionMode;
 }
 
+void WorldEntity::teleport_to(Utilities::vec2 _destination)
+{
+    m_simPos.m_bIsDirty = false;
+    m_simPos.m_currentPos = _destination;
+}
+
+void WorldEntity::die()
+{
+    m_bIsDead = true;
+    Graphics::Animation::Animator::play_animation_oneshot(m_sprite, m_NPCDefinition.deathAnim, 8.0f);
+}
+
 const bool WorldEntity::in_combat() const
 {
     return m_bInCombat;
@@ -121,7 +136,9 @@ void WorldEntity::turn_to(DM::Utils::UUID _entityId)
 
 void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
 {
+    //*
     // Add the hitsplat.
+    //*
     {
         Utilities::vec2 simpos = m_simPos.get_position();
 
@@ -139,7 +156,9 @@ void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
 
     }
 
+    //*
     // Register in combat timer.
+    //*
     {
         m_bInCombat = true;
         
@@ -170,7 +189,8 @@ void WorldEntity::attack()
 
 void WorldEntity::update_skill(uint8_t _skillType, int32_t _level, int32_t _levelBoosted)
 {
-    DM::SKILLS::Skill* skill = &m_skills[(DM::SKILLS::e_skills)_skillType];
+    DM::SKILLS::e_skills type = static_cast<DM::SKILLS::e_skills>(_skillType);
+    DM::SKILLS::Skill* skill = &m_skills[type];
     skill->level = _level;
     skill->levelboosted = _levelBoosted;
 }
@@ -197,8 +217,21 @@ const Utilities::vec2 WorldEntity::get_position() const
     return m_simPos.get_position();
 }
 
+const bool WorldEntity::is_visible() const
+{
+    return !m_bShouldHide;
+}
+
+void WorldEntity::set_visibility(bool _bShouldHide)
+{
+    m_bShouldHide = _bShouldHide;
+}
+
 bool WorldEntity::handle_event(const SDL_Event* _event)
 {
+    if (m_bIsDead)
+        return false;
+
     if (is_hovered())
     {
         switch (_event->type)
@@ -261,13 +294,36 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
 
 void WorldEntity::update()
 {
+    using namespace Graphics::Animation;
+
     m_canvas->recursiveUpdateCleanup();
-
-    m_canvas->render();
-
-    if(m_simPos.is_dirty()) 
+    
+    if (!m_bShouldHide)
     {
-        m_simPos.update();
+        m_canvas->render();
+
+        //*------------------
+        // Pathing simulation
+        //*
+        if (m_simPos.is_dirty())
+        {
+            // Perform animation stalling when the Entity is doing its attacking animation.
+            if(!Animator::is_playing(m_sprite, m_NPCDefinition.attackAnim)) 
+            {
+                m_simPos.update();
+            }
+        }
+    }
+}
+
+void WorldEntity::respawn() 
+{
+    //*
+    // Stop the death animation and make the entity interactable again.
+    //*
+    {
+        Graphics::Animation::Animator::stop_current_animation(m_sprite);
+        m_bIsDead = false;
     }
 }
 

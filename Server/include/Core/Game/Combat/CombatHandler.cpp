@@ -25,10 +25,7 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 	// In this case we check if either of them are already dead.
 	//*
 	{
-		const int32_t hpEngager = _a->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-		const int32_t hpVictim =  _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-
-		if (hpEngager <= 0 || hpVictim <= 0)
+		if (_a->is_dead() || _b->is_dead())
 		{
 			return false;
 		}
@@ -91,10 +88,7 @@ const bool CombatHandler::engage(std::shared_ptr<NPC> _a, std::shared_ptr<Entity
 	// In this case we check if either of them are already dead.
 	//*
 	{
-		const int32_t hpEngager = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-		const int32_t hpVictim  = _b->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-
-		if (hpEngager <= 0 || hpVictim <= 0)
+		if (_a->is_dead() || _b->is_dead())
 		{
 			return false;
 		}
@@ -154,45 +148,19 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 	}
 
 	//*------------------
-	// Send hitData over.
+	// Hit the entity.
 	//* 
 	{
-		Packets::s_EntityHit packet;
-		packet.interpreter  = e_PacketInterpreter::PACKET_ENTITY_HIT;
-		packet.action       = e_Action::SOFT_ACTION;
-		packet.fromEntityId = _a->uuid;
-		packet.toEntityId   = _b->uuid;
-		packet.hitAmount    = maxHit;
-
-		PacketHandler::send_packet_multicast<Packets::s_EntityHit>
-			(
-				&packet,
-				g_globals.networkHandler->get_server_host(),
-				0,
-				ENET_PACKET_FLAG_RELIABLE
-			);
+		_b->broadcast_hit(_a, maxHit);
 	}
 
 	//*-------------------------------
 	// Update entity skill clientsided.
 	//*
 	{
-		Packets::s_UpdateSkill packet;
-		packet.interpreter = e_PacketInterpreter::PACKET_ENTITY_SKILL_UPDATE;
-		packet.action       = e_Action::SOFT_ACTION;
-		packet.entityId     = _b->uuid;
-		packet.skillType    = (uint8_t)DM::SKILLS::e_skills::HITPOINTS;
-		packet.level        = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].level;
-		packet.levelBoosted = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-
-		PacketHandler::send_packet_multicast<Packets::s_UpdateSkill>
-			(
-				&packet,
-				g_globals.networkHandler->get_server_host(),
-				0,
-				ENET_PACKET_FLAG_RELIABLE
-			);
+		_b->broadcast_skill(DM::SKILLS::e_skills::HITPOINTS);
 	}
+
 }
 
 void CombatHandler::queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _targetUUID)

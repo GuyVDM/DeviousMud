@@ -12,7 +12,7 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
         {
             const e_Action packetAction = m_packets[i]->action;
 
-            if(packetAction < _action)
+            if(static_cast<uint8_t>(packetAction) < static_cast<uint8_t>(_action))
             {
                 m_packets.erase(m_packets.begin() + i);
             }
@@ -24,12 +24,12 @@ void EventQuery::queue_packet(std::unique_ptr<Packets::s_PacketHeader> _packet)
     {
         const e_Action highestPrio = get_highest_packet_priority();
 
-        if (_packet->action < highestPrio)
+        if (static_cast<uint8_t>(_packet->action) < static_cast<uint8_t>(highestPrio))
         {
             return;
         }
         else
-        if (_packet->action > highestPrio)
+        if (static_cast<uint8_t>(_packet->action) > static_cast<uint8_t>(highestPrio))
         {
             remove_lower_prio_packets(_packet->action);
         }
@@ -74,7 +74,7 @@ const e_Action EventQuery::get_highest_packet_priority() const
 
     for (const auto& packet : m_packets)
     {
-        if (packet->action > highestAction)
+        if (static_cast<uint8_t>(packet->action) > static_cast<uint8_t>(highestAction))
         {
             highestAction = packet->action;
 

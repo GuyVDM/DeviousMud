@@ -16,6 +16,7 @@ struct NPCDef
 	e_AnimationType      walkingAnim    = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      attackAnim     = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      idleAnim       = e_AnimationType::NO_ANIMATION;
+	e_AnimationType      deathAnim		= e_AnimationType::NO_ANIMATION;
 };
 
 using NPCMap = std::map<uint8_t, NPCDef>;
@@ -39,6 +40,7 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 		npc.idleAnim    = e_AnimationType::PLAYER_IDLE;
 		npc.walkingAnim = e_AnimationType::PLAYER_WALKING;
 		npc.attackAnim  = e_AnimationType::PLAYER_ATTACKING;
+		npc.deathAnim   = e_AnimationType::PLAYER_DEATH;
 		break;
 
 	case 1:
@@ -49,6 +51,7 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 		npc.idleAnim    = e_AnimationType::GOBLIN_IDLE;
 		npc.walkingAnim = e_AnimationType::GOBLIN_WALK;
 		npc.attackAnim  = e_AnimationType::GOBLIN_ATTACK;
+		npc.deathAnim   = e_AnimationType::GOBLIN_DEATH;
 		break;
 
 	default:
@@ -59,6 +62,7 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 		npc.idleAnim    = e_AnimationType::NO_ANIMATION;
 		npc.walkingAnim = e_AnimationType::NO_ANIMATION;
 		npc.attackAnim  = e_AnimationType::NO_ANIMATION;
+		npc.deathAnim   = e_AnimationType::NO_ANIMATION;
 		break;
 	}
 

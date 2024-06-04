@@ -38,8 +38,15 @@ enum class e_PacketInterpreter : uint8_t
 
 	PACKET_ENTITY_HIT    = 0x0A,
 
-	PACKET_ENTITY_SKILL_UPDATE = 0x0B
+	PACKET_ENTITY_SKILL_UPDATE = 0x0B,
 
+	PACKET_ENTITY_DEATH        = 0x0C,
+
+	PACKET_ENTITY_RESPAWN      = 0x0D,
+
+	PACKET_ENTITY_HIDE         = 0x0E,
+
+	PACKET_ENTITY_TELEPORT     = 0x0F
 };
 
 namespace Packets
@@ -84,6 +91,31 @@ namespace Packets
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
+		}
+	};
+
+	struct s_TeleportEntity : public s_ActionPacket
+	{
+		int32_t x, y;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_ActionPacket>(this));
+			ar(x);
+			ar(y);
+		}
+	};
+
+	struct s_HideEntity : public s_ActionPacket 
+	{
+		bool bShouldHide = false;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_ActionPacket>(this));
+			ar(bShouldHide);
 		}
 	};
 

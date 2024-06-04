@@ -121,6 +121,29 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 
 		switch(packet->interpreter) 
 		{
+			case e_PacketInterpreter::PACKET_ENTITY_DEATH:
+			{
+				using OptEntity = std::optional<std::shared_ptr<Entity>>;
+
+				OptEntity player = g_globals.entityHandler->get_entity(_client->clientId);
+
+				if(auto playerPtr = player.value(); player.has_value()) 
+				{
+					if(playerPtr->is_dead()) 
+					{
+						Packets::s_PacketHeader deathPacket;
+						packet->action = e_Action::HARD_ACTION;
+						packet->interpreter = e_PacketInterpreter::PACKET_ENTITY_DEATH;
+
+						_client->packetquery->queue_packet
+						(
+							std::move(packet)
+						);
+					}
+				}
+			}
+			break;
+
 			case e_PacketInterpreter::PACKET_FOLLOW_ENTITY:
 			{
 				auto packetFollow = transform_packet<Packets::s_EntityFollow>(std::move(packet));

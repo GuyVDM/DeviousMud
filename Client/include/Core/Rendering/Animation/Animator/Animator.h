@@ -21,6 +21,7 @@ namespace Graphics
 				float					 playbackSpeed;
 				int32_t				     keyframeIndex;
 				float					 elapsedTime;
+				bool                     bHoldOnLastFrame;
 
 
 				e_AnimationType          defaultAnimation     = e_AnimationType::NO_ANIMATION;
@@ -36,6 +37,7 @@ namespace Graphics
 						bIsLooping       = true;
 						currentAnimation = defaultAnimation;
 						playbackSpeed    = defaultPlaybackspeed;
+						bHoldOnLastFrame = false;
 						return;
 					}
 
@@ -48,6 +50,13 @@ namespace Graphics
 		/// </summary>
 		public:
 			/// <summary>
+			/// Returns true if the sprite is currently playing the specified animation.
+			/// </summary>
+			/// <param name="_sprite"></param>
+			/// <returns></returns>
+			static bool is_playing(Sprite& _sprite, e_AnimationType _animation);
+
+			/// <summary>
 			/// Register an animation for a given sprite to play.
 			/// </summary>
 			/// <param name="_sprite"></param>
@@ -55,6 +64,14 @@ namespace Graphics
 			/// <param name="_bIsLooping"></param>
 			/// <param name="_playbackSpeed"></param>
 			static void play_animation(Sprite& _sprite, const e_AnimationType& _animation, const bool& _bIsLooping, const float& _playbackSpeed = 1.0f);
+
+			/// <summary>
+			/// Plays an animation, but holds it at the last frame until a different animation plays.
+			/// </summary>
+			/// <param name="_sprite"></param>
+			/// <param name="_animation"></param>
+			/// <param name="_playbackSpeed"></param>
+			static void play_animation_oneshot(Sprite& _sprite, const e_AnimationType& _animation, const float& _playbackSpeed = 1.0f);
 
 			/// <summary>
 			/// Sets an idle animation for the sprite, everytime a animation comes to end, it will transition back to this specified animation.

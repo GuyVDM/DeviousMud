@@ -184,17 +184,21 @@ bool Server::EntityHandler::move_towards_entity(const EntityUUID _entityA, const
 	return false;
 }
 
-void Server::EntityHandler::create_world_npc(uint8_t npcId, Utilities::ivec2 _pos)
+void Server::EntityHandler::create_world_npc(uint8_t npcId, Utilities::ivec2 _pos, int32_t _respawnTimer)
 {
-	NPC data = get_entity_data(npcId);
-	data.uuid = DM::Utils::UUID::generate();
-	data.position = _pos;
-	data.startingPosition = _pos;
+	NPC data              = get_entity_data(npcId);
+	data.uuid             = DM::Utils::UUID::generate();
+	data.position         = _pos;
+	data.respawnLocation = _pos;
+	data.m_respawnTimer   = _respawnTimer;
 
 	m_entities[data.uuid] = std::make_shared<NPC>(data);
+	
 	m_npcHandles.push_back(data.uuid);
 
-	//Notice to clients that a new entity has spawned.
+	//*------------------------------------------------
+	// Notice to clients that a new entity has spawned.
+	//*
 	{
 		Packets::s_CreateEntity packet;
 		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;

@@ -39,12 +39,15 @@ void Graphics::UI::EntityLayer::init()
 
 void Graphics::UI::EntityLayer::update()
 {
-	for(const auto&[uuid, entity] : m_entityHandler->m_worldEntities)
-	{;
-		const SimPosition& entitySim = entity->get_simulated_data();
-		const Utilities::vec2 tileCenterOffset = Utilities::vec2(1.0f) - Utilities::vec2(0.25f, 0.15f);
-		m_renderer->plot_frame(entity->get_sprite(), entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size);
-		m_renderer->draw_outline(entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size, 2, { 255, 255, 255, 255 }, 0, false);
+	for (const auto& [uuid, entity] : m_entityHandler->m_worldEntities)
+	{
+		if (entity->is_visible())
+		{
+			const SimPosition& entitySim = entity->get_simulated_data();
+			const Utilities::vec2 tileCenterOffset = Utilities::vec2(1.0f) - Utilities::vec2(0.25f, 0.15f);
+			m_renderer->plot_frame(entity->get_sprite(), entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size);
+			m_renderer->draw_outline(entitySim.get_position() - tileCenterOffset, m_entitySize * entity->get_definition().size, 2, { 255, 255, 255, 255 }, 0, false);
+		}
 	}
 
 	if (m_bHasLocalPlayer)

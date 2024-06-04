@@ -156,6 +156,70 @@ void ENetPacketHandler::process_packet()
 			}
 		}
 		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_DEATH:
+		{
+			Packets::s_ActionPacket packet;
+			PacketHandler::retrieve_packet_data<Packets::s_ActionPacket>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->die();
+				return;
+			}
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_RESPAWN:
+		{
+			Packets::s_ActionPacket packet;
+			PacketHandler::retrieve_packet_data<Packets::s_ActionPacket>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->respawn();
+				return;
+			}
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_HIDE:
+		{
+			Packets::s_HideEntity packet;
+			PacketHandler::retrieve_packet_data<Packets::s_HideEntity>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->set_visibility(packet.bShouldHide);
+				return;
+			}
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_TELEPORT:
+		{
+			Packets::s_TeleportEntity packet;
+			PacketHandler::retrieve_packet_data<Packets::s_TeleportEntity>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->teleport_to
+				(
+					Utilities::vec2
+					(
+						static_cast<float>(packet.x), 
+						static_cast<float>(packet.y)
+					)
+				);
+				return;
+			}
+		}
+		break;
+
 	}
 
 	enet_packet_destroy(m_event.packet);

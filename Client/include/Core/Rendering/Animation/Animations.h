@@ -15,6 +15,7 @@ enum class e_AnimationType : uint8_t
     PLAYER_IDLE,
     PLAYER_WALKING,
     PLAYER_ATTACKING,
+    PLAYER_DEATH,
 
     //Entities
     GOBLIN_IDLE,
@@ -36,6 +37,7 @@ struct Animations
              { e_AnimationType::PLAYER_IDLE,             Animation2D(0 , 4 )},
              { e_AnimationType::PLAYER_WALKING,          Animation2D(5 , 12)},
              { e_AnimationType::PLAYER_ATTACKING,        Animation2D(17 , 20)},
+             { e_AnimationType::PLAYER_DEATH,            Animation2D(21 , 24)},
 
              //Entities
              { e_AnimationType::GOBLIN_IDLE,             Animation2D(0 , 19)},
