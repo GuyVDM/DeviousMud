@@ -16,6 +16,9 @@ protected:
 	void send_message() const;
 
 private:
+	void update_text();
+
+private:
 	const int32_t m_maxCharacterCount = 50;
 	std::string m_inputField = "";
 };

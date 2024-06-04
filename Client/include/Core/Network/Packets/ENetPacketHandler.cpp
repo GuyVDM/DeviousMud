@@ -226,7 +226,6 @@ void ENetPacketHandler::process_packet()
 
 			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
 			{
-				DEVIOUS_LOG("Received message : " << packet.message);
 				RefEntity entt = optEntity.value();
 				entt->say(packet.message);
 			}

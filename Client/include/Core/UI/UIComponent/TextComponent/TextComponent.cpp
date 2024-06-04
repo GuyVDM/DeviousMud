@@ -10,60 +10,17 @@ using namespace Graphics;
 
 std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents, Utilities::vec2 _pos, const TextArgs _args)
 {
-	std::shared_ptr<TextComponent> textComponent;
-
-	if (!_contents.empty())
-	{
-
-		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
-
-		//Create font path
-		std::string fontPath = renderer->m_assetsPath;
-		{
-			fontPath.append("/fonts/");
-			fontPath.append(Fonts::FontMap().at(_args.font));
-		}
-
-		//Load font
-		TTF_Font* font = TTF_OpenFont(fontPath.c_str(), _args.size);
-		DEVIOUS_ASSERT(font != NULL);
-
-		//Create surface from font
-		SDL_Surface* textSurface = TTF_RenderText_Solid(font, _contents.c_str(), _args.color);
-		DEVIOUS_ASSERT(textSurface != NULL);
-
-		textComponent = UIComponent::create_component<TextComponent>
-		(
+	std::shared_ptr<TextComponent> textComponent = UIComponent::create_component<TextComponent>
+	(
 			_pos,
-			Utilities::vec2((float)textSurface->w, (float)textSurface->h),
+			Utilities::vec2(1.0f),
 			Graphics::SpriteType::NONE
-		);
+	);
 
-		//Create texture from surface.
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->m_renderer, textSurface);
-		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	textComponent->m_contents = _contents;
+	textComponent->m_textArgs = _args;
+	textComponent->rebuild_text();
 
-		DEVIOUS_ASSERT(texture != NULL);
-
-		//Cleanup the font and surface.
-		SDL_FreeSurface(textSurface);
-		TTF_CloseFont(font);
-
-		//Set text texture.
-		textComponent->m_textTexture = texture;
-		textComponent->m_textArgs    = _args;
-	}
-	else 
-	{
-		textComponent = UIComponent::create_component<TextComponent>
-		(
-			_pos,
-			Utilities::vec2(1.0f, 1.0f),
-			Graphics::SpriteType::NONE
-		);
-	}
-
-	textComponent->set_asset_name("TextComponent");
 	return textComponent;
 }
 
@@ -72,12 +29,71 @@ TextComponent::~TextComponent()
 	SDL_DestroyTexture(m_textTexture);
 }
 
+void Graphics::TextComponent::set_text(std::string _contents)
+{
+	m_contents = _contents;
+	rebuild_text();
+}
+
+void Graphics::TextComponent::set_text_args(const TextArgs _args)
+{
+	m_textArgs = _args;
+	rebuild_text();
+}
+
 void Graphics::TextComponent::init()
 {
 	on_render_call.add_listener
 	(
 		std::bind(&TextComponent::renderText, this, std::placeholders::_1)
 	);
+}
+
+void Graphics::TextComponent::rebuild_text()
+{
+	if (m_textTexture)
+	{
+		SDL_DestroyTexture(m_textTexture);
+	}
+
+	if (!m_contents.empty())
+	{
+		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
+
+		//Create font path
+		std::string fontPath = renderer->m_assetsPath;
+		{
+			fontPath.append("/fonts/");
+			fontPath.append(Fonts::FontMap().at(m_textArgs.font));
+		}
+
+		//Load font
+		TTF_Font* font = TTF_OpenFont(fontPath.c_str(), m_textArgs.size);
+		{
+			DEVIOUS_ASSERT(font != NULL);
+
+			//Create surface from font
+			SDL_Surface* textSurface = TTF_RenderText_Solid(font, m_contents.c_str(), m_textArgs.color);
+			DEVIOUS_ASSERT(textSurface != NULL);
+
+			//Create texture from surface.
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->m_renderer, textSurface);
+			DEVIOUS_ASSERT(texture != NULL);
+			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+			Utilities::ivec2 textureDimensions{ 0 };
+			SDL_QueryTexture(texture, NULL, NULL, &textureDimensions.x, &textureDimensions.y);
+
+			//Set size equal to the texture.
+			set_size(Utilities::to_vec2(textureDimensions));
+
+			//Cleanup the font and surface.
+			SDL_FreeSurface(textSurface);
+
+			m_textTexture = texture;
+		}
+		TTF_CloseFont(font);
+	}
 }
 
 void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)

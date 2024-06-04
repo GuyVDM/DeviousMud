@@ -40,14 +40,22 @@ namespace Graphics
 
 		virtual ~TextComponent();
 
+		void set_text(std::string _contents);
+
+		void set_text_args(const TextArgs _args = TextArgs::Default());
+
 	protected:
 		virtual void init() override;
+
+	private:
+		void rebuild_text();
 
 	private:
 		using UIComponent::UIComponent;
 
 		SDL_Texture* m_textTexture;
 		TextArgs     m_textArgs;
+		std::string  m_contents;
 
 	    void renderText(std::shared_ptr<Graphics::Renderer> _renderer);
 
