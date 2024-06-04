@@ -34,6 +34,12 @@ public:
 	void set_interaction_mode(e_InteractionMode _interactionMode);
 
 	/// <summary>
+	/// Prints text above the entity its head temporarily.
+	/// </summary>
+	/// <param name="_text"></param>
+	void say(std::string _text);
+
+	/// <summary>
 	/// To make the entity instantly teleport.
 	/// </summary>
 	/// <param name="_destination"></param>

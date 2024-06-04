@@ -41,6 +41,7 @@
     <ClCompile Include="include\Core\Util\Timer.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\WorldText\WorldText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -140,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

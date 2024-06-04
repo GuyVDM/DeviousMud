@@ -203,6 +203,7 @@
     <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\WorldText\WorldText.cpp" />
     <ClCompile Include="include\Core\Util\Timer.cpp" />
     <ClCompile Include="include\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -243,6 +244,7 @@
     <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
     <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h" />
     <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h" />
     <ClInclude Include="include\Core\Util\TimerHandler.h" />
     <ClInclude Include="include\precomp.h" />
   </ItemGroup>

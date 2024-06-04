@@ -22,11 +22,12 @@
 
 #include "Core/UI/UIComponent/Hitsplat/Hitsplat.h"
 
+#include "Core/UI/UIComponent/WorldText/WorldText.h"
+
 #include "Core/UI/UIComponent/Healthbar/Healthbar.h"
 
 RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::Utils::UUID _uuid)
 {
-
     //*
     // Create the entity and register a shared pointer for it.
     //*
@@ -105,6 +106,43 @@ void WorldEntity::set_interaction_mode(e_InteractionMode _interactionMode)
     m_eInteractionMode = _interactionMode;
 }
 
+void WorldEntity::say(std::string _text)
+{
+    std::shared_ptr<WorldText> text;
+
+    //*---------------------------------------------------------------------
+    // Try grab existing text component if its there, if not, make a new one.
+    //*
+    {
+        auto optText = m_canvas->get_component_in_children<WorldText>();
+        if (optText.has_value())
+        {
+            text = optText.value();
+        }
+        else
+        {
+            text = UIComponent::create_component<WorldText>
+            (
+                get_position() + Utilities::vec2(get_size().x / 2.0f, 0.0f),
+                Utilities::vec2(1.0f), 
+                Graphics::SpriteType::NONE, 
+                false
+            );
+        }
+    }
+
+    //*------------------------------------------------
+    // Register the TextComponent and set the contents.
+    //*
+    {
+        text->set_text(_text);
+
+        text->set_follow_target(m_entityUUID);
+
+        m_canvas->add_child(text);
+    }
+}
+
 void WorldEntity::teleport_to(Utilities::vec2 _destination)
 {
     m_simPos.m_bIsDirty = false;
@@ -153,7 +191,6 @@ void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
         hitsplat->set_hit_amount(_hitAmount);
         hitsplat->set_follow_target(m_entityUUID);
         m_canvas->add_child(hitsplat);
-
     }
 
     //*
@@ -205,10 +242,13 @@ void WorldEntity::move_to(const Utilities::ivec2 _pos)
     // We only want to move if the target is NOT the same as the current one.
     if (_pos != Utilities::to_ivec2(m_simPos.m_endPos)) 
     {
+        using namespace Graphics::Animation;
+
         m_simPos.set_target(Utilities::to_vec2(_pos));
-        Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
         m_sprite.bIsFlipped = _pos.x < get_position().x;
         set_position(Utilities::to_vec2(_pos));
+
+        Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
     }
 }
 
