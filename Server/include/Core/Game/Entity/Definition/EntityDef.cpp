@@ -250,6 +250,11 @@ const bool Entity::is_dead() const
 	return m_bIsDead;
 }
 
+const bool Entity::is_hidden() const
+{
+	return m_bHideEntity;
+}
+
 /// <summary>
 /// TODO: Replace these with statemachines maybe?
 /// </summary>

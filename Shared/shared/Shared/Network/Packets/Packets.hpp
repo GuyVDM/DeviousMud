@@ -148,6 +148,11 @@ namespace Packets
 		uint64_t npcId = 0;
 
 		/// <summary>
+		/// If this NPC should be hidden.
+		/// </summary>
+		bool bIsHidden = false;
+
+		/// <summary>
 		/// Where to spawn the entity.
 		/// </summary>
 		uint32_t posX = 0, posY = 0;
@@ -158,6 +163,7 @@ namespace Packets
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
 			ar(npcId);
+			ar(bIsHidden);
 			ar(posX);
 			ar(posY);
 		}

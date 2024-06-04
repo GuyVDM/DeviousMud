@@ -94,10 +94,14 @@ void ENetPacketHandler::process_packet()
 
 		case e_PacketInterpreter::PACKET_CREATE_ENTITY:
 		{
-			Packets::s_CreateEntity entity;
-			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(entity, &m_event);
-			entityHandler->create_world_entity(entity.entityId, entity.npcId, Utilities::ivec2(entity.posX, entity.posY));
-			DEVIOUS_EVENT("Creating Entity of id: " << entity.npcId << " at coords: " << entity.posX << ", " << entity.posY << ".");
+			Packets::s_CreateEntity packet;
+			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(packet, &m_event);
+			entityHandler->create_world_entity(packet.entityId, packet.npcId, Utilities::ivec2(packet.posX, packet.posY));
+			
+			RefEntity entity = entityHandler->get_entity(packet.entityId).value();
+			entity->set_visibility(packet.bIsHidden);
+
+			DEVIOUS_EVENT("Creating Entity of id: " << packet.npcId << " at coords: " << packet.posX << ", " << packet.posY << ".");
 		}
 		break;
 

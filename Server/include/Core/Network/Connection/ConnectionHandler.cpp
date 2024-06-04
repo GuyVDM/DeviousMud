@@ -123,6 +123,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		packet.npcId = 0;
 		packet.posX  = 0;
 		packet.posY  = 0;
+		packet.bIsHidden = false;
 
 		//Sign to all clients that are already connected that a new player has joined.
 		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>(&packet, server, 0, ENET_PACKET_FLAG_RELIABLE);
@@ -152,6 +153,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 				packet.npcId = 0;
 				packet.posX = optPlayer.value()->position.x;
 				packet.posY = optPlayer.value()->position.y;
+				packet.bIsHidden = optPlayer.value()->is_hidden();
 
 				PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 			}
@@ -163,10 +165,11 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	{
 		Packets::s_CreateEntity packet;
 		packet.interpreter = e_PacketInterpreter::PACKET_CREATE_ENTITY;
-		packet.entityId = entity->uuid;
-		packet.npcId    = entity->npcId;
-		packet.posX     = entity->position.x;
-		packet.posY     = entity->position.y;
+		packet.entityId  = entity->uuid;
+		packet.npcId     = entity->npcId;
+		packet.posX      = entity->position.x;
+		packet.posY      = entity->position.y;
+		packet.bIsHidden = entity->is_hidden();
 
 		PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}

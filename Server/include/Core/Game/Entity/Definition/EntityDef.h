@@ -98,6 +98,12 @@ public:
 	/// <returns></returns>
 	const bool is_dead() const;
 
+	/// <summary>
+	/// Whether this entity is hidden.
+	/// </summary>
+	/// <returns></returns>
+	const bool is_hidden() const;
+
 protected:
 	mutable bool        m_bHideEntity = false;
 	bool                m_bIsDead     = false;

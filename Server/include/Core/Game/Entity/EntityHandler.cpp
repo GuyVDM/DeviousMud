@@ -189,8 +189,9 @@ void Server::EntityHandler::create_world_npc(uint8_t npcId, Utilities::ivec2 _po
 	NPC data              = get_entity_data(npcId);
 	data.uuid             = DM::Utils::UUID::generate();
 	data.position         = _pos;
-	data.respawnLocation = _pos;
+	data.respawnLocation  = _pos;
 	data.m_respawnTimer   = _respawnTimer;
+	data.m_bHideEntity    = false;
 
 	m_entities[data.uuid] = std::make_shared<NPC>(data);
 	
