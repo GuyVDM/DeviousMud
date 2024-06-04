@@ -215,7 +215,20 @@ void ENetPacketHandler::process_packet()
 						static_cast<float>(packet.y)
 					)
 				);
-				return;
+			}
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_ENTITY_MESSAGE_WORLD:
+		{
+			Packets::s_Message packet;
+			PacketHandler::retrieve_packet_data<Packets::s_Message>(packet, &m_event);
+
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				DEVIOUS_LOG("Received message : " << packet.message);
+				RefEntity entt = optEntity.value();
+				entt->say(packet.message);
 			}
 		}
 		break;

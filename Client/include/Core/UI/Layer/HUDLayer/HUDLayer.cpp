@@ -11,6 +11,8 @@
 
 #include "Core/UI/UIComponent/OptionsTab/OptionsTab.h"
 
+#include "Core/UI/UIComponent/Chatbox/Chatbox.h"
+
 using namespace Utilities;
 using namespace Graphics::UI;
 
@@ -126,6 +128,24 @@ void HUDLayer::create_hud()
 			SpriteType::HUD_OPTIONS_BOX,
 			true
 		);
+	}   m_canvas->add_child(component);
+
+	// Chatbox
+	{
+		Utilities::ivec2 viewportSize = Utilities::ivec2(0);
+		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
+
+		Utilities::vec2 size = { 579.0f, 183.0f };
+		Utilities::vec2 bottomLeft = Utilities::vec2(0.0f, viewportSize.y) - Utilities::vec2(0.0f, size.y);
+
+		component = UIComponent::create_component<Chatbox>
+		(
+			bottomLeft,
+			size,
+			SpriteType::HUD_CHATBOX,
+			true
+		);
+		component->set_anchor(e_AnchorPreset::BOTTOM_LEFT);
 	}   m_canvas->add_child(component);
 }
 

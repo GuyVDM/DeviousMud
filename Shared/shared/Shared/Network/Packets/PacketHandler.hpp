@@ -49,7 +49,7 @@ constexpr inline int PacketHandler::send_packet(T* _data, ENetPeer* _peer, ENetH
 		}
 
 		std::string stringdata = os.str();
-		ENetPacket* packet = enet_packet_create(stringdata.c_str(), sizeof(stringdata), _flags);
+		ENetPacket* packet = enet_packet_create(stringdata.data(), stringdata.size(), _flags);
 
 		if (enet_peer_send(_peer, _channel, packet) == 0)
 		{
@@ -59,7 +59,7 @@ constexpr inline int PacketHandler::send_packet(T* _data, ENetPeer* _peer, ENetH
 		{
 			DEVIOUS_ASSERT(_peer != nullptr);
 			DEVIOUS_ASSERT(packet != nullptr);
-			fprintf(stderr, "Something went wrong with sending out a packet... \n");
+			DEVIOUS_ERR("Something went wrong with sending out a packet...");
 		}
 
 		return PACKET_SENT;
@@ -83,11 +83,18 @@ constexpr inline void PacketHandler::retrieve_packet_data(T& _packet, ENetEvent*
 {
 	static_assert(std::is_base_of<Packets::s_PacketHeader, T>::value || std::is_same<Packets::s_PacketHeader, T>::value, "T must inherit from the packetheader.");
 
-	std::string st((const char*)_e->packet->data, _e->packet->dataLength);
-	
-	std::istringstream is(st);
+	try
 	{
-		cereal::PortableBinaryInputArchive ar(is);
-		ar(_packet);
+		std::string st((const char*)_e->packet->data, _e->packet->dataLength);
+
+		std::istringstream is(st);
+		{
+			cereal::PortableBinaryInputArchive ar(is);
+			ar(_packet);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		DEVIOUS_ERR("Serialization error: " << e.what() << std::endl);
 	}
 }

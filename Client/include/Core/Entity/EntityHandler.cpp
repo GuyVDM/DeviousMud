@@ -92,3 +92,8 @@ void EntityHandler::update()
 		entity->update();
 	}
 }
+
+const uint64_t EntityHandler::get_local_player_id() const
+{
+	return m_localPlayerId;
+}

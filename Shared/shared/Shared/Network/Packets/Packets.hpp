@@ -46,7 +46,9 @@ enum class e_PacketInterpreter : uint8_t
 
 	PACKET_ENTITY_HIDE         = 0x0E,
 
-	PACKET_ENTITY_TELEPORT     = 0x0F
+	PACKET_ENTITY_TELEPORT     = 0x0F,
+
+	PACKET_ENTITY_MESSAGE_WORLD      = 16
 };
 
 namespace Packets
@@ -91,6 +93,18 @@ namespace Packets
 		{
 			ar(cereal::base_class<s_PacketHeader>(this));
 			ar(entityId);
+		}
+	};
+
+	struct s_Message : public s_ActionPacket 
+	{
+		std::string message;
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_ActionPacket>(this));
+			ar(message);
 		}
 	};
 

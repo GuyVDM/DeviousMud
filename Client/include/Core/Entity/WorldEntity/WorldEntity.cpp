@@ -128,6 +128,8 @@ void WorldEntity::say(std::string _text)
                 Graphics::SpriteType::NONE, 
                 false
             );
+
+            m_canvas->add_child(text);
         }
     }
 
@@ -138,8 +140,6 @@ void WorldEntity::say(std::string _text)
         text->set_text(_text);
 
         text->set_follow_target(m_entityUUID);
-
-        m_canvas->add_child(text);
     }
 }
 

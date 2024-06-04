@@ -68,6 +68,7 @@ void Application::load_sprites()
 		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
 		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
 		renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
+		renderer->load_and_bind_surface("hud/chatbox.png",  Graphics::SpriteType::HUD_CHATBOX);
 	}
 
 	// Load in misc.

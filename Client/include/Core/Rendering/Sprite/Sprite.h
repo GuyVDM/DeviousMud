@@ -21,6 +21,7 @@ namespace Graphics
 		HUD_TAB,
 		HUD_FRAME,
 		HUD_OPTIONS_BOX,
+		HUD_CHATBOX,
 
 		// HUD ICONS
 		HUD_ICON_PLACEHOLDER,

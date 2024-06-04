@@ -54,6 +54,8 @@ public:
 
 	void update();
 
+	const uint64_t get_local_player_id() const;
+
 	std::optional<RefEntity> get_entity(DM::Utils::UUID _id) const;
 
 	const std::unordered_map<DM::Utils::UUID, RefEntity>& get_entities();

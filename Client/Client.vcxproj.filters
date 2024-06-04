@@ -42,6 +42,7 @@
     <ClCompile Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\WorldText\WorldText.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\Chatbox\Chatbox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -144,6 +145,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\CharacterMap\CharacterMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

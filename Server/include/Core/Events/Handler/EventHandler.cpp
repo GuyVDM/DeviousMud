@@ -72,6 +72,18 @@ void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo
 		}
 		break;
 
+		case e_PacketInterpreter::PACKET_ENTITY_MESSAGE_WORLD:
+		{
+			Packets::s_Message packet;
+			PacketHandler::retrieve_packet_data<Packets::s_Message>(packet, _event);
+
+			eventQuery->queue_packet
+			(
+				std::move(std::make_unique<Packets::s_Message>(packet))
+			);
+		}
+		break;
+
 		case e_PacketInterpreter::PACKET_ENGAGE_ENTITY:
 		{
 			Packets::s_ActionPacket packet;
@@ -121,6 +133,28 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 
 		switch(packet->interpreter) 
 		{
+			//*-----------------------------------------
+			// Make a entity print a message clientside.
+			//*
+			case e_PacketInterpreter::PACKET_ENTITY_MESSAGE_WORLD:
+			{
+				auto message = transform_packet<Packets::s_Message>(std::move(packet));
+
+				Packets::s_Message response;
+				response.interpreter = message->interpreter;
+				response.entityId    = message->entityId;
+				response.message     = message->message;
+
+				PacketHandler::send_packet_multicast<Packets::s_Message>
+				(
+					&response,
+					g_globals.networkHandler->get_server_host(),
+					0,
+					ENET_PACKET_FLAG_RELIABLE
+				);
+			}
+			break;
+
 			case e_PacketInterpreter::PACKET_ENTITY_DEATH:
 			{
 				using OptEntity = std::optional<std::shared_ptr<Entity>>;

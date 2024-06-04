@@ -193,6 +193,7 @@
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
     <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
     <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
+    <ClCompile Include="include\Core\UI\UIComponent\Chatbox\Chatbox.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
@@ -234,6 +235,8 @@
     <ClInclude Include="include\Core\Rendering\Renderer.h" />
     <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
     <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\CharacterMap\CharacterMap.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.h" />
     <ClInclude Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.h" />

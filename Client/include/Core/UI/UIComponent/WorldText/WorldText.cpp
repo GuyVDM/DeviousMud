@@ -41,8 +41,8 @@ void WorldText::set_text(std::string _text)
 	{
 		textArgs.color = { 255, 255, 0, 255 };
 		textArgs.font = e_FontType::RUNESCAPE_UF;
-		textArgs.size = 20;
-		textArgs.bDropShadow = false;
+		textArgs.size = 24;
+		textArgs.bDropShadow = true;
 	}
 
 	// Create hitamount text
