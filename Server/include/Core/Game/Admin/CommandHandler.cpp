@@ -35,7 +35,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			}
 		}
 
-		if(commandArgs[0] == "teleport")
+		if(commandArgs[0] == "teleport" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if(commandArgs.size() > 2)
 			{
@@ -53,7 +53,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 		}
 
-		if(commandArgs[0] == "restore") 
+		if(commandArgs[0] == "restore" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			for(uint8_t i = 0; i < DM::SKILLS::SKILL_COUNT; i++) 
 			{
@@ -67,7 +67,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if (commandArgs[0] == "killall")
+		if (commandArgs[0] == "killall" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			for(auto& entity : g_globals.entityHandler->get_all_entities()) 
 			{
@@ -82,7 +82,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if (commandArgs[0] == "kill")
+		if (commandArgs[0] == "kill" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if (commandArgs.size() > 1)
 			{
@@ -115,7 +115,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if (commandArgs[0] == "teleto")
+		if (commandArgs[0] == "teleto" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if (commandArgs.size() > 1)
 			{
@@ -146,7 +146,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if (commandArgs[0] == "teletome")
+		if (commandArgs[0] == "teletome" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if (commandArgs.size() > 1)
 			{
@@ -177,7 +177,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if(commandArgs[0] == "mypos") 
+		if(commandArgs[0] == "mypos" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			Utilities::ivec2 pos = _player->position;
 			_player->whisper("<col=#FF0000>[Server]: <col=#000000>Position X : " + std::to_string(pos.x));
@@ -259,7 +259,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if(commandArgs[0] == "kick") 
+		if(commandArgs[0] == "kick" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if (commandArgs.size() > 1)
 			{
@@ -295,7 +295,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			return true;
 		}
 
-		if(commandArgs[0] == "spawnnpc") 
+		if(commandArgs[0] == "spawnnpc" && _player->get_player_rights() == Player::e_PlayerRights::Admin)
 		{
 			if (commandArgs.size() > 1)
 			{
