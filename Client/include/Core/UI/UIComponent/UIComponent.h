@@ -71,12 +71,6 @@ public:
 	static std::shared_ptr<T> create_component(const Utilities::vec2 _pos, const Utilities::vec2 _size, Graphics::SpriteType _sprite, bool _bInteractable = false);
 
 	/// <summary>
-	/// Allows for indentification of asset whilest debugging.
-	/// </summary>
-	/// <param name="_debugName"></param>
-	void set_asset_name(std::string _debugName);
-
-	/// <summary>
 	/// Generates a anchor based on the preset and the parents transform.
 	/// </summary>
 	/// <param name="_preset"></param>
@@ -258,8 +252,6 @@ private:
 	friend Graphics::UI::HUDLayer;
 
 protected:
-	std::string                                m_assetName = "Null";
-
 	bool                                       m_bIsActive     = true;
 	bool                                       m_bIsMovable    = false;
 	bool									   m_bInteractable = true;

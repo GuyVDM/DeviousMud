@@ -57,7 +57,8 @@ void Application::load_sprites()
 	//TODO: Remove all of this and move it to a static const map.
 	// Miscelaneous sprites
 	{
-		renderer->load_and_bind_surface("Player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
+		renderer->load_and_bind_surface("player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
+		renderer->load_and_bind_surface("player/rank_owner.png", Graphics::SpriteType::PLAYER_RANK_OWNER, 28);
 		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
 		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 14);
 	}

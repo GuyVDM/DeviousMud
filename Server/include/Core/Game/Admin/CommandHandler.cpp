@@ -6,6 +6,12 @@
 
 #include "Core/Game/Entity/Definition/EntityDef.h"
 
+#include "Core/Globals/S_Globals.h"
+
+#include "Core/Game/Entity/EntityHandler.h"
+
+#include "Core/Network/Connection/ConnectionHandler.h"
+
 bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, const std::string& _string)
 {
 	const static std::string commandPrefix = "::";
@@ -17,7 +23,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 		//*
 		// Store all potential command specific parameters into the vector
 		//*
-		std::vector<std::string> commandArguments;
+		std::vector<std::string> commandArgs;
 		{
 			std::istringstream sstream(command);
 
@@ -25,27 +31,72 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			std::string word;
 			while (std::getline(sstream, word, ' '))
 			{
-				commandArguments.push_back(word);
+				commandArgs.push_back(word);
 			}
 		}
 
-		if(commandArguments[0] == "teleport")
+		if(commandArgs[0] == "teleport")
 		{
-			if(commandArguments.size() > 2)
+			if(commandArgs.size() > 2)
 			{
 				int32_t x, y;
 				
-				if(try_parse_as_int(commandArguments[1], x) &&
-				   try_parse_as_int(commandArguments[2], y)) 
+				if(try_parse_as_int(commandArgs[1], x) &&
+				   try_parse_as_int(commandArgs[2], y)) 
 				{
 					_player->teleport_to(Utilities::ivec2(x, y));
 					_player->whisper("[Server]: Teleported player to: " + std::to_string(x) + ", " + std::to_string(y));
 					return true;
 				}
-
-				_player->whisper("[Server]: Invalid arguments were specified.");
-				return false;
 			}
+
+			_player->whisper("[Server]: Invalid arguments were specified.");
+		}
+
+		if (commandArgs[0] == "changename")
+		{
+			if (commandArgs.size() > 1)
+			{
+				std::string name = commandArgs[1];
+				{
+					_player->set_name(name);
+				}
+			}
+			else 
+			{
+				_player->whisper("[Server]: Invalid arguments were specified.");
+			}
+
+			return true;
+		}
+
+		if(commandArgs[0] == "kick") 
+		{
+			if (commandArgs.size() > 1)
+			{
+				std::string name = commandArgs[1];
+
+				auto& cHandler = g_globals.connectionHandler;
+
+				auto& clientHandles = g_globals.connectionHandler->get_client_handles();
+				
+				for(uint64_t clientHandle : clientHandles) 
+				{
+					auto optEntt = g_globals.entityHandler->get_entity(clientHandle);
+
+					std::shared_ptr<Player> target = std::static_pointer_cast<Player>(optEntt.value());
+						
+					if (target->name == name)
+					{
+						_player->whisper("[Server]: Succesfully disconnected: " + target->name + '.');
+						cHandler->disconnect_client(static_cast<enet_uint32>(clientHandle));
+						return true;
+					}
+				}
+			}
+
+			_player->whisper("[Server]: The player you tried to kick does not exist.");
+			return true;
 		}
 	}
 

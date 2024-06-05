@@ -28,7 +28,7 @@
 
 RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::Utils::UUID _uuid)
 {
-    //*
+    //*-------------------------------------------------------
     // Create the entity and register a shared pointer for it.
     //*
     const NPCDef npcDef = get_npc_definition(_npcId);
@@ -40,8 +40,15 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
     );  
 
     std::shared_ptr<WorldEntity> shrdEntity = std::shared_ptr<WorldEntity>(entity);
-    
+
+    //*----------------
+    // Set entity name.
     //*
+    {
+        shrdEntity->set_name(npcDef.name);
+    }
+    
+    //*---------------------------------------------
     // Register UI elements and entity specific data.
     //*
     {
@@ -52,10 +59,9 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
         entity->m_canvas = Canvas::create_canvas();
         entity->m_canvas->set_render_mode(UIComponent::e_RenderMode::WORLDSPACE);
         entity->m_canvas->set_z_order(playerUI_zOrder);
-        entity->m_canvas->set_asset_name("Canvas - Entity");
     }
     
-    //*
+    //*-----------------------------------
     //  Register healthbar for the entity.
     //*
     {
@@ -63,7 +69,7 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
         entity->m_canvas->add_child(healthbar);
     }
 
-    //*
+    //*------------------------------------------
     // Set default idle animation for the entity.
     //*
     Graphics::Animation::Animator::set_default_animation(entity->m_sprite, npcDef.idleAnim, 8.0f);
@@ -73,7 +79,9 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
 
 WorldEntity::WorldEntity(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::Sprite _sprite) : Clickable(_pos, _size, _sprite)
 {
+    //*------------------------------------------------------------------
     // Bind callback to the end of the walking cycle to default animation.
+    //*
     {
         auto stop_curr_anim_func = [this]()
         {
@@ -174,7 +182,7 @@ void WorldEntity::turn_to(DM::Utils::UUID _entityId)
 
 void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
 {
-    //*
+    //*-----------------
     // Add the hitsplat.
     //*
     {
@@ -187,13 +195,12 @@ void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
             Graphics::SpriteType::HITSPLAT
         );
 
-        hitsplat->set_asset_name("Hitsplat");
         hitsplat->set_hit_amount(_hitAmount);
         hitsplat->set_follow_target(m_entityUUID);
         m_canvas->add_child(hitsplat);
     }
 
-    //*
+    //*------------------------
     // Register in combat timer.
     //*
     {
@@ -239,7 +246,9 @@ DM::SKILLS::SkillMap& WorldEntity::get_skills()
 
 void WorldEntity::move_to(const Utilities::ivec2 _pos)
 {
+    //*----------------------------------------------------------------------
     // We only want to move if the target is NOT the same as the current one.
+    //
     if (_pos != Utilities::to_ivec2(m_simPos.m_endPos)) 
     {
         using namespace Graphics::Animation;
@@ -295,7 +304,7 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
 
                     OptionArgs option;
                     option.actionStr = "Attack";
-                    option.subjectStr = "Entity";
+                    option.subjectStr = m_name;
                     option.actionCol = { 255, 255, 0, 255 };
                     option.function = std::bind(attack_entity);
                     OptionsTab::add_option(option);
@@ -316,7 +325,7 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
 
                     OptionArgs option;
                     option.actionStr = "Follow";
-                    option.subjectStr = "Entity";
+                    option.subjectStr = m_name;
                     option.actionCol = { 255, 255, 0, 255 };
                     option.function = std::bind(follow_entity);
                     OptionsTab::add_option(option);
@@ -354,6 +363,16 @@ void WorldEntity::update()
             }
         }
     }
+}
+
+void WorldEntity::set_name(const std::string& _name)
+{
+    m_name = _name;
+}
+
+const std::string& WorldEntity::get_name() const
+{
+    return m_name;
 }
 
 void WorldEntity::respawn() 

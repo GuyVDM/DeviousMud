@@ -92,11 +92,6 @@ const bool UIComponent::overlaps_rect(const int& _x, const int& _y) const
     return (_x > left && _x < right && _y > top && _y < bottom);
 }
 
-void UIComponent::set_asset_name(std::string _debugName)
-{
-    m_assetName = _debugName;
-}
-
 Utilities::vec2 UIComponent::get_anchor_position(e_AnchorPreset _preset, Rect _rect)
 {
     switch (_preset)

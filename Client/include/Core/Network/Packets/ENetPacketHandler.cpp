@@ -240,10 +240,36 @@ void ENetPacketHandler::process_packet()
 			}
 
 			ChatboxMessage message;
-			message.name = packet.author;
+			message.name    = packet.author;
 			message.message = packet.message;
 
 			Chatbox::s_on_message_received.invoke(message);
+		}
+		break;
+
+		case e_PacketInterpreter::PACKET_CHANGE_NAME:
+		{
+			Packets::s_NameChange packet;
+			PacketHandler::retrieve_packet_data<Packets::s_NameChange>(packet, &m_event);
+
+			//*----------------------------------------------------------------------
+			// Set entity name of matching UUID to be equal to the packet's contents.
+			//*
+			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			{
+				RefEntity entt = optEntity.value();
+				entt->set_name(packet.name);
+			}
+
+			uint64_t localPlayerId = g_globals.entityHandler.lock()->get_local_player_id();
+
+			//*----------------------------------------------------------------------
+			// If it's our name, we update the chatbox.
+			//*
+			if(packet.entityId == localPlayerId) 
+			{
+				Chatbox::s_on_name_changed.invoke(packet.name);
+			}
 		}
 		break;
 

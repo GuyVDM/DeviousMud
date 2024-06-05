@@ -48,7 +48,9 @@ enum class e_PacketInterpreter : uint8_t
 
 	PACKET_ENTITY_TELEPORT     = 0x0F,
 
-	PACKET_ENTITY_MESSAGE_WORLD      = 16
+	PACKET_ENTITY_MESSAGE_WORLD = 0x10,
+
+	PACKET_CHANGE_NAME          = 0x11
 };
 
 namespace Packets
@@ -107,6 +109,18 @@ namespace Packets
 			ar(cereal::base_class<s_ActionPacket>(this));
 			ar(author);
 			ar(message);
+		}
+	};
+
+	struct s_NameChange : public s_ActionPacket
+	{
+		std::string name = "";
+
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(cereal::base_class<s_ActionPacket>(this));
+			ar(name);
 		}
 	};
 

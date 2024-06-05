@@ -380,6 +380,88 @@ void Player::whisper(const std::string& _message) const
 	}
 }
 
+bool Player::set_name(const std::string& _name)
+{
+	const int32_t MAX_NAME_SIZE = 20;
+
+	const int32_t nameSize = _name.size();
+
+	const auto name_taken = [_name]()
+	{
+		auto& clientHandles = g_globals.connectionHandler->get_client_handles();
+
+		for(enet_uint32 clientHandle : clientHandles) 
+		{
+			const uint64_t clientHandle64 = static_cast<uint64_t>(clientHandle);
+			auto optPlayer = g_globals.entityHandler->get_entity(clientHandle64);
+
+			if(optPlayer.has_value()) 
+			{
+				std::shared_ptr<Player> player = std::static_pointer_cast<Player>(optPlayer.value());
+
+				if(player->name == _name) 
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	};
+
+	const auto name_contains_non_space = [_name]()
+	{
+		for (char c : _name)
+		{
+			if (!std::isspace(static_cast<unsigned char>(c)))
+			{
+				return true;
+			}
+		}
+		return false;
+	};
+
+	if (!name_contains_non_space())
+	{
+		whisper("[Server]: Name only contains spaces.");
+		return false;
+	}
+
+	if(name_taken()) 
+	{
+		whisper("[Server]: Name is already taken by another player.");
+		return false;
+	}
+
+	if(nameSize > MAX_NAME_SIZE && nameSize <= 0)
+	{
+		whisper("[Server]: Name size is either too small or too large.");
+		whisper("          Max is : " + std::to_string(MAX_NAME_SIZE) + "characters.");
+		return false;
+	}
+
+	// Set the new name.
+	{
+		name = _name;
+		whisper("[Server]: Name succesfully changed to: " + name);
+
+		Packets::s_NameChange packet;
+		packet.entityId = uuid;
+		packet.interpreter = e_PacketInterpreter::PACKET_CHANGE_NAME;
+		packet.name = name;
+
+		PacketHandler::send_packet_multicast<Packets::s_NameChange>
+			(
+				&packet,
+				g_globals.networkHandler->get_server_host(),
+				0,
+				ENET_PACKET_FLAG_RELIABLE
+			);
+
+		return true;
+	}
+}
+
 void Player::die()
 {
 	//*------------------------

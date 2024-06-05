@@ -110,10 +110,10 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 	std::shared_ptr<Server::EntityHandler> eHandler = g_globals.entityHandler;
 
+	ENetHost* server = g_globals.networkHandler->get_server_host();
+
 	//Register our player in the player handler.
 	eHandler->register_player(newClient->clientId);
-
-	ENetHost* server = g_globals.networkHandler->get_server_host();
 
 	//Create player data associated with the client.
 	{
@@ -137,6 +137,20 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 		PacketHandler::send_packet<Packets::s_CreateEntity>(&player, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
 
+	//Set temporary name for the player.
+	{
+		const std::string name = "Player " + std::to_string(static_cast<int32_t>(newClient->playerId));
+
+		auto player = std::static_pointer_cast<Player>
+			(
+				eHandler->get_entity(newClient->clientId).value()
+			);
+
+		player->set_name(name);
+		player->whisper("Welcome to my DeviousMUD 2D Clone!");
+		player->whisper("Use ::changename [name] to change your name ingame.");
+	}
+
 	//Send all existing players over to the registered player.
 	for (const enet_uint32 handle : m_clientHandles)
 	{
@@ -156,6 +170,16 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 				packet.bIsHidden = optPlayer.value()->is_hidden();
 
 				PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
+			}
+
+			// Update the player its name.
+			{
+				std::shared_ptr<Player> player = std::static_pointer_cast<Player>(optPlayer.value());
+
+				Packets::s_NameChange packet;
+				packet.interpreter = e_PacketInterpreter::PACKET_CHANGE_NAME;
+				packet.entityId = player->uuid;
+				packet.name     = player->name;
 			}
 		}
 	}

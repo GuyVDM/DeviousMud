@@ -116,13 +116,19 @@ protected:
 class Player : public Entity
 {
 public:
-	std::string name = "";
+	std::string name = "Player";
 
 	/// <summary>
 	/// Broadcast the message into the player their chatbox specifically.
 	/// </summary>
 	/// <param name="_message"></param>
 	void whisper(const std::string& _message) const;
+
+	/// <summary>
+	/// Sets the name of the player, and updates it across all clients.
+	/// </summary>
+	/// <param name="_name"></param>
+	bool set_name(const std::string& _name);
 
 	/// <summary>
 	/// Kills & prevents the player from doing any actions.

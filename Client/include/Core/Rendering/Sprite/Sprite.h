@@ -30,6 +30,9 @@ namespace Graphics
 		// MISC
 		HITSPLAT,
 
+		// RANKS
+		PLAYER_RANK_OWNER,
+
 		//Entities
 		NPC_GOBLIN
 	}; 

@@ -132,6 +132,18 @@ public:
 	virtual void update();
 
 	/// <summary>
+	/// Set the name of the entity.
+	/// </summary>
+	/// <param name="_name"></param>
+	void set_name(const std::string& _name);
+
+	/// <summary>
+	/// Get the name of the entity.
+	/// </summary>
+	/// <returns></returns>
+	const std::string& get_name() const;
+
+	/// <summary>
 	/// Returns the map of skills of the specified entity.
 	/// </summary>
 	/// <returns></returns>
@@ -162,6 +174,7 @@ private:
 	DM::Utils::UUID         m_updateListenerUUID;
 
 	std::shared_ptr<Canvas> m_canvas;
+	std::string             m_name = "null";
 };  
 
 using RefEntity = std::shared_ptr<WorldEntity>;

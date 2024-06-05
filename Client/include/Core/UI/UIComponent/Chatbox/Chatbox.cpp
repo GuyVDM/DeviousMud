@@ -11,10 +11,12 @@
 #include "Core/Entity/EntityHandler.h"
 
 EventListener<ChatboxMessage> Chatbox::s_on_message_received;
+EventListener<std::string>    Chatbox::s_on_name_changed;
 
 Chatbox::~Chatbox()
 {
     s_on_message_received.remove_listener(m_message_received_UUID);
+    s_on_name_changed.remove_listener(m_name_changed_UUID);
 }
 
 void Chatbox::init()
@@ -22,12 +24,17 @@ void Chatbox::init()
 	m_bIsMovable = true;
     
     //*-------------------------------------
-    // Bind callback for receiving messages.
+    // Bind callback for receiving messages and name changing.
     //*
     {
         m_message_received_UUID = s_on_message_received.add_listener
         (
             std::bind(&Chatbox::receive_message, this, std::placeholders::_1)
+        );
+
+        m_name_changed_UUID = s_on_name_changed.add_listener
+        (
+            std::bind(&Chatbox::name_changed, this, std::placeholders::_1)
         );
     }
 
@@ -170,12 +177,18 @@ void Chatbox::receive_message(ChatboxMessage _message)
     }
 }
 
+void Chatbox::name_changed(const std::string _name)
+{
+    m_playerName = _name;
+    update_text();
+}
+
 void Chatbox::update_text()
 {
-    const std::string namePlaceholder = "Player: ";
     const std::string marker = "*";
 
-    std::string text = namePlaceholder;
+    std::string text = m_playerName;
+    text.append(": ");
     text.append(m_inputField);
     text.append(marker);
 

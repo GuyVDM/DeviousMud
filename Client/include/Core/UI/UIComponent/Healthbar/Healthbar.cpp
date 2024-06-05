@@ -23,7 +23,6 @@ std::shared_ptr<Healthbar> Healthbar::create_hp_bar(Utilities::vec2 _size, std::
         );
 
     healthbar->m_owner = _owner;
-    healthbar->m_assetName = "Healthbar";
     return healthbar;
 }
 

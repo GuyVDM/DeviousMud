@@ -151,9 +151,9 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 					{
 						Packets::s_Message response;
 						response.interpreter = message->interpreter;
-						response.entityId = message->entityId;
-						response.message  = message->message;
-						response.author   = message->author;
+						response.entityId    = message->entityId;
+						response.message     = message->message;
+						response.author      = player->name;
 
 						PacketHandler::send_packet_multicast<Packets::s_Message>
 						(
