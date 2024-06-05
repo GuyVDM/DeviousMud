@@ -53,7 +53,78 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 		}
 
-		if(commandArgs[0] == "setrank") 
+		if (commandArgs[0] == "teleto")
+		{
+			if (commandArgs.size() > 1)
+			{
+				std::string fullName = commandArgs[1];
+
+				if (commandArgs.size() > 2)
+				{
+					//If there are words to attach back together, do so.
+					for (int32_t i = 2; i < commandArgs.size(); i++)
+					{
+						fullName.append(" ");
+						fullName.append(commandArgs[i]);
+					}
+				}
+
+				auto optTarget = g_globals.entityHandler->get_player_by_name(fullName);
+
+				if (optTarget.has_value())
+				{
+					std::shared_ptr<Player> target = optTarget.value();
+					_player->teleport_to(target->position);
+					_player->whisper("<col=#FF0000>[Server]: Teleported to <col=#000000>" + target->name);
+					return true;
+				}
+			}
+
+			_player->whisper("<col=#FF0000>[Server]: Player doesn't exist.");
+			return true;
+		}
+
+		if (commandArgs[0] == "teletome")
+		{
+			if (commandArgs.size() > 1)
+			{
+				std::string fullName = commandArgs[1];
+
+				if (commandArgs.size() > 2)
+				{
+					//If there are words to attach back together, do so.
+					for (int32_t i = 2; i < commandArgs.size(); i++)
+					{
+						fullName.append(" ");
+						fullName.append(commandArgs[i]);
+					}
+				}
+
+				auto optTarget = g_globals.entityHandler->get_player_by_name(fullName);
+
+				if (optTarget.has_value())
+				{
+					std::shared_ptr<Player> target = optTarget.value();
+					target->teleport_to(_player->position);
+					target->whisper("<col=#FF0000>[Server]: You have been force teleported to <col=#000000>" + _player->name);
+					return true;
+				}
+			}
+
+			_player->whisper("<col=#FF0000>[Server]: Player doesn't exist.");
+			return true;
+		}
+
+		if(commandArgs[0] == "mypos") 
+		{
+			Utilities::ivec2 pos = _player->position;
+			_player->whisper("<col=#FF0000>[Server]: <col=#000000>Position X : " + std::to_string(pos.x));
+			_player->whisper("<col=#FF0000>[Server]: <col=#000000>Position Y : " + std::to_string(pos.y));
+
+			return true;
+		}
+
+		if(commandArgs[0] == "setrights") 
 		{
 			std::string failReason = "<col=#FF0000>[Server]: Invalid arguments were specified.";
 
@@ -61,7 +132,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			{
 				int32_t rank;
 
-				if(try_parse_as_int(commandArgs[1], rank))
+				if (try_parse_as_int(commandArgs[1], rank))
 				{
 					std::string fullName = commandArgs[2];
 
@@ -75,31 +146,24 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 						}
 					}
 
-					auto& cHandler = g_globals.connectionHandler;
+					auto optTarget = g_globals.entityHandler->get_player_by_name(fullName);
 
-					auto& clientHandles = g_globals.connectionHandler->get_client_handles();
-
-					for (uint64_t clientHandle : clientHandles)
+					if (optTarget.has_value())
 					{
-						auto optEntt = g_globals.entityHandler->get_entity(clientHandle);
+						std::shared_ptr target = optTarget.value();
 
-						std::shared_ptr<Player> target = std::static_pointer_cast<Player>(optEntt.value());
-
-						if (target->name == fullName)
+						//*--------------------------------
+						// Check if the rank given is valid
+						//*
+						if (rank > -1 && rank < static_cast<int32_t>(Player::e_PlayerRights::RankCount))
 						{
-							//*--------------------------------
-							// Check if the rank given is valid
-							//*
-							if (rank > -1 && rank < static_cast<int32_t>(Player::e_PlayerRights::RankCount))
-							{
-								Player::e_PlayerRights newRights = static_cast<Player::e_PlayerRights>(rank);
-								target->set_player_rights(newRights);
-								return true;
-							}
-							else failReason = "<col=#FF0000>[Server]: Invalid rank was specified.";
-						}
-						else failReason = "<col=#FF0000>[Server]: Player with name doesn't exist.";
-					}
+							Player::e_PlayerRights newRights = static_cast<Player::e_PlayerRights>(rank);
+							target->set_player_rights(newRights);
+							_player->whisper("<col=#FF0000>[Server]: Rights have been updated.");
+							return true;
+
+						}   else failReason = "<col=#FF0000>[Server]: Invalid rank was specified.";
+					}       else failReason = "<col=#FF0000>[Server]: Player with name doesn't exist.";
 				}
 			}
 
@@ -149,20 +213,17 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 					}
 				}
 
-				auto& cHandler = g_globals.connectionHandler;
+				auto optTarget = g_globals.entityHandler->get_player_by_name(fullName);
 
-				auto& clientHandles = g_globals.connectionHandler->get_client_handles();
-				
-				for(uint64_t clientHandle : clientHandles) 
+				if (optTarget.has_value())
 				{
-					auto optEntt = g_globals.entityHandler->get_entity(clientHandle);
+					std::shared_ptr<Player> target = optTarget.value();
 
-					std::shared_ptr<Player> target = std::static_pointer_cast<Player>(optEntt.value());
-						
 					if (target->name == fullName)
 					{
 						_player->whisper("<col=#FF0000>[Server]: Succesfully disconnected: " + target->name + '.');
-						cHandler->disconnect_client(static_cast<enet_uint32>(clientHandle));
+						uint64_t clientHandle64 = g_globals.entityHandler->transpose_player_to_client_handle(target->uuid).value();
+						g_globals.connectionHandler->disconnect_client(static_cast<enet_uint32>(clientHandle64));
 						return true;
 					}
 				}

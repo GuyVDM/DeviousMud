@@ -94,6 +94,14 @@ namespace Server
 
 
 		/// <summary>
+		/// Tries to get player by name.
+		/// </summary>
+		/// <param name="_name"></param>
+		/// <returns></returns>
+		std::optional<std::shared_ptr<Player>> get_player_by_name(const std::string& _name);
+
+
+		/// <summary>
 		/// Returns, if valid, the owning client of the player it's handle in 64 bits.
 		/// </summary>
 		/// <param name="_uuid"></param>

@@ -512,5 +512,5 @@ void Player::set_player_rights(const Player::e_PlayerRights _eRights)
 	m_playerRights = _eRights;
 
 	int32_t rightsToInt = static_cast<int32_t>(_eRights);
-	whisper("<col=#FF0000>[Server]: Your rank has been updated: " + std::to_string(rightsToInt) + " <icon=" + std::to_string(rightsToInt) + '>');
+	whisper("<col=#FF0000>[Server]: Your player rights have been updated: " + std::to_string(rightsToInt) + " <icon=" + std::to_string(rightsToInt) + '>');
 }

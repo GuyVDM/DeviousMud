@@ -257,6 +257,26 @@ std::optional<std::shared_ptr<Entity>> Server::EntityHandler::get_entity(const D
 	return std::nullopt;
 }
 
+std::optional<std::shared_ptr<Player>> Server::EntityHandler::get_player_by_name(const std::string& _name)
+{
+	for(auto&[playerId, clientId] : m_playerToClientHandles) 
+	{
+		auto optEntity = get_entity(clientId);
+
+		if(optEntity.has_value()) 
+		{
+			std::shared_ptr<Player> player = std::static_pointer_cast<Player>(optEntity.value());
+
+			if(player->name == _name) 
+			{
+				return player;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
+
 const std::optional<uint64_t> Server::EntityHandler::transpose_player_to_client_handle(DM::Utils::UUID _uuid) const
 {
 	if(m_playerToClientHandles.find(_uuid) != m_playerToClientHandles.end()) 

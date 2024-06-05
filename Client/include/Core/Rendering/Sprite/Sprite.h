@@ -12,6 +12,10 @@ namespace Graphics
 	enum class SpriteType : uint16_t
 	{
 		NONE = 0,
+
+		// RANKS
+		PLAYER_RANK_OWNER = 1,
+
 		TILE_DEFAULT,
 		CROSS,
 		PLAYER,
@@ -29,9 +33,6 @@ namespace Graphics
 
 		// MISC
 		HITSPLAT,
-
-		// RANKS
-		PLAYER_RANK_OWNER,
 
 		//Entities
 		NPC_GOBLIN

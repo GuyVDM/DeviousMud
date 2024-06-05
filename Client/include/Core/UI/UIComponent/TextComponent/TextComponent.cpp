@@ -78,6 +78,38 @@ std::vector<Graphics::TextComponent::TextSegmentColor> Graphics::TextComponent::
 	return textSegments;
 }
 
+bool Graphics::TextComponent::parse_hex_to_color(const std::string& _string, SDL_Color& _color) const
+{
+	for (char c : _string)
+	{
+		//*--------------------------------------
+		// If it's a valid hexadecimal character.
+		//*
+		if (!std::isxdigit(c))
+		{
+			return false;
+		}
+	}
+
+	//*----------------------
+	// Convert hex to integer
+	//*
+	std::istringstream iss(_string);
+	uint32_t rgb;
+	iss >> std::hex >> rgb;
+
+	if (iss.fail())
+	{
+		return false;
+	}
+
+	_color.r = (rgb >> 16) & 0xFF;
+	_color.g = (rgb >> 8) & 0xFF;
+	_color.b = rgb & 0xFF;
+
+	return true;
+}
+
 void Graphics::TextComponent::clean()
 {
 	for (SDL_Texture* texture : m_textTextures)
@@ -176,38 +208,6 @@ void Graphics::TextComponent::create_texture(const std::string& _contents, const
 			set_size(newSize);
 		}
 	}
-}
-
-bool Graphics::TextComponent::parse_hex_to_color(const std::string& _string, SDL_Color& _color) const
-{	
-	for(char c : _string)
-	{
-		//*--------------------------------------
-		// If it's a valid hexadecimal character.
-		//*
-		if(!std::isxdigit(c)) 
-		{
-			return false;
-		}
-	}
-	
-	//*----------------------
-	// Convert hex to integer
-	//*
-	std::istringstream iss(_string);
-	uint32_t rgb;
-	iss >> std::hex >> rgb;
-
-	if (iss.fail()) 
-	{
-		return false;
-	}
-
-	_color.r = (rgb >> 16) & 0xFF;
-	_color.g = (rgb >> 8) & 0xFF;
-	_color.b =  rgb & 0xFF;
-
-	return true;
 }
 
 void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
