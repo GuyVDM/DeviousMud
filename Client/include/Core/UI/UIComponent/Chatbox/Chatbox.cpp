@@ -188,7 +188,7 @@ void Chatbox::update_text()
     const std::string marker = "*";
 
     std::string text = m_playerName;
-    text.append(": <col=#1b19ed>");
+    text.append(":  <col=#1b19ed>");
     text.append(m_inputField);
     text.append(marker);
 

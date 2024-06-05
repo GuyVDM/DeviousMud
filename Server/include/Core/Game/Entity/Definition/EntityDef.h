@@ -116,6 +116,13 @@ protected:
 class Player : public Entity
 {
 public:
+	enum class e_PlayerRights : uint8_t
+	{
+		Regular = 0,
+		Admin   = 1,
+		RankCount
+	};
+
 	std::string name = "Player";
 
 	/// <summary>
@@ -134,6 +141,22 @@ public:
 	/// Kills & prevents the player from doing any actions.
 	/// </summary>
 	virtual void die() override;
+
+	/// <summary>
+	/// Set the rights of this player.
+	/// </summary>
+	/// <param name="_eRights"></param>
+	void set_player_rights(const e_PlayerRights _eRights);
+
+	/// <summary>
+	/// Get the rights of this player.
+	/// </summary>
+	/// <returns></returns>
+	const e_PlayerRights get_player_rights() const;
+
+private:
+	e_PlayerRights m_playerRights;
+	
 };
 
 class NPC : public Entity

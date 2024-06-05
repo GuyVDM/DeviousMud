@@ -53,6 +53,60 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 		}
 
+		if(commandArgs[0] == "setrank") 
+		{
+			std::string failReason = "<col=#FF0000>[Server]: Invalid arguments were specified.";
+
+			if (commandArgs.size() > 2)
+			{
+				int32_t rank;
+
+				if(try_parse_as_int(commandArgs[1], rank))
+				{
+					std::string fullName = commandArgs[2];
+
+					if (commandArgs.size() > 3)
+					{
+						//If there are words to attach back together, do so.
+						for (int32_t i = 3; i < commandArgs.size(); i++)
+						{
+							fullName.append(" ");
+							fullName.append(commandArgs[i]);
+						}
+					}
+
+					auto& cHandler = g_globals.connectionHandler;
+
+					auto& clientHandles = g_globals.connectionHandler->get_client_handles();
+
+					for (uint64_t clientHandle : clientHandles)
+					{
+						auto optEntt = g_globals.entityHandler->get_entity(clientHandle);
+
+						std::shared_ptr<Player> target = std::static_pointer_cast<Player>(optEntt.value());
+
+						if (target->name == fullName)
+						{
+							//*--------------------------------
+							// Check if the rank given is valid
+							//*
+							if (rank > -1 && rank < static_cast<int32_t>(Player::e_PlayerRights::RankCount))
+							{
+								Player::e_PlayerRights newRights = static_cast<Player::e_PlayerRights>(rank);
+								target->set_player_rights(newRights);
+								return true;
+							}
+							else failReason = "<col=#FF0000>[Server]: Invalid rank was specified.";
+						}
+						else failReason = "<col=#FF0000>[Server]: Player with name doesn't exist.";
+					}
+				}
+			}
+
+			_player->whisper(failReason);
+			return true;
+		}
+
 		if (commandArgs[0] == "changename")
 		{
 			if (commandArgs.size() > 1)
@@ -83,7 +137,17 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 		{
 			if (commandArgs.size() > 1)
 			{
-				std::string name = commandArgs[1];
+				std::string fullName = commandArgs[1];
+
+				//If there are words to attach back together, do so.
+				if (commandArgs.size() > 2)
+				{
+					for (int32_t i = 2; i < commandArgs.size(); i++)
+					{
+						fullName.append(" ");
+						fullName.append(commandArgs[i]);
+					}
+				}
 
 				auto& cHandler = g_globals.connectionHandler;
 
@@ -95,7 +159,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 
 					std::shared_ptr<Player> target = std::static_pointer_cast<Player>(optEntt.value());
 						
-					if (target->name == name)
+					if (target->name == fullName)
 					{
 						_player->whisper("<col=#FF0000>[Server]: Succesfully disconnected: " + target->name + '.');
 						cHandler->disconnect_client(static_cast<enet_uint32>(clientHandle));

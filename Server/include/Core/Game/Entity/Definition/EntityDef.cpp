@@ -501,3 +501,16 @@ void Player::die()
 		);
 	}
 }
+
+const Player::e_PlayerRights Player::get_player_rights() const
+{
+	return m_playerRights;
+}
+
+void Player::set_player_rights(const Player::e_PlayerRights _eRights)
+{
+	m_playerRights = _eRights;
+
+	int32_t rightsToInt = static_cast<int32_t>(_eRights);
+	whisper("<col=#FF0000>[Server]: Your rank has been updated: " + std::to_string(rightsToInt) + " <icon=" + std::to_string(rightsToInt) + '>');
+}

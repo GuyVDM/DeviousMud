@@ -180,8 +180,6 @@ void Graphics::TextComponent::create_texture(const std::string& _contents, const
 
 bool Graphics::TextComponent::parse_hex_to_color(const std::string& _string, SDL_Color& _color) const
 {	
-	DEVIOUS_LOG(_string);
-
 	for(char c : _string)
 	{
 		//*--------------------------------------
