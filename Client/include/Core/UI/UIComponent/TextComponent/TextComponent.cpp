@@ -6,15 +6,19 @@
 
 #include "Core/Global/C_Globals.h"
 
+#include <sstream>
+
+#include <iomanip>
+
 using namespace Graphics;
 
 std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents, Utilities::vec2 _pos, const TextArgs _args)
 {
 	std::shared_ptr<TextComponent> textComponent = UIComponent::create_component<TextComponent>
 	(
-			_pos,
-			Utilities::vec2(1.0f),
-			Graphics::SpriteType::NONE
+		_pos,
+		Utilities::vec2(1.0f),
+		Graphics::SpriteType::NONE
 	);
 
 	textComponent->m_contents = _contents;
@@ -26,7 +30,62 @@ std::shared_ptr<TextComponent> TextComponent::create_text(std::string _contents,
 
 TextComponent::~TextComponent()
 {
-	SDL_DestroyTexture(m_textTexture);
+	clean();
+}
+
+std::vector<Graphics::TextComponent::TextSegmentColor> Graphics::TextComponent::split_with_color_codes(const std::string& _contents)
+{
+	std::vector<TextSegmentColor> textSegments;
+	std::istringstream sstream(_contents);
+
+	char ch;
+	std::string currentText;
+	SDL_Color currentColor = m_textArgs.color;
+
+	while (sstream >> std::noskipws >> ch)
+	{
+		currentText += ch;
+
+		//If a color code is being typed out
+		const size_t colCodeLoc = currentText.find("<col=#");
+		if(colCodeLoc != std::string::npos) 
+		{
+			if(currentText.size() >= colCodeLoc + 12) 
+			{
+				if(currentText[colCodeLoc + 12] == '>') 
+				{
+					std::string colCode = currentText.substr(colCodeLoc + 6 , 6);
+					
+					SDL_Color tempColor;
+
+					if(parse_hex_to_color(colCode, tempColor))
+					{
+						currentText.erase(colCodeLoc, 13);
+						
+						textSegments.push_back({ currentText, currentColor });
+
+						currentText.clear();
+
+						currentColor = tempColor;
+					}
+				}
+			}
+		}
+	}
+
+	textSegments.push_back({ currentText, currentColor });
+
+	return textSegments;
+}
+
+void Graphics::TextComponent::clean()
+{
+	for (SDL_Texture* texture : m_textTextures)
+	{
+		SDL_DestroyTexture(texture);
+	}
+
+	m_textTextures.clear();
 }
 
 void Graphics::TextComponent::set_text(std::string _contents)
@@ -51,12 +110,27 @@ void Graphics::TextComponent::init()
 
 void Graphics::TextComponent::rebuild_text()
 {
-	if (m_textTexture)
+	if (m_textTextures.size() > 0)
 	{
-		SDL_DestroyTexture(m_textTexture);
+		clean();
 	}
 
-	if (!m_contents.empty())
+	generate_text_textures();
+}
+
+const void Graphics::TextComponent::generate_text_textures()
+{
+	std::vector<TextSegmentColor> segments = split_with_color_codes(m_contents);
+
+	for (auto& segment : segments) 
+	{
+		create_texture(segment.text, segment.color);
+	}
+}
+
+void Graphics::TextComponent::create_texture(const std::string& _contents, const SDL_Color& _col)
+{
+	if (!_contents.empty())
 	{
 		std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
 
@@ -67,41 +141,83 @@ void Graphics::TextComponent::rebuild_text()
 			fontPath.append(Fonts::FontMap().at(m_textArgs.font));
 		}
 
-		//Load font
+		//Load font into a texture & close it afterwards.
 		TTF_Font* font = TTF_OpenFont(fontPath.c_str(), m_textArgs.size);
 		{
 			DEVIOUS_ASSERT(font != NULL);
 
-			//Create surface from font
-			SDL_Surface* textSurface = TTF_RenderText_Solid(font, m_contents.c_str(), m_textArgs.color);
+			SDL_Surface* textSurface = TTF_RenderText_Solid(font, _contents.c_str(), _col);
 			DEVIOUS_ASSERT(textSurface != NULL);
 
-			//Create texture from surface.
 			SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer->m_renderer, textSurface);
 			DEVIOUS_ASSERT(texture != NULL);
+
 			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-			Utilities::ivec2 textureDimensions{ 0 };
-			SDL_QueryTexture(texture, NULL, NULL, &textureDimensions.x, &textureDimensions.y);
-
-			//Set size equal to the texture.
-			set_size(Utilities::to_vec2(textureDimensions));
-
-			//Cleanup the font and surface.
 			SDL_FreeSurface(textSurface);
 
-			m_textTexture = texture;
+			m_textTextures.push_back(texture);
+
+			TTF_CloseFont(font);
 		}
-		TTF_CloseFont(font);
+		
+		//*------------------------------------------------------
+		// Resize the text element incorporating all the textures.
+		//*
+		{
+			Utilities::vec2 newSize = { 0.0f };
+			for (int32_t i = 0; i < m_textTextures.size(); i++)
+			{
+				Utilities::ivec2 textureDimensions{ 0 };
+				SDL_QueryTexture(m_textTextures[i], NULL, NULL, &textureDimensions.x, &textureDimensions.y);
+				newSize.x += static_cast<float>(textureDimensions.x);
+				newSize.y = std::max(newSize.y, static_cast<float>(textureDimensions.y));
+			}
+
+			set_size(newSize);
+		}
 	}
+}
+
+bool Graphics::TextComponent::parse_hex_to_color(const std::string& _string, SDL_Color& _color) const
+{	
+	DEVIOUS_LOG(_string);
+
+	for(char c : _string)
+	{
+		//*--------------------------------------
+		// If it's a valid hexadecimal character.
+		//*
+		if(!std::isxdigit(c)) 
+		{
+			return false;
+		}
+	}
+	
+	//*----------------------
+	// Convert hex to integer
+	//*
+	std::istringstream iss(_string);
+	uint32_t rgb;
+	iss >> std::hex >> rgb;
+
+	if (iss.fail()) 
+	{
+		return false;
+	}
+
+	_color.r = (rgb >> 16) & 0xFF;
+	_color.g = (rgb >> 8) & 0xFF;
+	_color.b =  rgb & 0xFF;
+
+	return true;
 }
 
 void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-	if (m_textTexture)
+	if (m_textTextures.size() > 0)
 	{
 		const Utilities::vec2 position = get_position();
-		const Utilities::vec2 size     = get_size();
+		const Utilities::vec2 size = get_size();
 
 		float dropShadowOffsetPx = 1.0f;
 
@@ -112,29 +228,43 @@ void TextComponent::renderText(std::shared_ptr<Graphics::Renderer> _renderer)
 			dropShadowOffsetPx = 1.0f / (float)Renderer::GRID_CELL_PX_SIZE;
 		}
 
-		// Render the shadow text.
-		if (m_textArgs.bDropShadow)
+		Utilities::vec2  elementPosition = get_position();
+		Utilities::ivec2 textureDimensions{ 0 };
+
+		for (int32_t i = 0; i < m_textTextures.size(); i++)
 		{
-			SpriteRenderData data{};
-			data.color       = { 1, 1, 1, 255 };
-			data.position    = position + Utilities::vec2(dropShadowOffsetPx);
-			data.size        = size;
-			data.texture     = m_textTexture;
-			data.renderFlags = flags;
+			SDL_QueryTexture(m_textTextures[i], NULL, NULL, &textureDimensions.x, &textureDimensions.y);
 
-			_renderer->plot_texture(data, m_sprite.zRenderPriority);
-		}
+			// Render the shadow text.
+			if (m_textArgs.bDropShadow)
+			{
+				SpriteRenderData data{};
+				data.color    = { 1, 1, 1, 255 };
+				data.position = elementPosition + Utilities::vec2(dropShadowOffsetPx);
+				data.size     = Utilities::to_vec2(textureDimensions);
+				data.texture  = m_textTextures[i];
+				data.renderFlags = flags;
 
-		// Render the main text.
-		{
-			SpriteRenderData data{};
-			data.color       = m_textArgs.color;
-			data.position    = position;
-			data.size        = size;
-			data.texture     = m_textTexture;
-			data.renderFlags = flags;
+				_renderer->plot_texture(data, m_sprite.zRenderPriority);
+			}
 
-			_renderer->plot_texture(data, m_sprite.zRenderPriority);
+			// Render the main text.
+			{
+				SpriteRenderData data{};
+				data.color = { 255, 255, 255, 255 };
+				data.position = elementPosition;
+				data.size     = Utilities::to_vec2(textureDimensions);
+				data.texture  = m_textTextures[i];
+				data.renderFlags = flags;
+
+				_renderer->plot_texture(data, m_sprite.zRenderPriority);
+			}
+
+			elementPosition = elementPosition + Utilities::vec2
+			(
+				static_cast<float>(textureDimensions.x),
+				0.0f
+			);
 		}
 	}
 }

@@ -36,6 +36,12 @@ namespace Graphics
 	class TextComponent final : public UIComponent
 	{
 	public:
+		struct TextSegmentColor
+		{
+			std::string text;
+			SDL_Color   color;
+		};
+
 		static std::shared_ptr<TextComponent> create_text(std::string _contents, Utilities::vec2 _pos, const TextArgs _args = TextArgs::Default());
 
 		virtual ~TextComponent();
@@ -48,12 +54,22 @@ namespace Graphics
 		virtual void init() override;
 
 	private:
+		std::vector<TextSegmentColor> split_with_color_codes(const std::string& _contents);
+
+		void clean();
+
 		void rebuild_text();
+
+		void create_texture(const std::string& _contents, const SDL_Color& _col);
+
+		const void generate_text_textures();
+
+		bool parse_hex_to_color(const std::string& _string, SDL_Color& _color) const;
 
 	private:
 		using UIComponent::UIComponent;
 
-		SDL_Texture* m_textTexture;
+		std::vector<SDL_Texture*> m_textTextures;
 		TextArgs     m_textArgs;
 		std::string  m_contents;
 

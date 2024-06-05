@@ -152,7 +152,7 @@ namespace Utilities
             return *this;
         }
 
-        friend inline _vec2 operator+(const _vec2& _lhs, const _vec2& _rhs)
+        friend inline _vec2 operator+(const _vec2& _lhs, const _vec2& _rhs) //Possibly broken???
         {
             return _vec2(_lhs.x + _rhs.x, _lhs.y + _rhs.y);
         }
