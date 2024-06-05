@@ -57,10 +57,19 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 		{
 			if (commandArgs.size() > 1)
 			{
-				std::string name = commandArgs[1];
+				std::string fullName = commandArgs[1];
+
+				//If there are words to attach back together, do so.
+				if (commandArgs.size() > 2)
 				{
-					_player->set_name(name);
+					for (int32_t i = 2; i < commandArgs.size(); i++)
+					{
+						fullName.append(" ");
+						fullName.append(commandArgs[i]);
+					}
 				}
+
+				_player->set_name(fullName);	
 			}
 			else 
 			{
