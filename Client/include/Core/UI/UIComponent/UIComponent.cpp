@@ -21,7 +21,7 @@ void UIComponent::update()
 
 const int32_t UIComponent::get_child_count() const
 {
-    return (int32_t)m_children.size();
+    return m_children.size();
 }
 
 
@@ -185,7 +185,7 @@ void UIComponent::set_anchor(e_AnchorPreset _anchorPreset)
     m_anchor = _anchorPreset;
 }
 
-void UIComponent::add_child(std::shared_ptr<UIComponent> _component)
+void UIComponent::add_child(std::shared_ptr<UIComponent> _component, int32_t _insertAt)
 {
     auto it = std::find_if(m_children.begin(), m_children.end(), [_component](const std::shared_ptr<UIComponent> _other)
         {
@@ -194,7 +194,15 @@ void UIComponent::add_child(std::shared_ptr<UIComponent> _component)
 
     if(it == m_children.end()) 
     {   
-        m_children.push_back(_component);
+        if(_insertAt > -1) 
+        {
+            m_children.insert(m_children.begin() + _insertAt, _component);
+        }
+        else
+        {
+            m_children.push_back(_component);
+        }
+
         _component->set_parent(this);
         return;
     }
@@ -211,7 +219,8 @@ void UIComponent::remove_child(UIComponent* _component)
 
     if (it != m_children.end())
     {
-        m_children.erase(it);
+        const int32_t index = std::distance(m_children.begin(), it);
+        m_children.erase(std::remove(m_children.begin(), m_children.end(), m_children[index]), m_children.end());
         return;
     }
 

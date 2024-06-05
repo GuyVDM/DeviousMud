@@ -8,6 +8,8 @@
 
 #include "Core/Global/C_Globals.h"
 
+#include "Core/UI/UIComponent/Chatbox/Chatbox.h"
+
 #include "Shared/Network/Packets/Packets.hpp"
 
 #include <enet/enet.h> 
@@ -232,6 +234,12 @@ void ENetPacketHandler::process_packet()
 			{
 				RefEntity entt = optEntity.value();
 				entt->say(packet.message);
+
+				ChatboxMessage message;
+				message.name    = packet.author;
+				message.message = packet.message;
+
+				Chatbox::s_on_message_received.invoke(message);
 			}
 		}
 		break;

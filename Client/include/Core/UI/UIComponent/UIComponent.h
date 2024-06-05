@@ -97,9 +97,10 @@ public:
 
 	/// <summary>
 	/// Registers the received pointer as a child.
+	/// If _insert at is higher than -1, it will try inserting at that index.
 	/// </summary>
 	/// <param name="_component"></param>
-	void add_child(std::shared_ptr<UIComponent> _component);
+	void add_child(std::shared_ptr<UIComponent> _component, int32_t _insertAt = -1);
 
 	/// <summary>
 	/// Attempts to remove the component from the children if it's valid.

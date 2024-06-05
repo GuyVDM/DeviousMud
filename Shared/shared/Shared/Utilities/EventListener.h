@@ -27,8 +27,15 @@ public:
 	void clear();
 
 private:
+	std::vector<DM::Utils::UUID> m_toRemove;
 	std::unordered_map<DM::Utils::UUID, Listener> m_listeners;
 };
+
+template<typename Parameter>
+inline void EventListener<Parameter>::remove_listener(DM::Utils::UUID _uuid)
+{
+	m_toRemove.push_back(_uuid);
+}
 
 template<typename Parameter>
 inline DM::Utils::UUID EventListener<Parameter>::add_listener(Listener _listener)
@@ -41,7 +48,12 @@ inline DM::Utils::UUID EventListener<Parameter>::add_listener(Listener _listener
 template<typename Parameter>
 inline void EventListener<Parameter>::invoke(Parameter _param)
 {
-	std::vector<DM::Utils::UUID> toRemove;
+	for (DM::Utils::UUID& uuid : m_toRemove)
+	{
+		m_listeners.erase(uuid);
+	}
+
+	m_toRemove.clear();
 
 	for (const auto& [uuid, listener] : m_listeners)
 	{
@@ -51,14 +63,8 @@ inline void EventListener<Parameter>::invoke(Parameter _param)
 		}
 		else
 		{
-			toRemove.push_back(uuid);
+			m_toRemove.push_back(uuid);
 		}
-	}
-
-	for (DM::Utils::UUID& uuid : toRemove)
-	{
-		m_listeners.erase(uuid);
-		DEVIOUS_ERR("WE REMOVED YES YES YES");
 	}
 }
 
@@ -77,7 +83,7 @@ class EventListener<void>
 public:
 	inline DM::Utils::UUID add_listener(Listener _listener)
 	{
-		DM::Utils::UUID uuid = DM::Utils::UUID::generate();
+		const DM::Utils::UUID uuid = DM::Utils::UUID::generate();
 		m_listeners[uuid] = _listener;
 		return uuid;
 	}
@@ -102,7 +108,6 @@ public:
 				m_toRemove.push_back(uuid);
 			}
 		}
-
 	}
 
 	inline void remove_listener(DM::Utils::UUID _id) 

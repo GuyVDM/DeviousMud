@@ -10,13 +10,26 @@
 
 #include "Core/Entity/EntityHandler.h"
 
+EventListener<ChatboxMessage> Chatbox::s_on_message_received;
+
 Chatbox::~Chatbox()
 {
+    s_on_message_received.remove_listener(m_message_received_UUID);
 }
 
 void Chatbox::init()
 {
 	m_bIsMovable = true;
+    
+    //*-------------------------------------
+    // Bind callback for receiving messages.
+    //*
+    {
+        m_message_received_UUID = s_on_message_received.add_listener
+        (
+            std::bind(&Chatbox::receive_message, this, std::placeholders::_1)
+        );
+    }
 
     //*
     // Create input field visual representation.
@@ -98,6 +111,7 @@ void Chatbox::send_message() const
     packet.action      = e_Action::SOFT_ACTION;
     packet.entityId    = g_globals.entityHandler.lock()->get_local_player_id();
     packet.message     = m_inputField;
+    packet.author      = "Player";
 
     g_globals.packetHandler.lock()->send_packet<Packets::s_Message>
     (
@@ -105,6 +119,55 @@ void Chatbox::send_message() const
         0, 
         ENET_PACKET_FLAG_RELIABLE
     );
+}
+
+void Chatbox::receive_message(ChatboxMessage _message)
+{
+    TextArgs args;
+    {
+        args.bDropShadow = false;
+        args.color = { 0, 0, 0, 255 };
+        args.font = e_FontType::RUNESCAPE_UF;
+        args.size = 15;
+    }
+
+    std::string chatboxMessage = "";
+
+    //*
+    // Construct final message before we turn it into an object.
+    //*
+    {
+        if (_message.name != "")
+        {
+            chatboxMessage.append(_message.name + ": ");
+        }
+
+        chatboxMessage.append(_message.message);
+    }
+
+    const int32_t maxMessageCount = 8;
+
+    auto messageItem = Graphics::TextComponent::create_text(chatboxMessage, Utilities::vec2(0.0f), args);
+    {
+        if(get_child_count() - 1 >= maxMessageCount) 
+        {
+            m_children[get_child_count() - 1]->unparent();
+        }
+
+        messageItem->set_anchor(e_AnchorPreset::BOTTOM_LEFT);
+        messageItem->set_render_mode(e_RenderMode::SCREENSPACE);
+        add_child(messageItem, 1);
+
+        for(int32_t i = 1; i < m_children.size(); i++) 
+        {
+            auto& msg = m_children[i];
+            const Utilities::vec2 startLocation = Utilities::vec2(15.0f, -34.0f);
+            const Utilities::vec2 offsetY = Utilities::vec2(0, -17.0f) * static_cast<float>(i);
+            const Utilities::vec2 inputfieldPos = (get_position() + Utilities::vec2(0.0f, get_size().y)) + startLocation + offsetY;
+            msg->set_position(inputfieldPos);
+        }
+
+    }
 }
 
 void Chatbox::update_text()

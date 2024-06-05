@@ -98,12 +98,14 @@ namespace Packets
 
 	struct s_Message : public s_ActionPacket 
 	{
-		std::string message;
+		std::string author  = "";
+		std::string message = "";
 
 		template<class Archive>
 		void serialize(Archive& ar)
 		{
 			ar(cereal::base_class<s_ActionPacket>(this));
+			ar(author);
 			ar(message);
 		}
 	};
