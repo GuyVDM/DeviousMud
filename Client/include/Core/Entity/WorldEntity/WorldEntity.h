@@ -71,7 +71,7 @@ public:
 	/// <summary>
 	/// TODO: Make it summon a hitsplat.
 	/// </summary>
-	void hit(DM::Utils::UUID _from, int32_t _hitAmount);
+	void hit(int32_t _hitAmount);
 
 
 	/// <summary>

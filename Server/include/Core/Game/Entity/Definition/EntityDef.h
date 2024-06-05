@@ -23,6 +23,13 @@ public:
 	uint32_t             tickCounter = 0;
 	DM::Utils::UUID      uuid        = 0;
 
+
+	/// <summary>
+	/// Hit the entity for a specified amount.
+	/// </summary>
+	/// <param name="_damage"></param>
+	void hit(std::shared_ptr<Entity> _from, const int32_t _damage);
+
 	/// <summary>
 	/// Kills the entity.
 	/// </summary>
@@ -50,7 +57,7 @@ public:
 	/// Hit the entity for X amount.
 	/// </summary>
 	/// <param name="hitAmount"></param>
-	void broadcast_hit(std::shared_ptr<Entity> _by, int32_t _hitAmount) const;
+	void broadcast_hit(std::shared_ptr<Entity> _from, int32_t _hitAmount) const;
 
 	/// <summary>
 	/// Whether the entity should get hidden client side.

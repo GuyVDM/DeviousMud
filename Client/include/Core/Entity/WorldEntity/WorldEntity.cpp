@@ -180,7 +180,7 @@ void WorldEntity::turn_to(DM::Utils::UUID _entityId)
     }
 }
 
-void WorldEntity::hit(DM::Utils::UUID _from, int32_t _hitAmount)
+void WorldEntity::hit(int32_t _hitAmount)
 {
     //*-----------------
     // Add the hitsplat.

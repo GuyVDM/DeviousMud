@@ -53,6 +53,68 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 		}
 
+		if(commandArgs[0] == "restore") 
+		{
+			for(uint8_t i = 0; i < DM::SKILLS::SKILL_COUNT; i++) 
+			{
+				DM::SKILLS::e_skills skillType = static_cast<DM::SKILLS::e_skills>(i);
+
+				_player->skills[skillType].levelboosted = _player->skills[skillType].level;
+				_player->broadcast_skill(skillType);
+			}
+
+			_player->whisper("<col=#FF0000>[Server]: Restored all your stats.");
+			return true;
+		}
+
+		if (commandArgs[0] == "killall")
+		{
+			for(auto& entity : g_globals.entityHandler->get_all_entities()) 
+			{
+				if(entity->uuid != _player->uuid) 
+				{
+					const int32_t damage = entity->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+					entity->hit(nullptr, damage);
+				}
+			}
+
+			_player->whisper("<col=#FF0000>[Server]: Killed all entities.");
+			return true;
+		}
+
+		if (commandArgs[0] == "kill")
+		{
+			if (commandArgs.size() > 1)
+			{
+				std::string fullName = commandArgs[1];
+
+				if (commandArgs.size() > 2)
+				{
+					//If there are words to attach back together, do so.
+					for (int32_t i = 2; i < commandArgs.size(); i++)
+					{
+						fullName.append(" ");
+						fullName.append(commandArgs[i]);
+					}
+				}
+
+				auto optTarget = g_globals.entityHandler->get_player_by_name(fullName);
+
+				if (optTarget.has_value())
+				{
+					std::shared_ptr<Player> target = optTarget.value();
+					const int32_t damage = target->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+
+					target->hit(nullptr, damage);
+					_player->whisper("<col=#FF0000>[Server]: Killed <col=#000000>" + target->name + "<col=#FF0000>");
+					return true;
+				}
+			}
+
+			_player->whisper("<col=#FF0000>[Server]: Player doesn't exist.");
+			return true;
+		}
+
 		if (commandArgs[0] == "teleto")
 		{
 			if (commandArgs.size() > 1)

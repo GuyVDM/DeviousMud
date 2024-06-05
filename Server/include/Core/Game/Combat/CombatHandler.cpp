@@ -131,36 +131,22 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 	//TODO: remove this and calculate this dynamically.
 	const int32_t maxHit = 1;
 
-	//*-----------------------------------------
-	// Apply the damage to the entity its health.
+	//Apply the hit
+	_b->hit(_a, maxHit);
+
+	//Try make other entity retaliate.
+	_b->try_set_target(_a, true);
+
+	//*------------------
+	// Disengage if dead.
 	//*
 	{
-		int32_t* hp = &_b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
-		*hp = CLAMP(*hp - maxHit, 0, INT32_MAX);
-
-		//Try make other entity retaliate.
-		_b->try_set_target(_a, true);
-
-		if(*hp <= 0) 
+		int32_t hp = _b->skills.get_map()[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		if (hp <= 0)
 		{
 			_a->disengage();
 		}
 	}
-
-	//*------------------
-	// Hit the entity.
-	//* 
-	{
-		_b->broadcast_hit(_a, maxHit);
-	}
-
-	//*-------------------------------
-	// Update entity skill clientsided.
-	//*
-	{
-		_b->broadcast_skill(DM::SKILLS::e_skills::HITPOINTS);
-	}
-
 }
 
 void CombatHandler::queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _targetUUID)

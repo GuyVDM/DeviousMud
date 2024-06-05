@@ -86,6 +86,13 @@ namespace Server
 
 
 		/// <summary>
+		/// Get a list of all entites
+		/// </summary>
+		/// <returns></returns>
+		const std::vector<std::shared_ptr<Entity>> get_all_entities();
+
+		
+		/// <summary>
 		/// Returns any entity matching the indentifier, will iterate through both players and npc's alike.
 		/// </summary>
 		/// <param name="_id"></param>

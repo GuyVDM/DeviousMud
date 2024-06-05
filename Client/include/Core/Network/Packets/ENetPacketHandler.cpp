@@ -144,7 +144,7 @@ void ENetPacketHandler::process_packet()
 			if (auto victimEnttOpt = g_globals.entityHandler.lock()->get_entity(packet.toEntityId); victimEnttOpt.has_value())
 			{
 				RefEntity victimEntt = victimEnttOpt.value();
-				victimEntt->hit(packet.fromEntityId, packet.hitAmount);
+				victimEntt->hit(packet.hitAmount);
 			}
 		}
 		break;

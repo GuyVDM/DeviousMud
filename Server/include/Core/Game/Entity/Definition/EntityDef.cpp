@@ -21,6 +21,7 @@
 #include "Shared/Network/Packets/PacketHandler.hpp"
 
 #include <random>
+#include <Shared/Utilities/Math.hpp>
 
 void Entity::hide_entity(const bool _bShouldHide) const 
 {
@@ -57,6 +58,31 @@ void Entity::teleport_to(Utilities::ivec2 _destination)
 		0,
 		ENET_PACKET_FLAG_RELIABLE
 	);
+}
+
+void Entity::hit(std::shared_ptr<Entity> _from, const int32_t _damage)
+{
+	//*----------------
+	// Apply the damage
+	//*
+	{
+		int32_t* hp = &skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
+		*hp = CLAMP(*hp - _damage, 0, INT32_MAX);
+	}
+
+	//*------------------
+	// Hit the entity.
+	//* 
+	{
+		broadcast_hit(_from, _damage);
+	}
+
+	//*-------------------------------
+	// Update entity skill clientsided.
+	//*
+	{
+		broadcast_skill(DM::SKILLS::e_skills::HITPOINTS);
+	}
 }
 
 void Entity::die()
@@ -215,12 +241,19 @@ void Entity::respawn()
 	hide_entity(false);
 }
 
-void Entity::broadcast_hit(std::shared_ptr<Entity> _by, int32_t _hitAmount) const
+void Entity::broadcast_hit(std::shared_ptr<Entity> _from, int32_t _hitAmount) const
 {
+	DM::Utils::UUID instigatorUuid = 0;
+
+	if(_from != nullptr) 
+	{
+		instigatorUuid = _from->uuid;
+	}
+
 	Packets::s_EntityHit packet;
 	packet.interpreter  = e_PacketInterpreter::PACKET_ENTITY_HIT;
 	packet.action       = e_Action::SOFT_ACTION;
-	packet.fromEntityId = _by->uuid;
+	packet.fromEntityId = instigatorUuid;
 	packet.toEntityId   = uuid;
 	packet.hitAmount    = _hitAmount;
 

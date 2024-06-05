@@ -237,6 +237,18 @@ const std::vector<std::shared_ptr<NPC>> Server::EntityHandler::get_world_npcs()
 	return npcs;
 }
 
+const std::vector<std::shared_ptr<Entity>> Server::EntityHandler::get_all_entities()
+{
+	std::vector<std::shared_ptr<Entity>> entities;
+
+	for(auto&[uuid, entity] : m_entities) 
+	{
+		entities.push_back(entity);
+	}
+
+	return entities;
+}
+
 std::optional<std::shared_ptr<Entity>> Server::EntityHandler::get_entity(const DM::Utils::UUID& _id)
 {
 	//If the handle turns out to be a playerhandle, transpose it to the client handle and find the appropriate player.
