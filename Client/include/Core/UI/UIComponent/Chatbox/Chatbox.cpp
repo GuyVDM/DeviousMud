@@ -146,7 +146,7 @@ void Chatbox::receive_message(ChatboxMessage _message)
     {
         if (_message.name != "")
         {
-            chatboxMessage.append(_message.name + ": ");
+            chatboxMessage.append(_message.name + ": <col=#1b19ed>");
         }
 
         chatboxMessage.append(_message.message);
@@ -188,7 +188,7 @@ void Chatbox::update_text()
     const std::string marker = "*";
 
     std::string text = m_playerName;
-    text.append(": ");
+    text.append(": <col=#1b19ed>");
     text.append(m_inputField);
     text.append(marker);
 
