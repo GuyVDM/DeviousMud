@@ -432,27 +432,27 @@ bool Player::set_name(const std::string& _name)
 
 	if (!name_contains_non_space())
 	{
-		whisper("[Server]: Name only contains spaces.");
+		whisper("<col=#FF0000>[Server]: Name only contains spaces.");
 		return false;
 	}
 
 	if(name_taken()) 
 	{
-		whisper("[Server]: Name is already taken by another player.");
+		whisper("<col=#FF0000>[Server]: Name is already taken by another player.");
 		return false;
 	}
 
 	if(nameSize > MAX_NAME_SIZE && nameSize <= 0)
 	{
-		whisper("[Server]: Name size is either too small or too large.");
-		whisper("          Max is : " + std::to_string(MAX_NAME_SIZE) + "characters.");
+		whisper("<col=#FF0000>[Server]: Name size is either too small or too large.");
+		whisper("<col=#FF0000>          Max is : " + std::to_string(MAX_NAME_SIZE) + "characters.");
 		return false;
 	}
 
 	// Set the new name.
 	{
 		name = _name;
-		whisper("[Server]: Name succesfully changed to: " + name);
+		whisper("<col=#FF0000>[Server]: Name succesfully changed to: " + name);
 
 		Packets::s_NameChange packet;
 		packet.entityId = uuid;

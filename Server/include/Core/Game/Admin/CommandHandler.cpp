@@ -45,12 +45,12 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				   try_parse_as_int(commandArgs[2], y)) 
 				{
 					_player->teleport_to(Utilities::ivec2(x, y));
-					_player->whisper("[Server]: Teleported player to: " + std::to_string(x) + ", " + std::to_string(y));
+					_player->whisper("<col=#FF0000>[Server]: Teleported player to: " + std::to_string(x) + ", " + std::to_string(y));
 					return true;
 				}
 			}
 
-			_player->whisper("[Server]: Invalid arguments were specified.");
+			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 		}
 
 		if (commandArgs[0] == "changename")
@@ -73,7 +73,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			}
 			else 
 			{
-				_player->whisper("[Server]: Invalid arguments were specified.");
+				_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 			}
 
 			return true;
@@ -97,14 +97,14 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 						
 					if (target->name == name)
 					{
-						_player->whisper("[Server]: Succesfully disconnected: " + target->name + '.');
+						_player->whisper("<col=#FF0000>[Server]: Succesfully disconnected: " + target->name + '.');
 						cHandler->disconnect_client(static_cast<enet_uint32>(clientHandle));
 						return true;
 					}
 				}
 			}
 
-			_player->whisper("[Server]: The player you tried to kick does not exist.");
+			_player->whisper("<col=#FF0000>[Server]: The player you tried to kick does not exist.");
 			return true;
 		}
 
@@ -125,14 +125,14 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 							playerPos
 						);
 
-						_player->whisper("[Server]: Spawned NPC ID: " + std::to_string(npcId) + " at "
+						_player->whisper("<col=#FF0000>[Server]: Spawned NPC ID: " + std::to_string(npcId) + " at "
                                           + std::to_string(playerPos.x) + " , " + std::to_string(playerPos.y) + '.');
 						return true;
 					}
 				}
 			}
 
-			_player->whisper("[Server]: Invalid arguments were specified.");
+			_player->whisper("<col=#FF0000>[Server]: Invalid arguments were specified.");
 			return true;
 		}
 	}
