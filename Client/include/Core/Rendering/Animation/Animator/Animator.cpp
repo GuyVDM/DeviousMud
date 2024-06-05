@@ -27,8 +27,11 @@ bool Graphics::Animation::Animator::is_playing(Sprite& _sprite, e_AnimationType 
 	return false;
 }
 
-void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animationType, const bool& _bIsLooping, const float& _playbackSpeed)
+bool Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animationType, const bool& _bIsLooping, const float& _playbackSpeed)
 {
+	if (_animationType == e_AnimationType::NO_ANIMATION)
+		return false;
+
 	////Set the first frame of the animation
 	const Animation2D animation = Animations::animationMap().at(_animationType);
 
@@ -48,7 +51,7 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 		//Register the animation controller
 		Animator::s_animators[controller.uuid] = controller;
 		controller.sprite->frame = animation.get_keyframes()[controller.keyframeIndex];
-		return;
+		return true;
 	}
 
 	// If the controller already exists, just update the animation within the controller.
@@ -65,14 +68,17 @@ void Animator::play_animation(Sprite& _sprite, const e_AnimationType& _animation
 
 		Animator::s_animators[controller.uuid] = controller;
 	}
+
+	return true;
 }
 
 void Graphics::Animation::Animator::play_animation_oneshot(Sprite& _sprite, const e_AnimationType& _animation, const float& _playbackSpeed)
 {
-	play_animation(_sprite, _animation, false, _playbackSpeed);
-
-	AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
-	controller.bHoldOnLastFrame = true;
+	if(Animator::play_animation(_sprite, _animation, false, _playbackSpeed))
+	{
+		AnimationController& controller = Animator::s_animators[_sprite.get_uuid()];
+		controller.bHoldOnLastFrame = true;
+	}
 }
 
 void Graphics::Animation::Animator::set_default_animation(Sprite& _sprite, const e_AnimationType& _animation, const float& _playbackSpeed)

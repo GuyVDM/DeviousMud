@@ -63,7 +63,7 @@ namespace Graphics
 			/// <param name="_animation"></param>
 			/// <param name="_bIsLooping"></param>
 			/// <param name="_playbackSpeed"></param>
-			static void play_animation(Sprite& _sprite, const e_AnimationType& _animation, const bool& _bIsLooping, const float& _playbackSpeed = 1.0f);
+			static bool play_animation(Sprite& _sprite, const e_AnimationType& _animation, const bool& _bIsLooping, const float& _playbackSpeed = 1.0f);
 
 			/// <summary>
 			/// Plays an animation, but holds it at the last frame until a different animation plays.
