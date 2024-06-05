@@ -353,7 +353,7 @@ void NPC::disengage()
 	m_target.reset();
 }
 
-void Player::tell(const std::string& _message) const
+void Player::whisper(const std::string& _message) const
 {
 	auto optCHandle = g_globals.entityHandler->transpose_player_to_client_handle(uuid);
 

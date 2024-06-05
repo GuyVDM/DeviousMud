@@ -119,10 +119,10 @@ public:
 	std::string name = "";
 
 	/// <summary>
-	/// Broadcast the message into the player their chatbox.
+	/// Broadcast the message into the player their chatbox specifically.
 	/// </summary>
 	/// <param name="_message"></param>
-	void tell(const std::string& _message) const;
+	void whisper(const std::string& _message) const;
 
 	/// <summary>
 	/// Kills & prevents the player from doing any actions.
