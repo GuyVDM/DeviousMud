@@ -100,13 +100,29 @@ namespace Server
 		/// <returns></returns>
 		const std::optional<uint64_t> transpose_player_to_client_handle(DM::Utils::UUID _uuid) const;
 
-		void entities_tick();
+
+		/// <summary>
+		/// Destroys the entity next frame.
+		/// </summary>
+		/// <param name="_uuid"></param>
+		void destroy_entity(DM::Utils::UUID _uuid);
+
+
+		/// <summary>
+		/// Happens every game cycle.
+		/// </summary>
+		void tick();
 
 	public:
 		EntityHandler() = default;
 		~EntityHandler();
 
 	private:
+		/// <summary>
+		/// All npc's that are flagged to get destroyed.
+		/// </summary>
+		std::vector<EntityUUID> m_toRemove;
+
 		/// <summary>
 		/// All world entities.
 		/// </summary>

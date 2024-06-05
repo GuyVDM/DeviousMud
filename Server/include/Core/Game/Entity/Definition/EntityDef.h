@@ -208,6 +208,16 @@ static const NPC get_entity_data(const uint8_t _id)
 
 	switch(_id) 
 	{
+		case 0:
+		{
+			data.skills[e_skills::HITPOINTS].level = 5;
+			data.skills[e_skills::ATTACK].level = 5;
+			data.skills[e_skills::STRENGTH].level = 5;
+			data.skills[e_skills::DEFENCE].level = 0;
+			data.wanderingDistance = 3;
+		}
+		break;
+
 		case 1:
 		{
 			data.skills[e_skills::HITPOINTS].level = 5;
@@ -220,7 +230,7 @@ static const NPC get_entity_data(const uint8_t _id)
 
 		default:
 		{
-			data.skills[e_skills::HITPOINTS].level = 100;
+			data.skills[e_skills::HITPOINTS].level = 1;
 		}
 		break;
 	}

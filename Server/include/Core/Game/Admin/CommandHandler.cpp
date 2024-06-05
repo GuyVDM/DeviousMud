@@ -98,6 +98,34 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			_player->whisper("[Server]: The player you tried to kick does not exist.");
 			return true;
 		}
+
+		if(commandArgs[0] == "spawnnpc") 
+		{
+			if (commandArgs.size() > 1)
+			{
+				int32_t npcId;
+				if (try_parse_as_int(commandArgs[1], npcId))
+				{
+					if (npcId > 0 && npcId <= UINT8_MAX)
+					{
+						Utilities::ivec2 playerPos = _player->position;
+
+						g_globals.entityHandler->create_world_npc
+						(
+							static_cast<uint8_t>(npcId),
+							playerPos
+						);
+
+						_player->whisper("[Server]: Spawned NPC ID: " + std::to_string(npcId) + " at "
+                                          + std::to_string(playerPos.x) + " , " + std::to_string(playerPos.y) + '.');
+						return true;
+					}
+				}
+			}
+
+			_player->whisper("[Server]: Invalid arguments were specified.");
+			return true;
+		}
 	}
 
 	return false;

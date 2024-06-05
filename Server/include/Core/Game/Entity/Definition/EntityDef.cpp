@@ -154,6 +154,15 @@ int32_t Entity::get_respawn_timer()
 void Entity::respawn()
 {
 	//*
+	// Destroy entity permanently serversided & client sided if the respawn timer is smaller than 1 tick.
+	//*
+	if(get_respawn_timer() < 1) 
+	{
+		g_globals.entityHandler->destroy_entity(uuid);
+		return;
+	}
+
+	//*
 	// Reset death related params.
 	//*
 	{

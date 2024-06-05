@@ -214,21 +214,6 @@ void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthand
 		g_globals.entityHandler->logout_player(m_clientInfo[_clienthandle]->clientId);
 	}
 
-	//Multicast to all other players that a player has left.
-	{
-		Packets::s_CreateEntity playerData;
-		playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
-		playerData.entityId = m_clientInfo[_clienthandle]->playerId;
-
-		PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
-		(
-			&playerData,
-			g_globals.networkHandler->get_server_host(),
-			0,
-			ENET_PACKET_FLAG_RELIABLE
-		);
-	}
-
 	//Find and remove the clienthandle of the client that we're disconnecting.
 	const auto it = std::find_if(m_clientHandles.begin(), m_clientHandles.end(), [&_clienthandle](const enet_uint32& _handle)
 	{

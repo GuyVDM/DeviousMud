@@ -55,8 +55,9 @@ void Server::EntityHandler::logout_player(const uint64_t _clientId)
 {
 	if (auto player = get_entity(_clientId); player.has_value())
 	{
+		destroy_entity(_clientId);
 		m_playerToClientHandles.erase(player.value()->uuid);
-		m_entities.erase(_clientId);
+
 		DEVIOUS_EVENT("Player: " << _clientId << " has logged out.");
 		return;
 	}
@@ -266,8 +267,35 @@ const std::optional<uint64_t> Server::EntityHandler::transpose_player_to_client_
 	return std::nullopt;
 }
 
-void Server::EntityHandler::entities_tick()
+void Server::EntityHandler::destroy_entity(DM::Utils::UUID _uuid)
 {
+	m_toRemove.push_back(_uuid);
+}
+
+void Server::EntityHandler::tick()
+{
+	for (DM::Utils::UUID enttId : m_toRemove)
+	{
+		if (m_entities.find(enttId) != m_entities.end())
+		{
+			Packets::s_CreateEntity playerData;
+			playerData.interpreter = e_PacketInterpreter::PACKET_REMOVE_ENTITY;
+			playerData.entityId    = m_entities[enttId]->uuid;
+
+			PacketHandler::send_packet_multicast<Packets::s_CreateEntity>
+			(
+				&playerData,
+				g_globals.networkHandler->get_server_host(),
+				0,
+				ENET_PACKET_FLAG_RELIABLE
+			);
+
+			m_entities.erase(enttId);
+		}
+	}
+
+	m_toRemove.clear();
+
 	for(const auto&[uuid, entity] : m_entities) 
 	{
 		entity->update();

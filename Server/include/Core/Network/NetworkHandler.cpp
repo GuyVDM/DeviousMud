@@ -114,7 +114,7 @@ void NetworkHandler::start_ticking()
 			{
 				Server::EventHandler::handle_queud_events();
 				connectionHandler->update_idle_timers();
-				entityHandler->entities_tick();
+				entityHandler->tick();
 			}
 		}
 	}
