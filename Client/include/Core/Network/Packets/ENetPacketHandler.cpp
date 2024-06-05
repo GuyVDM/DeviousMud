@@ -230,17 +230,20 @@ void ENetPacketHandler::process_packet()
 			Packets::s_Message packet;
 			PacketHandler::retrieve_packet_data<Packets::s_Message>(packet, &m_event);
 
-			if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+			if (packet.entityId != 0)
 			{
-				RefEntity entt = optEntity.value();
-				entt->say(packet.message);
-
-				ChatboxMessage message;
-				message.name    = packet.author;
-				message.message = packet.message;
-
-				Chatbox::s_on_message_received.invoke(message);
+				if (auto optEntity = g_globals.entityHandler.lock()->get_entity(packet.entityId); optEntity.has_value())
+				{
+					RefEntity entt = optEntity.value();
+					entt->say(packet.message);
+				}
 			}
+
+			ChatboxMessage message;
+			message.name = packet.author;
+			message.message = packet.message;
+
+			Chatbox::s_on_message_received.invoke(message);
 		}
 		break;
 

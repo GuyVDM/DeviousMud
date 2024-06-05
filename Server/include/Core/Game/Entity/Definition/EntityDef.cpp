@@ -353,6 +353,33 @@ void NPC::disengage()
 	m_target.reset();
 }
 
+void Player::tell(const std::string& _message) const
+{
+	auto optCHandle = g_globals.entityHandler->transpose_player_to_client_handle(uuid);
+
+	if(optCHandle.has_value()) 
+	{
+		const enet_uint32 clientHandle = static_cast<enet_uint32>(optCHandle.value());
+
+		RefClientInfo info = g_globals.connectionHandler->get_client_info(clientHandle);
+
+		Packets::s_Message response;
+		response.interpreter = e_PacketInterpreter::PACKET_ENTITY_MESSAGE_WORLD;
+		response.entityId = 0;
+		response.message  = _message;
+		response.author   = "";
+
+		PacketHandler::send_packet<Packets::s_Message>
+		(
+			&response,
+			info->peer,
+			g_globals.networkHandler->get_server_host(),
+			0,
+			ENET_PACKET_FLAG_RELIABLE
+		);
+	}
+}
+
 void Player::die()
 {
 	//*------------------------

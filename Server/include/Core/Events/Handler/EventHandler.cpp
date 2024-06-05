@@ -16,10 +16,11 @@
 
 #include "Core/Game/Combat/CombatHandler.h"
 
+#include "Core/Game/Admin/CommandHandler.h"
+
 #include "Shared/Network/Packets/PacketHandler.hpp"
 
 #include "Shared/Navigation/AStar.hpp"
-
 
 
 using ivec2 = Utilities::ivec2;
@@ -140,19 +141,29 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 			{
 				auto message = transform_packet<Packets::s_Message>(std::move(packet));
 
-				Packets::s_Message response;
-				response.interpreter = message->interpreter;
-				response.entityId    = message->entityId;
-				response.message     = message->message;
-				response.author      = message->author;
+				const auto& player = g_globals.entityHandler->get_entity(_client->clientId);
 
-				PacketHandler::send_packet_multicast<Packets::s_Message>
-				(
-					&response,
-					g_globals.networkHandler->get_server_host(),
-					0,
-					ENET_PACKET_FLAG_RELIABLE
-				);
+				if (auto entityPtr = player.value(); player.has_value())
+				{
+					std::shared_ptr<Player> player = std::static_pointer_cast<Player>(entityPtr);
+
+					if (!CommandHandler::try_handle_as_command(player, message->message))
+					{
+						Packets::s_Message response;
+						response.interpreter = message->interpreter;
+						response.entityId = message->entityId;
+						response.message  = message->message;
+						response.author   = message->author;
+
+						PacketHandler::send_packet_multicast<Packets::s_Message>
+						(
+							&response,
+							g_globals.networkHandler->get_server_host(),
+							0,
+							ENET_PACKET_FLAG_RELIABLE
+						);
+					}
+				}
 			}
 			break;
 

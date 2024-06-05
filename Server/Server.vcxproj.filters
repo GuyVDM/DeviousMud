@@ -27,6 +27,7 @@
     <ClCompile Include="include\Core\Game\World\World.cpp" />
     <ClCompile Include="include\Core\Game\Entity\Definition\EntityDef.cpp" />
     <ClCompile Include="include\Core\Game\Combat\CombatHandler.cpp" />
+    <ClCompile Include="include\Core\Game\Admin\CommandHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\precomp.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="include\Core\Game\World\World.h" />
     <ClInclude Include="include\Core\Game\Entity\Definition\EntityDef.h" />
     <ClInclude Include="include\Core\Game\Combat\CombatHandler.h" />
+    <ClInclude Include="include\Core\Game\Admin\CommandHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

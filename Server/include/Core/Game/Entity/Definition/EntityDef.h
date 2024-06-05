@@ -119,6 +119,12 @@ public:
 	std::string name = "";
 
 	/// <summary>
+	/// Broadcast the message into the player their chatbox.
+	/// </summary>
+	/// <param name="_message"></param>
+	void tell(const std::string& _message) const;
+
+	/// <summary>
 	/// Kills & prevents the player from doing any actions.
 	/// </summary>
 	virtual void die() override;
