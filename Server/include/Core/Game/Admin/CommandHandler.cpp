@@ -45,7 +45,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				   try_parse_as_int(commandArgs[2], y)) 
 				{
 					_player->teleport_to(Utilities::ivec2(x, y));
-					_player->whisper("<col=#FF0000>[Server]: Teleported player to: " + std::to_string(x) + ", " + std::to_string(y));
+					_player->whisper("<col=#FF0000>[Server]: <col=#000000>Teleported player to: <col=#FF0000>" + std::to_string(x) + ", " + std::to_string(y));
 					return true;
 				}
 			}
@@ -63,7 +63,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				_player->broadcast_skill(skillType);
 			}
 
-			_player->whisper("<col=#FF0000>[Server]: Restored all your stats.");
+			_player->whisper("<col=#FF0000>[Server]: <col=#000000>Restored all your stats.");
 			return true;
 		}
 
@@ -78,7 +78,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				}
 			}
 
-			_player->whisper("<col=#FF0000>[Server]: Killed all entities.");
+			_player->whisper("<col=#FF0000>[Server]: <col=#000000>Killed all entities.");
 			return true;
 		}
 
@@ -106,7 +106,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 					const int32_t damage = target->skills[DM::SKILLS::e_skills::HITPOINTS].levelboosted;
 
 					target->hit(nullptr, damage);
-					_player->whisper("<col=#FF0000>[Server]: Killed <col=#000000>" + target->name + "<col=#FF0000>");
+					_player->whisper("<col=#FF0000>[Server]: Killed <col=#000000>" + target->get_shown_name() + "<col=#FF0000>");
 					return true;
 				}
 			}
@@ -137,7 +137,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				{
 					std::shared_ptr<Player> target = optTarget.value();
 					_player->teleport_to(target->position);
-					_player->whisper("<col=#FF0000>[Server]: Teleported to <col=#000000>" + target->name);
+					_player->whisper("<col=#FF0000>[Server]: Teleported to <col=#000000>" + target->get_shown_name());
 					return true;
 				}
 			}
@@ -168,7 +168,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				{
 					std::shared_ptr<Player> target = optTarget.value();
 					target->teleport_to(_player->position);
-					target->whisper("<col=#FF0000>[Server]: You have been force teleported to <col=#000000>" + _player->name);
+					target->whisper("<col=#FF0000>[Server]: <col=#000000>You have been force teleported to <col=#FF0000>" + _player->get_shown_name());
 					return true;
 				}
 			}
@@ -221,7 +221,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 						{
 							Player::e_PlayerRights newRights = static_cast<Player::e_PlayerRights>(rank);
 							target->set_player_rights(newRights);
-							_player->whisper("<col=#FF0000>[Server]: Rights have been updated.");
+							_player->whisper("<col=#FF0000>[Server]: <col=#000000>Rights have been updated.");
 							return true;
 
 						}   else failReason = "<col=#FF0000>[Server]: Invalid rank was specified.";
@@ -281,9 +281,9 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				{
 					std::shared_ptr<Player> target = optTarget.value();
 
-					if (target->name == fullName)
+					if (target->get_name() == fullName)
 					{
-						_player->whisper("<col=#FF0000>[Server]: Succesfully disconnected: " + target->name + '.');
+						_player->whisper("<col=#FF0000>[Server]: <col=#000000>Succesfully disconnected: <col=#FF0000>" + target->get_shown_name() + '.');
 						uint64_t clientHandle64 = g_globals.entityHandler->transpose_player_to_client_handle(target->uuid).value();
 						g_globals.connectionHandler->disconnect_client(static_cast<enet_uint32>(clientHandle64));
 						return true;
@@ -312,7 +312,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 							playerPos
 						);
 
-						_player->whisper("<col=#FF0000>[Server]: Spawned NPC ID: " + std::to_string(npcId) + " at "
+						_player->whisper("<col=#FF0000>[Server]: <col=#000000>Spawned NPC ID: " + std::to_string(npcId) + " at "
                                           + std::to_string(playerPos.x) + " , " + std::to_string(playerPos.y) + '.');
 						return true;
 					}

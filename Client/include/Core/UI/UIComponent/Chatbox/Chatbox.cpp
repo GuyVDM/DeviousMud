@@ -111,8 +111,23 @@ bool Chatbox::handle_event(const SDL_Event* _event)
 	return UIComponent::handle_event(_event);
 }
 
-void Chatbox::send_message() const
+void Chatbox::send_message()
 {
+    //*-------------------------------------------------------------------
+    // Force first character to Uppercase if it's alphanumerical and lower.
+    //*
+    {
+        char c = m_inputField[0];
+
+        if(std::isalpha(c)) 
+        {
+            if(std::islower(c)) 
+            {
+                m_inputField[0] = std::toupper(c);
+            }
+        }
+    }
+
     Packets::s_Message packet;
     packet.interpreter = e_PacketInterpreter::PACKET_ENTITY_MESSAGE_WORLD;
     packet.action      = e_Action::SOFT_ACTION;

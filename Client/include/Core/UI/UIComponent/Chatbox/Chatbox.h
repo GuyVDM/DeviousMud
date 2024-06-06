@@ -28,7 +28,7 @@ protected:
 private:
 	void update_text();
 
-	void send_message() const;
+	void send_message();
 
 	void receive_message(ChatboxMessage _message);
 

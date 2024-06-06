@@ -20,8 +20,11 @@
 
 #include "Shared/Network/Packets/PacketHandler.hpp"
 
+#include "Shared/Utilities/Math.hpp"
+
 #include <random>
-#include <Shared/Utilities/Math.hpp>
+
+#include <cctype>
 
 void Entity::hide_entity(const bool _bShouldHide) const 
 {
@@ -395,6 +398,42 @@ void NPC::disengage()
 	m_target.reset();
 }
 
+const std::string Player::get_shown_name() const
+{
+	std::string tempName;
+
+	int32_t playerRights = static_cast<int32_t>(m_playerRights);
+
+	if (playerRights > 0)
+	{
+		tempName = "<icon=" + std::to_string(playerRights) + "> ";
+	}
+
+	tempName.append(m_name);
+	return tempName;
+}
+
+void Player::broadcast_name()
+{
+	Packets::s_NameChange packet;
+	packet.entityId = uuid;
+	packet.interpreter = e_PacketInterpreter::PACKET_CHANGE_NAME;
+	packet.name = get_shown_name();
+
+	PacketHandler::send_packet_multicast<Packets::s_NameChange>
+	(
+		&packet,
+		g_globals.networkHandler->get_server_host(),
+		0,
+		ENET_PACKET_FLAG_RELIABLE
+	);
+}
+
+const std::string& Player::get_name() const
+{
+	return m_name;
+}
+
 void Player::whisper(const std::string& _message) const
 {
 	auto optCHandle = g_globals.entityHandler->transpose_player_to_client_handle(uuid);
@@ -441,7 +480,7 @@ bool Player::set_name(const std::string& _name)
 			{
 				std::shared_ptr<Player> player = std::static_pointer_cast<Player>(optPlayer.value());
 
-				if(player->name == _name) 
+				if(player->m_name == _name) 
 				{
 					return true;
 				}
@@ -469,6 +508,15 @@ bool Player::set_name(const std::string& _name)
 		return false;
 	}
 
+	for(char c : _name) 
+	{
+		if(!std::isalnum(c)) 
+		{
+			whisper("<col=#FF0000>[Server]: Your name can't contain any symbols.");
+			return false;
+		}
+	}
+
 	if(name_taken()) 
 	{
 		whisper("<col=#FF0000>[Server]: Name is already taken by another player.");
@@ -484,21 +532,10 @@ bool Player::set_name(const std::string& _name)
 
 	// Set the new name.
 	{
-		name = _name;
-		whisper("<col=#FF0000>[Server]: Name succesfully changed to: " + name);
-
-		Packets::s_NameChange packet;
-		packet.entityId = uuid;
-		packet.interpreter = e_PacketInterpreter::PACKET_CHANGE_NAME;
-		packet.name = name;
-
-		PacketHandler::send_packet_multicast<Packets::s_NameChange>
-			(
-				&packet,
-				g_globals.networkHandler->get_server_host(),
-				0,
-				ENET_PACKET_FLAG_RELIABLE
-			);
+		m_name = _name;
+		whisper("<col=#FF0000>[Server]: Name succesfully changed to: " + get_shown_name());
+		
+		broadcast_name();
 
 		return true;
 	}
@@ -542,8 +579,17 @@ const Player::e_PlayerRights Player::get_player_rights() const
 
 void Player::set_player_rights(const Player::e_PlayerRights _eRights)
 {
-	m_playerRights = _eRights;
+	int32_t previousRoughts = static_cast<int32_t>(m_playerRights);
+	int32_t newRights      = static_cast<int32_t>(_eRights);
 
-	int32_t rightsToInt = static_cast<int32_t>(_eRights);
-	whisper("<col=#FF0000>[Server]: Your player rights have been updated: " + std::to_string(rightsToInt) + " <icon=" + std::to_string(rightsToInt) + '>');
+	if (previousRoughts != newRights)
+	{
+		m_playerRights = _eRights;
+
+		std::string upgradeString = previousRoughts > newRights ? "demoted" : "promoted";
+
+		whisper("<col=#FF0000>[Server]: <col=#000000>You have been " + upgradeString + " to : <icon=" + std::to_string(newRights) + '>');
+
+		broadcast_name();
+	}
 }

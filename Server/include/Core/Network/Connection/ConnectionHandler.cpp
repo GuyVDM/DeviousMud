@@ -139,12 +139,14 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 	//Set temporary name for the player.
 	{
-		const std::string name = "Player " + std::to_string(static_cast<int32_t>(newClient->playerId));
+
+		const std::string name = "Player" ;
+		DEVIOUS_LOG(name);
 
 		auto player = std::static_pointer_cast<Player>
-			(
-				eHandler->get_entity(newClient->clientId).value()
-			);
+		(
+			eHandler->get_entity(newClient->clientId).value()
+		);
 
 		player->set_name(name);
 		player->whisper("Welcome to my DeviousMUD 2D Clone!");
@@ -179,7 +181,7 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 				Packets::s_NameChange packet;
 				packet.interpreter = e_PacketInterpreter::PACKET_CHANGE_NAME;
 				packet.entityId = player->uuid;
-				packet.name     = player->name;
+				packet.name     = player->get_shown_name();
 			}
 		}
 	}

@@ -279,7 +279,7 @@ std::optional<std::shared_ptr<Player>> Server::EntityHandler::get_player_by_name
 		{
 			std::shared_ptr<Player> player = std::static_pointer_cast<Player>(optEntity.value());
 
-			if(player->name == _name) 
+			if(player->get_name() == _name)
 			{
 				return player;
 			}

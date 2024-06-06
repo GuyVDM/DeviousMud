@@ -130,7 +130,23 @@ public:
 		RankCount
 	};
 
-	std::string name = "Player";
+	/// <summary>
+	/// Get the name of the player as it would get shown to the client.
+	/// This includes ranking symbols and other text code vanities.
+	/// </summary>
+	/// <returns></returns>
+	const std::string get_shown_name() const;
+
+	/// <summary>
+	/// Update name across all clients.
+	/// </summary>
+	void broadcast_name();
+
+	/// <summary>
+	/// Return full string of name without any text code vanities attached.
+	/// </summary>
+	/// <returns></returns>
+	const std::string& get_name() const;
 
 	/// <summary>
 	/// Broadcast the message into the player their chatbox specifically.
@@ -162,7 +178,8 @@ public:
 	const e_PlayerRights get_player_rights() const;
 
 private:
-	e_PlayerRights m_playerRights = e_PlayerRights::Admin;
+	e_PlayerRights m_playerRights = e_PlayerRights::Regular;
+	std::string    m_name         = "Player";
 	
 };
 

@@ -34,7 +34,7 @@ TextComponent::~TextComponent()
 	clean();
 }
 
-std::vector<Graphics::TextComponent::TextSegment> Graphics::TextComponent::split_text_to_segments(const std::string& _contents)
+std::vector<Graphics::TextComponent::TextSegment> Graphics::TextComponent::split_text_to_segments(const std::string& _contents) const
 {
 	std::vector<TextSegment> textSegments;
 	std::istringstream sstream(_contents);

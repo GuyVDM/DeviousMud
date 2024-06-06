@@ -69,7 +69,7 @@ namespace Graphics
 		virtual void on_new_parent() override;
 
 	private:
-		std::vector<TextSegment> split_text_to_segments(const std::string& _contents);
+		std::vector<TextSegment> split_text_to_segments(const std::string& _contents) const;
 
 		void clean();
 

@@ -153,7 +153,7 @@ void Server::EventHandler::handle_client_specific_packets(RefClientInfo& _client
 						response.interpreter = message->interpreter;
 						response.entityId    = message->entityId;
 						response.message     = message->message;
-						response.author      = player->name;
+						response.author      = player->get_shown_name();
 
 						PacketHandler::send_packet_multicast<Packets::s_Message>
 						(
