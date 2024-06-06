@@ -158,7 +158,8 @@ void Chatbox::receive_message(ChatboxMessage _message)
     {
         if(get_child_count() - 1 >= maxMessageCount) 
         {
-            m_children[get_child_count() - 1]->unparent();
+            const int32_t index = get_child_count() - 1;
+            m_children[index]->unparent();
         }
 
         messageItem->set_anchor(e_AnchorPreset::BOTTOM_LEFT);
@@ -172,8 +173,8 @@ void Chatbox::receive_message(ChatboxMessage _message)
             const Utilities::vec2 offsetY = Utilities::vec2(0, -17.0f) * static_cast<float>(i);
             const Utilities::vec2 inputfieldPos = (get_position() + Utilities::vec2(0.0f, get_size().y)) + startLocation + offsetY;
             msg->set_position(inputfieldPos);
-        }
 
+        }
     }
 }
 

@@ -15,6 +15,10 @@ void UIComponent::init()
 {
 }
 
+void UIComponent::on_new_parent()
+{
+}
+
 void UIComponent::update()
 {
 }
@@ -151,7 +155,7 @@ void UIComponent::set_parent(UIComponent* _parent)
 
     // Copy some parent essentials.
     {
-        m_eRenderMode = m_parent->m_eRenderMode;
+        m_eRenderMode            = m_parent->m_eRenderMode;
         m_sprite.zRenderPriority = _parent->m_sprite.zRenderPriority;
 
         for (auto& child : m_children)
@@ -160,6 +164,8 @@ void UIComponent::set_parent(UIComponent* _parent)
             child->m_sprite.zRenderPriority = m_sprite.zRenderPriority;
         }
     }
+
+    on_new_parent();
 }
 
 void UIComponent::unparent()

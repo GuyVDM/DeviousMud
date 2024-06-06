@@ -75,6 +75,8 @@ namespace Graphics
 
 		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount = 1);
 
+		SDL_Texture* load_texture_of_sprite(const Graphics::SpriteType& _spritetype);
+
 		void start_frame();
 
 		void end_frame();

@@ -205,6 +205,11 @@ protected:
 	/// </summary>
 	virtual void init();
 	
+	/// <summary>
+	/// Gets called when a UIComponent gets set a new parent
+	/// </summary>
+	virtual void on_new_parent();
+
 private:
 	/// <summary>
 	/// Happens every frame.

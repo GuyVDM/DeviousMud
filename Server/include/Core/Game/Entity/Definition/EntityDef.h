@@ -162,7 +162,7 @@ public:
 	const e_PlayerRights get_player_rights() const;
 
 private:
-	e_PlayerRights m_playerRights;
+	e_PlayerRights m_playerRights = e_PlayerRights::Admin;
 	
 };
 

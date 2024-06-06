@@ -16,6 +16,12 @@ namespace Graphics
 		// RANKS
 		PLAYER_RANK_OWNER = 1,
 
+		//*--------------
+		// Not an actual entry.
+		// We use this for counting.
+		//*
+		PLAYER_ICON_COUNT,
+
 		TILE_DEFAULT,
 		CROSS,
 		PLAYER,
@@ -35,8 +41,18 @@ namespace Graphics
 		HITSPLAT,
 
 		//Entities
-		NPC_GOBLIN
+		NPC_GOBLIN,
+		
+		//*--------------
+		// Not an actual entry.
+		// We use this for counting.
+		//*
+		SPRITE_COUNT 
 	}; 
+
+	constexpr uint32_t SPRITE_COUNT = static_cast<uint32_t>(SpriteType::SPRITE_COUNT) - 1;
+
+	constexpr uint32_t ICON_COUNT = static_cast<uint32_t>(SpriteType::PLAYER_ICON_COUNT);
 
 	struct SpriteRenderData 
 	{

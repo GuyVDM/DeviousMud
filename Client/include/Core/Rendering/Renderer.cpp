@@ -100,6 +100,31 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 	m_sprites[_spritetype] = new SDL_SpriteDetails(surface, texture, _maxframecount);
 }
 
+SDL_Texture* Graphics::Renderer::load_texture_of_sprite(const Graphics::SpriteType& _spritetype)
+{
+	int32_t width, height, access;
+	Uint32 format;
+
+	SDL_Texture* spriteTex = m_sprites[_spritetype]->get_texture();
+
+	SDL_QueryTexture(spriteTex, &format, &access, &width, &height);
+
+	SDL_Texture* newTexture = SDL_CreateTexture(m_renderer, format, SDL_TEXTUREACCESS_TARGET, width, height);
+	if (!newTexture)
+	{
+		DEVIOUS_ERR("SDL_CreateTexture Error: " << SDL_GetError());
+		return NULL;
+	}
+
+	SDL_SetRenderTarget(m_renderer, newTexture);
+
+	SDL_RenderCopy(m_renderer, spriteTex, NULL, NULL);
+
+	SDL_SetRenderTarget(m_renderer, NULL);
+
+	return newTexture;
+}
+
 void Graphics::Renderer::start_frame()
 {
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
@@ -308,7 +333,7 @@ void Graphics::Renderer::end_frame()
 						get_viewport_size(&windowSize_w, &windowSize_h);
 					}
 
-					const float vpWidthHalfExtends = (float)windowSize_w / 2.0f;
+					const float vpWidthHalfExtends  = (float)windowSize_w / 2.0f;
 					const float vpHeightHalfExtends = (float)windowSize_h / 2.0f;
 					const Utilities::vec2 camPos = m_camera->get_position();
 
