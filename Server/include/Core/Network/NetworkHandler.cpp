@@ -82,7 +82,7 @@ void NetworkHandler::start_ticking()
 
 		ENetEvent e;
 
-		if(enet_host_service(m_server, &e, 0) > 0) //Try and catch packets before handling them
+		if(enet_host_service(m_server, &e, 600) > 0) //Try and catch packets before handling them
 		{
 			switch (e.type)
 			{
