@@ -153,5 +153,59 @@
     <ClInclude Include="include\Core\UI\UIComponent\Chatbox\CharacterMap\CharacterMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\sprites\Tile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\entity\0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\skill\skillcontainer.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\tabs\icons\default.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\tabs\icons\skills.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\tabs\tab.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\backdrop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\box.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\chatbox.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hud\frame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\Cross.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\sprites\hitsplat.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\fonts\runescape_uf.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\sprites\hud\tabs\Inventory_reference.pdn" />
+    <None Include="assets\sprites\hud\tabs\tab.pdn" />
+    <None Include="assets\sprites\hud\backdrop.pdn" />
   </ItemGroup>
 </Project>

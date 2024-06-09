@@ -250,6 +250,32 @@
     <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h" />
     <ClInclude Include="include\Core\Util\TimerHandler.h" />
     <ClInclude Include="include\precomp.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\sprites\Cross.png" />
+    <Image Include="assets\sprites\entity\0.png" />
+    <Image Include="assets\sprites\hitsplat.png" />
+    <Image Include="assets\sprites\hud\backdrop.png" />
+    <Image Include="assets\sprites\hud\box.png" />
+    <Image Include="assets\sprites\hud\chatbox.png" />
+    <Image Include="assets\sprites\hud\frame.png" />
+    <Image Include="assets\sprites\hud\skill\skillcontainer.png" />
+    <Image Include="assets\sprites\hud\tabs\icons\default.png" />
+    <Image Include="assets\sprites\hud\tabs\icons\skills.png" />
+    <Image Include="assets\sprites\hud\tabs\tab.png" />
+    <Image Include="assets\sprites\Tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\fonts\runescape_uf.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\sprites\hud\backdrop.pdn" />
+    <None Include="assets\sprites\hud\tabs\Inventory_reference.pdn" />
+    <None Include="assets\sprites\hud\tabs\tab.pdn" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

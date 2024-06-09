@@ -99,16 +99,16 @@ void HUDLayer::create_hud()
 
 	// HUD Tab Menu
 	{
-		Utilities::ivec2 viewportSize = Utilities::ivec2(0); 
+		Utilities::ivec2 viewportSize = Utilities::ivec2(0);
 		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 
 		component = UIComponent::create_component<HUDTabMenu>
-		(
-			UIComponent::Position(0.0f),
-			UIComponent::Size(336.0f * 0.625f, 504.0f * 0.625f),
-			SpriteType::HUD_BACKDROP,
-			true
-		);
+			(
+				UIComponent::Position(0.0f),
+				UIComponent::Size(336.0f * 0.625f, 504.0f * 0.625f),
+				SpriteType::HUD_BACKDROP,
+				true
+			);
 
 		const Rect boundingRect = component->get_bounding_rect();
 		const Utilities::vec2 size = boundingRect.get_size();
@@ -122,12 +122,12 @@ void HUDLayer::create_hud()
 	//// Options Menu
 	{
 		component = UIComponent::create_component<OptionsTab>
-		(
-			UIComponent::Position(100.0f, 100.0f),
-			UIComponent::Size(100.0f, 50.0f),
-			SpriteType::HUD_OPTIONS_BOX,
-			true
-		);
+			(
+				UIComponent::Position(100.0f, 100.0f),
+				UIComponent::Size(100.0f, 50.0f),
+				SpriteType::HUD_OPTIONS_BOX,
+				true
+			);
 	}   m_canvas->add_child(component);
 
 	// Chatbox
@@ -139,12 +139,12 @@ void HUDLayer::create_hud()
 		Utilities::vec2 bottomLeft = Utilities::vec2(0.0f, viewportSize.y) - Utilities::vec2(0.0f, size.y);
 
 		component = UIComponent::create_component<Chatbox>
-		(
-			bottomLeft,
-			size,
-			SpriteType::HUD_CHATBOX,
-			true
-		);
+			(
+				bottomLeft,
+				size,
+				SpriteType::HUD_CHATBOX,
+				true
+			);
 		component->set_anchor(e_AnchorPreset::BOTTOM_LEFT);
 	}   m_canvas->add_child(component);
 }

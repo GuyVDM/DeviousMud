@@ -36,6 +36,9 @@ namespace Graphics
 		// HUD ICONS
 		HUD_ICON_PLACEHOLDER,
 		HUD_ICON_SKILLS,
+		
+		//Tab specifics,
+		SKILL_BACKGROUND,
 
 		// MISC
 		HITSPLAT,

@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "Shared\Shared.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{DCF51E01-3554-46D3-90BE-0ABE7556A075}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DMInstaller", "DMInstaller\DMInstaller.vdproj", "{A559B2D1-1A20-4C38-AB3E-6F3371311396}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{DCF51E01-3554-46D3-90BE-0ABE7556A075}.Release|x64.Build.0 = Release|x64
 		{DCF51E01-3554-46D3-90BE-0ABE7556A075}.Release|x86.ActiveCfg = Release|Win32
 		{DCF51E01-3554-46D3-90BE-0ABE7556A075}.Release|x86.Build.0 = Release|Win32
+		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Debug|x64.ActiveCfg = Debug
+		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Debug|x86.ActiveCfg = Debug
+		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Release|x64.ActiveCfg = Release
+		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -31,9 +31,11 @@ NetworkHandler NetworkHandler::create_host(const char* _address, int32_t _port, 
 	ENetAddress connection;
 	ENetHost*   server;
 
-	enet_address_set_host(&connection, _address);
 	connection.port = _port;
+	connection.m_host = ENET_HOST_ANY;
+	//enet_address_set_host(&connection, _address);
 
+	DEVIOUS_EVENT("Trying to connect to: [" << _address << ":" << _port << "]...");
 	server = enet_host_create(&connection,
 							   _maxconnections,
 							   _channels,
@@ -42,7 +44,7 @@ NetworkHandler NetworkHandler::create_host(const char* _address, int32_t _port, 
 
 	if (server == NULL)
 	{
-		fprintf(stderr, "An error occurred while trying to create a ENet Server Host. \n");
+		DEVIOUS_ERR("An error occurred while trying to create a ENet Server Host. \n");
 		exit(EXIT_FAILURE);
 	}
 

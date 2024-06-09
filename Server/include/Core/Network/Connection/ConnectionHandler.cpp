@@ -141,7 +141,6 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	{
 
 		const std::string name = "Player" ;
-		DEVIOUS_LOG(name);
 
 		auto player = std::static_pointer_cast<Player>
 		(

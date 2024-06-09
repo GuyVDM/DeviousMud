@@ -1,4 +1,5 @@
 #include "precomp.h"
+
 #include "Core/Network/Client/ClientWrapper.h"
 
 #include <enet/enet.h>
@@ -12,7 +13,9 @@ int main(int argc, char** argv)
 	}
 
 	bool valid_connection = false;
-	Client c = Client::connect_localhost(valid_connection);
+
+	Client c = Client::connect_host(valid_connection, "83.82.219.73", 25565);
+	//Client c = Client::connect_localhost(valid_connection);
 
 	if (!valid_connection) 
 	{

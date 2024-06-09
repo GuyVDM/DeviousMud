@@ -43,6 +43,8 @@ Client Client::connect_localhost(bool& _succeeded)
 
 Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 {
+	DEVIOUS_EVENT("Trying to connect to: [" << _ip << ":" << _port << "].");
+
 	const enet_uint32 CONNECTION_TIME_MS = 5000;
 
 	ENetHost* m_host;
@@ -63,8 +65,11 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		exit(EXIT_FAILURE);
 	}
 
-	enet_address_set_host(&address,_ip);
-	address.port = _port;
+	if (_port > -1)
+	{
+		enet_address_set_host(&address, _ip);
+		address.port = _port;
+	}
 
 	c.m_peer = enet_host_connect(m_host, &address, 2, 0);
 
@@ -79,7 +84,7 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 	if (enet_host_service(m_host, &e, CONNECTION_TIME_MS) > 0 && e.type == ENET_EVENT_TYPE_CONNECT)
 	{
 		_succeeded = true;
-		puts("Connection to 127.0.0.1:1234 succeeded.\n");
+		DEVIOUS_EVENT("Connection to: [" << _ip << ":" << _port << "] succeeded.");
 		c.init();
 	}
 	else
@@ -88,7 +93,7 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		/* received. Reset the peer in the event the 5 seconds   */
 		/* had run out without any significant event.            */
 		enet_peer_reset(c.m_peer);
-		puts("Connection to 127.0.0.1:1234 failed.\n");
+		DEVIOUS_ERR("Failed to connect to: [" << _ip << ":" << _port << "].");
 	}
 
 	return c;

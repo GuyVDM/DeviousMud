@@ -82,14 +82,14 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 
 	const char* asset_path = m_path.c_str();
 
-	assert(m_sprites.find(_spritetype) == m_sprites.end());
+	DEVIOUS_ASSERT(m_sprites.find(_spritetype) == m_sprites.end());
 	SDL_Surface* surface = IMG_Load(asset_path);
 
 	//Check if the image got loaded correctly.
 	if (surface == nullptr)
 	{
 		fprintf(stderr, "Error loading image: %s\n", IMG_GetError());
-		assert(surface == nullptr);
+		DEVIOUS_ASSERT(surface == nullptr);
 	}
 
 	//Store the surface details and lock it behind the sprite type.

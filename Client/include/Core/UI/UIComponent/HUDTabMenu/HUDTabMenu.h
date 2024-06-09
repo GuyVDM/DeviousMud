@@ -33,6 +33,9 @@ class HUDTabMenu : public UIComponent
 public:
 	virtual ~HUDTabMenu() = default;
 
+protected:
+	virtual void on_new_parent();
+
 private:
 	using UIComponent::UIComponent;
 

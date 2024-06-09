@@ -70,10 +70,9 @@ void SimPosition::update()
 
 		const Utilities::vec2 END_TILE = Utilities::to_vec2(m_path[targetTileIndex]);
 
-		float SMOOTHED_TIMELINE = DMMath::smoothstep(0.0f, 1.0f, timeline); // Combine both smoothsteps
+		//float SMOOTHED_TIMELINE = DMMath::smoothstep(0.0f, 1.0f, timeline); // Combine both smoothsteps
 		
-		const float LOCAL_TIMELINE = (SMOOTHED_TIMELINE - (targetTileIndex * DURATION_TO_TILE)) / DURATION_TO_TILE;
-
+		const float LOCAL_TIMELINE = (timeline - (targetTileIndex * DURATION_TO_TILE)) / DURATION_TO_TILE;
 
 		m_currentPos = Utilities::vec2::lerp(START_TILE, END_TILE, LOCAL_TIMELINE);
 	}

@@ -69,6 +69,10 @@ void HUDTab::on_left_click()
 	m_sprite.color = { 255, 0, 0, 255};
 }
 
+void HUDTabMenu::on_new_parent()
+{
+}
+
 /// <summary>
 /// MAIN
 /// </summary>
@@ -247,6 +251,7 @@ void HUDTabMenu::init()
 				SpriteType::HUD_FRAME
 			);
 		component->set_anchor(e_AnchorPreset::CENTER);
+		component->get_sprite().bIsFlipped = true;
 		add_child(component);
 	}
 }

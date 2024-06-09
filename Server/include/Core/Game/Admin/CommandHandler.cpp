@@ -137,7 +137,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 				{
 					std::shared_ptr<Player> target = optTarget.value();
 					_player->teleport_to(target->position);
-					_player->whisper("<col=#FF0000>[Server]: Teleported to <col=#000000>" + target->get_shown_name());
+					_player->whisper("<col=#FF0000>[Server]: <col=#000000>Teleported to col=#FF0000>" + target->get_shown_name());
 					return true;
 				}
 			}
@@ -220,6 +220,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 						if (rank > -1 && rank < static_cast<int32_t>(Player::e_PlayerRights::RankCount))
 						{
 							Player::e_PlayerRights newRights = static_cast<Player::e_PlayerRights>(rank);
+
 							target->set_player_rights(newRights);
 							_player->whisper("<col=#FF0000>[Server]: <col=#000000>Rights have been updated.");
 							return true;

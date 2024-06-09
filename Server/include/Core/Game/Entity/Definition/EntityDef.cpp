@@ -579,16 +579,21 @@ const Player::e_PlayerRights Player::get_player_rights() const
 
 void Player::set_player_rights(const Player::e_PlayerRights _eRights)
 {
-	int32_t previousRoughts = static_cast<int32_t>(m_playerRights);
+	int32_t previousRights = static_cast<int32_t>(m_playerRights);
 	int32_t newRights      = static_cast<int32_t>(_eRights);
 
-	if (previousRoughts != newRights)
+	if (previousRights != newRights)
 	{
 		m_playerRights = _eRights;
 
-		std::string upgradeString = previousRoughts > newRights ? "demoted" : "promoted";
-
-		whisper("<col=#FF0000>[Server]: <col=#000000>You have been " + upgradeString + " to : <icon=" + std::to_string(newRights) + '>');
+		if(previousRights > newRights) 
+		{
+			whisper("<col=#FF0000>[Server]: <col=#000000>You have been demoted.");
+		}
+		else 
+		{
+			whisper("<col=#FF0000>[Server]: <col=#000000>You have been promoted to : <icon=" + std::to_string(newRights) + '>');
+		}
 
 		broadcast_name();
 	}
