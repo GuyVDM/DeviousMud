@@ -30,7 +30,7 @@ namespace Server
 		/// Removes any data associated regarding a specific client.
 		/// </summary>
 		/// <param name=""></param>
-		void disconnect_client(const enet_uint32& _clienthandle);
+		void flag_for_disconnect(const enet_uint32& _clienthandle);
 
 		/// <summary>
 		/// Try returning a existing client peer based on the index.
@@ -70,6 +70,12 @@ namespace Server
 		/// </summary>
 		void update_idle_timers();
 
+		/// <summary>
+		/// Removes any data associated regarding a specific client.
+		/// </summary>
+		/// <param name=""></param>
+		void disconnect_client(const enet_uint32& _clienthandle);
+
 
 	public:
 		ConnectionHandler() = default;
@@ -79,6 +85,7 @@ namespace Server
 		ConnectionHandler(ConnectionHandler&) = delete;
 
 	private:
+		std::vector<enet_uint32>                       m_pendingDisconnects;
 		std::vector<enet_uint32>                       m_clientHandles;
 		std::unordered_map<enet_uint32, RefClientInfo> m_clientInfo;
 

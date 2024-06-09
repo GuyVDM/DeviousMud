@@ -257,7 +257,10 @@ void WorldEntity::move_to(const Utilities::ivec2 _pos)
         m_sprite.bIsFlipped = _pos.x < get_position().x;
         set_position(Utilities::to_vec2(_pos));
 
-        Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
+        if (!Animator::is_playing(m_sprite, m_NPCDefinition.walkingAnim))
+        {
+            Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
+        }
     }
 }
 

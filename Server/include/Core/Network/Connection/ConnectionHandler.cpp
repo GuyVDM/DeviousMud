@@ -22,8 +22,6 @@ void Server::ConnectionHandler::update_idle_timers()
 {
 	ENetHost* server = g_globals.networkHandler->get_server_host();
 
-	std::vector<enet_uint32> toDisconnect;
-
 	for (auto& pair : m_clientInfo)
 	{
 		RefClientInfo clientInfo = pair.second;
@@ -39,7 +37,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
-			toDisconnect.push_back((enet_uint32)clientInfo->clientId);
+			m_pendingDisconnects.push_back((enet_uint32)clientInfo->clientId);
 			DEVIOUS_LOG("Registered client: " << clientInfo->clientId << " for disconnect.");
 			continue;
 		}
@@ -65,19 +63,21 @@ void Server::ConnectionHandler::update_idle_timers()
 			if (clientInfo->ticksSinceLastResponse >= MAX_TICK_INTERVAL_NO_RESPONSE)
 			{
 				DEVIOUS_LOG("Couldnt retrieve any sign of connection from " << clientInfo->clientId << ". Disconnecting...");
-				toDisconnect.push_back((enet_uint32)clientInfo->clientId);
+				m_pendingDisconnects.push_back((enet_uint32)clientInfo->clientId);
 				continue;
 			}
 		}
 	}
 
 	//Disconnect all timed out client handles.
-	if(toDisconnect.size() > 0) 
+	if(m_pendingDisconnects.size() > 0)
 	{
-		for (enet_uint32 clientHandle : toDisconnect) 
+		for (enet_uint32 clientHandle : m_pendingDisconnects)
 		{
 			disconnect_client(clientHandle);
 		}
+
+		m_pendingDisconnects.clear();
 	}
 }
 
@@ -139,14 +139,12 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 	//Set temporary name for the player.
 	{
-
-		const std::string name = "Player" ;
-
 		auto player = std::static_pointer_cast<Player>
 		(
 			eHandler->get_entity(newClient->clientId).value()
 		);
 
+		const std::string name = "Player" ;
 		player->set_name(name);
 		player->whisper("Welcome to my DeviousMUD 2D Clone!");
 		player->whisper("Use ::changename [name] to change your name ingame.");
@@ -198,6 +196,11 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 
 		PacketHandler::send_packet<Packets::s_CreateEntity>(&packet, newClient->peer, server, 0, ENET_PACKET_FLAG_RELIABLE);
 	}
+}
+
+void Server::ConnectionHandler::flag_for_disconnect(const enet_uint32& _clienthandle)
+{
+	m_pendingDisconnects.push_back(_clienthandle);
 }
 
 void Server::ConnectionHandler::disconnect_client(const enet_uint32& _clienthandle)

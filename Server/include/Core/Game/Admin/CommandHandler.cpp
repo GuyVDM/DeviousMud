@@ -20,7 +20,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 	{
 		const std::string command = _string.substr(commandPrefix.length());
 
-		//*
+		//*----------------------------------------------------------------
 		// Store all potential command specific parameters into the vector
 		//*
 		std::vector<std::string> commandArgs;
@@ -41,8 +41,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 			{
 				int32_t x, y;
 				
-				if(try_parse_as_int(commandArgs[1], x) &&
-				   try_parse_as_int(commandArgs[2], y)) 
+				if(try_parse_as_int(commandArgs[1], x) && try_parse_as_int(commandArgs[2], y)) 
 				{
 					_player->teleport_to(Utilities::ivec2(x, y));
 					_player->whisper("<col=#FF0000>[Server]: <col=#000000>Teleported player to: <col=#FF0000>" + std::to_string(x) + ", " + std::to_string(y));
@@ -286,7 +285,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 					{
 						_player->whisper("<col=#FF0000>[Server]: <col=#000000>Succesfully disconnected: <col=#FF0000>" + target->get_shown_name() + '.');
 						uint64_t clientHandle64 = g_globals.entityHandler->transpose_player_to_client_handle(target->uuid).value();
-						g_globals.connectionHandler->disconnect_client(static_cast<enet_uint32>(clientHandle64));
+						g_globals.connectionHandler->flag_for_disconnect(static_cast<enet_uint32>(clientHandle64));
 						return true;
 					}
 				}

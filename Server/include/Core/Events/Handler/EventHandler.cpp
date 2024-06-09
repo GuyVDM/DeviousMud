@@ -45,7 +45,7 @@ void Server::EventHandler::queue_incoming_event(ENetEvent* _event, RefClientInfo
 		case e_PacketInterpreter::PACKET_REMOVE_ENTITY:
 		{
 			std::shared_ptr<Server::ConnectionHandler> cHandler = g_globals.connectionHandler;
-			cHandler->disconnect_client((enet_uint32)_clientInfo->clientId);
+			cHandler->flag_for_disconnect((enet_uint32)_clientInfo->clientId);
 		}
 		return;
 
