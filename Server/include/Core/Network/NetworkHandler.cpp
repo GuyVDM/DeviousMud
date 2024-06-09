@@ -111,13 +111,14 @@ void NetworkHandler::start_ticking()
 		//*----
 		// Tick
 		//*
-		if(ticktimer > m_tickDuration) 
+		if (ticktimer > m_tickDuration)
 		{
 			ticktimer = 0.0f;
 			{
 				Server::EventHandler::handle_queud_events();
 				connectionHandler->update_idle_timers();
 				entityHandler->tick();
+			}
 		}
 	}
 }
