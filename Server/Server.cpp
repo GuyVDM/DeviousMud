@@ -15,6 +15,7 @@ int main(int argc, char** argv)
 
 	atexit(enet_deinitialize);
 
+	//NetworkHandler server = NetworkHandler::create_host("192.168.178.44", 25565, 100);
 	NetworkHandler server = NetworkHandler::create_local_host();
 	server.start_ticking();
 

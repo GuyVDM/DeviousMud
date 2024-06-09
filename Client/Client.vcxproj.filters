@@ -150,9 +150,6 @@
     <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\CharacterMap\CharacterMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

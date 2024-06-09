@@ -235,7 +235,6 @@
     <ClInclude Include="include\Core\Rendering\Renderer.h" />
     <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
     <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\CharacterMap\CharacterMap.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h" />
     <ClInclude Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.h" />
