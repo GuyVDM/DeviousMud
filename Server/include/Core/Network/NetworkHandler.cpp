@@ -82,7 +82,7 @@ void NetworkHandler::start_ticking()
 
 		ENetEvent e;
 
-		if(enet_host_service(m_server, &e, 600) > 0) //Try and catch packets before handling them
+		if(enet_host_service(m_server, &e, 10) > 0) //Try and catch packets before handling them
 		{
 			switch (e.type)
 			{
@@ -108,16 +108,16 @@ void NetworkHandler::start_ticking()
 			}
 		}
 
+		//*----
+		// Tick
+		//*
 		if(ticktimer > m_tickDuration) 
 		{
 			ticktimer = 0.0f;
-
-			//Tick
 			{
 				Server::EventHandler::handle_queud_events();
 				connectionHandler->update_idle_timers();
 				entityHandler->tick();
-			}
 		}
 	}
 }
