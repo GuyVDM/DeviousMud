@@ -275,6 +275,12 @@ static const NPC get_entity_data(const uint8_t _id)
 		}
 		break;
 
+		case 2:
+		{
+			data.skills[e_skills::HITPOINTS].level = 5;
+		}
+		break;
+
 		default:
 		{
 			data.skills[e_skills::HITPOINTS].level = 1;

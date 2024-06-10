@@ -45,6 +45,7 @@ namespace Graphics
 
 		//Entities
 		NPC_GOBLIN,
+		NPC_INU,
 		
 		//*--------------
 		// Not an actual entry.

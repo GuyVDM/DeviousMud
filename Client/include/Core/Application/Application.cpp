@@ -88,6 +88,7 @@ void Application::load_sprites()
 	//Load in all entities
 	{
 		renderer->load_and_bind_surface("entity/0.png", Graphics::SpriteType::NPC_GOBLIN, 50);
+		renderer->load_and_bind_surface("entity/1.png", Graphics::SpriteType::NPC_INU, 18);
 	}
 }
 

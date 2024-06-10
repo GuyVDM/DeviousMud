@@ -54,6 +54,17 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 		npc.deathAnim   = e_AnimationType::GOBLIN_DEATH;
 		break;
 
+	case 2:
+		npc.name = "Inu";
+		npc.combatLevel = 3;
+		npc.size = 1;
+		npc.sprite = SpriteType::NPC_INU;
+		npc.idleAnim = e_AnimationType::INU_IDLE;
+		npc.walkingAnim = e_AnimationType::INU_WALK;
+		npc.attackAnim = e_AnimationType::INU_ATTACK;
+		npc.deathAnim = e_AnimationType::INU_DEATH;
+		break;
+
 	default:
 		npc.name = "null";
 		npc.combatLevel = 0;

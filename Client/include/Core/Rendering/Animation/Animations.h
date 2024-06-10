@@ -21,7 +21,12 @@ enum class e_AnimationType : uint8_t
     GOBLIN_IDLE,
     GOBLIN_WALK,
     GOBLIN_ATTACK,
-    GOBLIN_DEATH
+    GOBLIN_DEATH,
+
+    INU_IDLE,
+    INU_ATTACK,
+    INU_WALK,
+    INU_DEATH
 };
 
 struct Animations
@@ -43,7 +48,12 @@ struct Animations
              { e_AnimationType::GOBLIN_IDLE,             Animation2D(0 , 19)},
              { e_AnimationType::GOBLIN_WALK,             Animation2D(20, 31)},
              { e_AnimationType::GOBLIN_ATTACK,           Animation2D(32, 39)},
-             { e_AnimationType::GOBLIN_DEATH,            Animation2D(40, 49)}
+             { e_AnimationType::GOBLIN_DEATH,            Animation2D(40, 49)},
+
+             { e_AnimationType::INU_IDLE,             Animation2D(8 , 11) },
+             { e_AnimationType::INU_WALK,             Animation2D(12, 17)},
+             { e_AnimationType::INU_ATTACK,           Animation2D(0, 3)},
+             { e_AnimationType::INU_DEATH,            Animation2D(4, 7)}
 
         };
 
