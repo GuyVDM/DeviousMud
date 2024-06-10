@@ -8,10 +8,13 @@ class Canvas final : public UIComponent
 public:
 	static std::shared_ptr<Canvas> create_canvas();
 
-	virtual ~Canvas() = default;
+	virtual ~Canvas();
 
 private:
 	using UIComponent::UIComponent;
 
 	virtual void init();
+
+private:
+	DM::Utils::UUID m_resizecallbackUUID = 0;
 };

@@ -15,8 +15,20 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_01FD7ECEB73C427DB493D25B70733808"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0CAC799450E025EE7FA2A648AB15B3F9"
         "OwnerKey" = "8:_1972FC7F99F54E9D96B6C7D4A04133EC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_12C64FE01CFD436CA1093FDBB57952B5"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -27,13 +39,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1DDB44DF3D8145D08D94A882FC4CD9C6"
+        "MsmKey" = "8:_1C13CBA698D14E38974F2C7E6DE354E9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_23675692DBDD4DFAB18F6D41510E4249"
+        "MsmKey" = "8:_1C2A714CC61D460E850AA44C39902FA5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -45,25 +57,31 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_37241634C69E4D85A7434DC6497DA1ED"
+        "MsmKey" = "8:_35D2A0A5DF0D40199EBB6FC2763B5FCE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_42DE78EA7AAC462F8BCC16C61B5DF239"
+        "MsmKey" = "8:_3F63BA6E0DBC4BA6BBA26CC46E97FDDA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4468ED84A63F43879967C265857294EE"
+        "MsmKey" = "8:_4B545B23D4AE463FA57F57DE0F4321B0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_5BE05F250F4E41DC8280622433B468B5"
+        "MsmKey" = "8:_504683EAD1EA409E90EAE1002BF09BA2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5CD9F8C50C734DD6AFF70853B1B1B0FE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -75,37 +93,43 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_63C70371A9584B0FA34729C052C9AC01"
+        "MsmKey" = "8:_69491E8A7CCF4D9BB6C02F6CCC0E63C6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_78C140E5CDF34B4AB14307F575D49DB2"
+        "MsmKey" = "8:_6A1D9363E5B14CF28CE6FA41C0B76F98"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7B39958AAAB94C49A93738D1F6810C86"
+        "MsmKey" = "8:_6AEFF97EFBFB431985F16402641C347B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_80310FF9C83C44E0BA9E9A12E23DEEB1"
+        "MsmKey" = "8:_6BCAD64A04484B07A540C22CFD048116"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_81409CC9160F4046B7A8002548267D97"
+        "MsmKey" = "8:_79376968DB2E46969051130E52CC9EE5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_8775FDB948004727B6AE560B6302BBF5"
+        "MsmKey" = "8:_850FC0CBDD71444EB439B083915408DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8FE93D034DC9463E97BE96B8D499DE12"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -113,18 +137,6 @@
         {
         "MsmKey" = "8:_954641A4FBB671849790C6C6ACB540E7"
         "OwnerKey" = "8:_1972FC7F99F54E9D96B6C7D4A04133EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9603025E931148F4A28EE32478D37FEA"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9CCC3DA247FF43FEA8201D855A35E07B"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -147,13 +159,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C822061A30654CBFA3A102C1ACC9986C"
+        "MsmKey" = "8:_C4AAC794F61B47AB9BEAF82E93ACF260"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DFBFB252258F4D54900B7D53DBC3CFA7"
+        "MsmKey" = "8:_C670C6251EA24B8E8A14A275B8768979"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E82DD2C233924380A58763FE0CE475AF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -161,18 +179,6 @@
         {
         "MsmKey" = "8:_EFE52E90CF1AB7EB941CAE6A3956E887"
         "OwnerKey" = "8:_1972FC7F99F54E9D96B6C7D4A04133EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F2170B89BC364AC1BD0E6C5B06D137C3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F2D8F52482A24CDB8F792C1C699DB600"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -193,6 +199,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -209,6 +223,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -230,6 +252,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01FD7ECEB73C427DB493D25B70733808"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\tab.pdn"
+            "TargetName" = "8:tab.pdn"
+            "Tag" = "8:"
+            "Folder" = "8:_67DE2DA07D2A49E6942050C8EBC035EF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0CAC799450E025EE7FA2A648AB15B3F9"
             {
             "SourcePath" = "8:ucrtbased.dll"
@@ -250,12 +292,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1DDB44DF3D8145D08D94A882FC4CD9C6"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_12C64FE01CFD436CA1093FDBB57952B5"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\tab.png"
-            "TargetName" = "8:tab.png"
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\Tile.png"
+            "TargetName" = "8:Tile.png"
             "Tag" = "8:"
-            "Folder" = "8:_419A351F02524E7F956402BCE3574A7E"
+            "Folder" = "8:_A68678A9C4B849459BB0A6EEAB3C7C4F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -270,12 +312,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_23675692DBDD4DFAB18F6D41510E4249"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1C13CBA698D14E38974F2C7E6DE354E9"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\backdrop.png"
-            "TargetName" = "8:backdrop.png"
+            "SourcePath" = "8:..\\Client\\assets\\fonts\\runescape_uf.ttf"
+            "TargetName" = "8:runescape_uf.ttf"
             "Tag" = "8:"
-            "Folder" = "8:_FD3BFED5F00E4E428C266A7719539CD7"
+            "Folder" = "8:_383C357E0CEA473D92F85B522F085C25"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1C2A714CC61D460E850AA44C39902FA5"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\backdrop.pdn"
+            "TargetName" = "8:backdrop.pdn"
+            "Tag" = "8:"
+            "Folder" = "8:_69C3A5B3E02045ED9180D3E6CA372874"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -310,12 +372,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_37241634C69E4D85A7434DC6497DA1ED"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_35D2A0A5DF0D40199EBB6FC2763B5FCE"
             {
             "SourcePath" = "8:..\\Client\\assets\\sprites\\entity\\0.png"
             "TargetName" = "8:0.png"
             "Tag" = "8:"
-            "Folder" = "8:_2972498597704C129279F8CE7591AEE3"
+            "Folder" = "8:_36636DEC7AE1499F9454AF0513191378"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -330,12 +392,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_42DE78EA7AAC462F8BCC16C61B5DF239"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F63BA6E0DBC4BA6BBA26CC46E97FDDA"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\icons\\skills.png"
-            "TargetName" = "8:skills.png"
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\entity\\1.png"
+            "TargetName" = "8:1.png"
             "Tag" = "8:"
-            "Folder" = "8:_CE8AB250E17448288917C2EBA565CBD8"
+            "Folder" = "8:_36636DEC7AE1499F9454AF0513191378"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -350,12 +412,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4468ED84A63F43879967C265857294EE"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B545B23D4AE463FA57F57DE0F4321B0"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\icons\\default.png"
+            "TargetName" = "8:default.png"
+            "Tag" = "8:"
+            "Folder" = "8:_CD9194ECA08C45EC9CC1D9161881D9AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_504683EAD1EA409E90EAE1002BF09BA2"
             {
             "SourcePath" = "8:..\\Client\\assets\\sprites\\Cross.png"
             "TargetName" = "8:Cross.png"
             "Tag" = "8:"
-            "Folder" = "8:_F08714D966F64F5BBE84A9CAA50367F3"
+            "Folder" = "8:_A68678A9C4B849459BB0A6EEAB3C7C4F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -370,12 +452,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5BE05F250F4E41DC8280622433B468B5"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5CD9F8C50C734DD6AFF70853B1B1B0FE"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\frame.png"
-            "TargetName" = "8:frame.png"
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\player\\rank_owner.png"
+            "TargetName" = "8:rank_owner.png"
             "Tag" = "8:"
-            "Folder" = "8:_FD3BFED5F00E4E428C266A7719539CD7"
+            "Folder" = "8:_5AEF83E729C84B5590593B3A0E97C6E4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -410,52 +492,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_63C70371A9584B0FA34729C052C9AC01"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\backdrop.pdn"
-            "TargetName" = "8:backdrop.pdn"
-            "Tag" = "8:"
-            "Folder" = "8:_FD3BFED5F00E4E428C266A7719539CD7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_78C140E5CDF34B4AB14307F575D49DB2"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\fonts\\runescape_uf.ttf"
-            "TargetName" = "8:runescape_uf.ttf"
-            "Tag" = "8:"
-            "Folder" = "8:_E9A42615145F4FE8AB244CE5C55A9B5A"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7B39958AAAB94C49A93738D1F6810C86"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_69491E8A7CCF4D9BB6C02F6CCC0E63C6"
             {
             "SourcePath" = "8:..\\Client\\assets\\sprites\\player\\Player_Sheet.png"
             "TargetName" = "8:Player_Sheet.png"
             "Tag" = "8:"
-            "Folder" = "8:_2F2A787218C142419129B39192E013A7"
+            "Folder" = "8:_5AEF83E729C84B5590593B3A0E97C6E4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -470,52 +512,112 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_80310FF9C83C44E0BA9E9A12E23DEEB1"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\player\\rank_owner.png"
-            "TargetName" = "8:rank_owner.png"
-            "Tag" = "8:"
-            "Folder" = "8:_2F2A787218C142419129B39192E013A7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81409CC9160F4046B7A8002548267D97"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hitsplat.png"
-            "TargetName" = "8:hitsplat.png"
-            "Tag" = "8:"
-            "Folder" = "8:_F08714D966F64F5BBE84A9CAA50367F3"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8775FDB948004727B6AE560B6302BBF5"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A1D9363E5B14CF28CE6FA41C0B76F98"
             {
             "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\Inventory_reference.pdn"
             "TargetName" = "8:Inventory_reference.pdn"
             "Tag" = "8:"
-            "Folder" = "8:_419A351F02524E7F956402BCE3574A7E"
+            "Folder" = "8:_67DE2DA07D2A49E6942050C8EBC035EF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6AEFF97EFBFB431985F16402641C347B"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\frame.png"
+            "TargetName" = "8:frame.png"
+            "Tag" = "8:"
+            "Folder" = "8:_69C3A5B3E02045ED9180D3E6CA372874"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6BCAD64A04484B07A540C22CFD048116"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\icons\\skills.png"
+            "TargetName" = "8:skills.png"
+            "Tag" = "8:"
+            "Folder" = "8:_CD9194ECA08C45EC9CC1D9161881D9AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_79376968DB2E46969051130E52CC9EE5"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\skill\\skillcontainer.png"
+            "TargetName" = "8:skillcontainer.png"
+            "Tag" = "8:"
+            "Folder" = "8:_392770E945C24E0DB5F806219EED816D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_850FC0CBDD71444EB439B083915408DF"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hitsplat.png"
+            "TargetName" = "8:hitsplat.png"
+            "Tag" = "8:"
+            "Folder" = "8:_A68678A9C4B849459BB0A6EEAB3C7C4F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8FE93D034DC9463E97BE96B8D499DE12"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\backdrop.png"
+            "TargetName" = "8:backdrop.png"
+            "Tag" = "8:"
+            "Folder" = "8:_69C3A5B3E02045ED9180D3E6CA372874"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -548,46 +650,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9603025E931148F4A28EE32478D37FEA"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\tab.pdn"
-            "TargetName" = "8:tab.pdn"
-            "Tag" = "8:"
-            "Folder" = "8:_419A351F02524E7F956402BCE3574A7E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9CCC3DA247FF43FEA8201D855A35E07B"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\skill\\skillcontainer.png"
-            "TargetName" = "8:skillcontainer.png"
-            "Tag" = "8:"
-            "Folder" = "8:_AF03F3A171444E0894B215A2C90359E5"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9CD5CADAA87A457B975BC3E2C1FDCAD2"
@@ -650,12 +712,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C822061A30654CBFA3A102C1ACC9986C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C4AAC794F61B47AB9BEAF82E93ACF260"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\chatbox.png"
-            "TargetName" = "8:chatbox.png"
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\box.png"
+            "TargetName" = "8:box.png"
             "Tag" = "8:"
-            "Folder" = "8:_FD3BFED5F00E4E428C266A7719539CD7"
+            "Folder" = "8:_69C3A5B3E02045ED9180D3E6CA372874"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -670,12 +732,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DFBFB252258F4D54900B7D53DBC3CFA7"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C670C6251EA24B8E8A14A275B8768979"
             {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\Tile.png"
-            "TargetName" = "8:Tile.png"
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\chatbox.png"
+            "TargetName" = "8:chatbox.png"
             "Tag" = "8:"
-            "Folder" = "8:_F08714D966F64F5BBE84A9CAA50367F3"
+            "Folder" = "8:_69C3A5B3E02045ED9180D3E6CA372874"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E82DD2C233924380A58763FE0CE475AF"
+            {
+            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\tab.png"
+            "TargetName" = "8:tab.png"
+            "Tag" = "8:"
+            "Folder" = "8:_67DE2DA07D2A49E6942050C8EBC035EF"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -708,46 +790,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2170B89BC364AC1BD0E6C5B06D137C3"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\box.png"
-            "TargetName" = "8:box.png"
-            "Tag" = "8:"
-            "Folder" = "8:_FD3BFED5F00E4E428C266A7719539CD7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2D8F52482A24CDB8F792C1C699DB600"
-            {
-            "SourcePath" = "8:..\\Client\\assets\\sprites\\hud\\tabs\\icons\\default.png"
-            "TargetName" = "8:default.png"
-            "Tag" = "8:"
-            "Folder" = "8:_CE8AB250E17448288917C2EBA565CBD8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
         }
@@ -788,97 +830,97 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_B375EF6920854631822B178F8C29BE95"
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_24616097483E42549795FD1B0E9A30FC"
                     {
                     "Name" = "8:assets"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
-                    "Property" = "8:_5671E87FF3C5471EA09CDC85720B4A67"
+                    "Property" = "8:_00AD4F629B324FDFB5345953EB6BC6D1"
                         "Folders"
                         {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_E9A42615145F4FE8AB244CE5C55A9B5A"
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_383C357E0CEA473D92F85B522F085C25"
                             {
                             "Name" = "8:fonts"
                             "AlwaysCreate" = "11:FALSE"
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
-                            "Property" = "8:_A1633A31B4D64F378E5FA9833BD7CBEF"
+                            "Property" = "8:_537D58A0BA0F47D78B9DB5A175218423"
                                 "Folders"
                                 {
                                 }
                             }
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_F08714D966F64F5BBE84A9CAA50367F3"
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_A68678A9C4B849459BB0A6EEAB3C7C4F"
                             {
                             "Name" = "8:sprites"
                             "AlwaysCreate" = "11:FALSE"
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
-                            "Property" = "8:_7FA1568BC8B24DBCA9E1428F3402CF5B"
+                            "Property" = "8:_31A2A30A0D9F435D867025068BB0E7D9"
                                 "Folders"
                                 {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_2972498597704C129279F8CE7591AEE3"
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_36636DEC7AE1499F9454AF0513191378"
                                     {
                                     "Name" = "8:entity"
                                     "AlwaysCreate" = "11:FALSE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
-                                    "Property" = "8:_C46BB300914F4532AF3964CE83182907"
+                                    "Property" = "8:_113945F7CCB14FE2976C1904BA6E5447"
                                         "Folders"
                                         {
                                         }
                                     }
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_2F2A787218C142419129B39192E013A7"
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_5AEF83E729C84B5590593B3A0E97C6E4"
                                     {
                                     "Name" = "8:player"
                                     "AlwaysCreate" = "11:FALSE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
-                                    "Property" = "8:_9CF9CB179EE24D36BC9EAD54CBB5214F"
+                                    "Property" = "8:_3EAFBD08BB5B429D9686D4858CAA0657"
                                         "Folders"
                                         {
                                         }
                                     }
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_FD3BFED5F00E4E428C266A7719539CD7"
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_69C3A5B3E02045ED9180D3E6CA372874"
                                     {
                                     "Name" = "8:hud"
                                     "AlwaysCreate" = "11:FALSE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
-                                    "Property" = "8:_09FDBCC012A241E2B14FAD3B45CD821D"
+                                    "Property" = "8:_0EAA4C62B1AB46B89FC5A91CE4F89713"
                                         "Folders"
                                         {
-                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_419A351F02524E7F956402BCE3574A7E"
-                                            {
-                                            "Name" = "8:tabs"
-                                            "AlwaysCreate" = "11:FALSE"
-                                            "Condition" = "8:"
-                                            "Transitive" = "11:FALSE"
-                                            "Property" = "8:_821E73C7EA1E4FBD90163678130E6D06"
-                                                "Folders"
-                                                {
-                                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_CE8AB250E17448288917C2EBA565CBD8"
-                                                    {
-                                                    "Name" = "8:icons"
-                                                    "AlwaysCreate" = "11:FALSE"
-                                                    "Condition" = "8:"
-                                                    "Transitive" = "11:FALSE"
-                                                    "Property" = "8:_975ACA1D73B148199DF5FB65F4E807DB"
-                                                        "Folders"
-                                                        {
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_AF03F3A171444E0894B215A2C90359E5"
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_392770E945C24E0DB5F806219EED816D"
                                             {
                                             "Name" = "8:skill"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
-                                            "Property" = "8:_15C98313985C43C98615C9AA37EF082A"
+                                            "Property" = "8:_DE8F65B478304110B1B11D3FFAE4B55C"
                                                 "Folders"
                                                 {
+                                                }
+                                            }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_67DE2DA07D2A49E6942050C8EBC035EF"
+                                            {
+                                            "Name" = "8:tabs"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_C6AE39F9CAAC4DAEAC160E73ED7F50AA"
+                                                "Folders"
+                                                {
+                                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_CD9194ECA08C45EC9CC1D9161881D9AB"
+                                                    {
+                                                    "Name" = "8:icons"
+                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "Property" = "8:_5E9E5FD3A3A14BFF81329A3DEE09F7FA"
+                                                        "Folders"
+                                                        {
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

@@ -11,6 +11,13 @@ std::shared_ptr<Canvas> Canvas::create_canvas()
 	return UIComponent::create_component<Canvas>(Utilities::vec2(0.0f), Utilities::vec2(0.0f), Graphics::SpriteType::NONE);
 }
 
+Canvas::~Canvas()
+{
+	auto renderer = g_globals.renderer.lock();
+
+	renderer->on_viewport_size_changed.remove_listener(m_resizecallbackUUID);
+}
+
 void Canvas::init()
 {
 	auto renderer = g_globals.renderer.lock();
@@ -23,7 +30,7 @@ void Canvas::init()
 	}
 
 	// Make it so that the canvas always scales to viewport
-	renderer->on_viewport_size_changed.add_listener
+	m_resizecallbackUUID = renderer->on_viewport_size_changed.add_listener
 	(
 		std::bind(&Canvas::set_size, this, std::placeholders::_1)
 	);
