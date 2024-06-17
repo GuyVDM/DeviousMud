@@ -306,6 +306,7 @@ bool CommandHandler::try_handle_as_command(std::shared_ptr<Player> _player, cons
 					{
 						Utilities::ivec2 playerPos = _player->position;
 
+						for(int i = 0; i < 40; i++)
 						g_globals.entityHandler->create_world_npc
 						(
 							static_cast<uint8_t>(npcId),

@@ -136,7 +136,7 @@ void HUDLayer::create_hud()
 		m_renderer->get_viewport_size(&viewportSize.x, &viewportSize.y);
 
 		Utilities::vec2 size = { 579.0f, 183.0f };
-		Utilities::vec2 bottomLeft = Utilities::vec2(0.0f, viewportSize.y) - Utilities::vec2(0.0f, size.y);
+		Utilities::vec2 bottomLeft = Utilities::vec2(0.0f, static_cast<float>(viewportSize.y)) - Utilities::vec2(0.0f, size.y);
 
 		component = UIComponent::create_component<Chatbox>
 			(

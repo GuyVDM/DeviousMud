@@ -133,7 +133,10 @@ void Graphics::Renderer::start_frame()
 
 void Graphics::Renderer::draw_rect(const Utilities::vec2 _pos, const Utilities::vec2 _size, SDL_Color _color, uint8_t _zOrder, bool _bScreenspace)
 {
-	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, _size.x, _size.y);
+	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 
+		static_cast<int>(_size.x),
+		static_cast<int>(_size.y)
+	);
 
 	//Create rect texture.
 	{

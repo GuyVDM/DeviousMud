@@ -98,7 +98,7 @@ void ENetPacketHandler::process_packet()
 		{
 			Packets::s_CreateEntity packet;
 			PacketHandler::retrieve_packet_data<Packets::s_CreateEntity>(packet, &m_event);
-			entityHandler->create_world_entity(packet.entityId, packet.npcId, Utilities::ivec2(packet.posX, packet.posY));
+			entityHandler->create_world_entity(packet.entityId, static_cast<uint8_t>(packet.npcId), Utilities::ivec2(packet.posX, packet.posY));
 			
 			RefEntity entity = entityHandler->get_entity(packet.entityId).value();
 			entity->set_visibility(packet.bIsHidden);

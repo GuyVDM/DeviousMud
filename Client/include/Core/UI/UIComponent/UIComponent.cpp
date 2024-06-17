@@ -25,7 +25,7 @@ void UIComponent::update()
 
 const int32_t UIComponent::get_child_count() const
 {
-    return m_children.size();
+    return static_cast<int32_t>(m_children.size());
 }
 
 
@@ -66,7 +66,9 @@ UIComponent::UIComponent(const Utilities::vec2& _pos, const Utilities::vec2& _si
 
 void UIComponent::on_cleanup()
 {
-    for (int i = toRemove.size() - 1; i >= 0; i--)
+    const int32_t removeSize = static_cast<int32_t>(toRemove.size()) - 1;
+
+    for (int32_t i = removeSize; i >= 0; i--)
     {
         if(toRemove[i]) 
         {
@@ -220,7 +222,7 @@ void UIComponent::remove_child(UIComponent* _component)
 
     if (it != m_children.end())
     {
-        const int32_t index = std::distance(m_children.begin(), it);
+        const int64_t index = std::distance(m_children.begin(), it);
         m_children.erase(std::remove(m_children.begin(), m_children.end(), m_children[index]), m_children.end());
         return;
     }

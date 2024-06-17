@@ -17,7 +17,7 @@ const std::vector<int>& Animation2D::get_keyframes() const
 
 const int32_t Animation2D::get_last_frame_index() const
 {
-	return m_keyframes.size() - 1;
+	return static_cast<int32_t>(m_keyframes.size()) - 1;
 }
 
 

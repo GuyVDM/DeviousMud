@@ -13,9 +13,12 @@ std::shared_ptr<Canvas> Canvas::create_canvas()
 
 Canvas::~Canvas()
 {
-	auto renderer = g_globals.renderer.lock();
+	if(!g_globals.renderer.expired()) 
+	{
+		auto renderer = g_globals.renderer.lock();
 
-	renderer->on_viewport_size_changed.remove_listener(m_resizecallbackUUID);
+		renderer->on_viewport_size_changed.remove_listener(m_resizecallbackUUID);
+	}
 }
 
 void Canvas::init()

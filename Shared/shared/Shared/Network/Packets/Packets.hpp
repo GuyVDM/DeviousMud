@@ -126,7 +126,7 @@ namespace Packets
 
 	struct s_TeleportEntity : public s_ActionPacket
 	{
-		int32_t x, y;
+		int32_t x = 0, y = 0;
 
 		template<class Archive>
 		void serialize(Archive& ar)
