@@ -204,7 +204,7 @@ public:
 	/// <summary>
 	/// The attack range of this NPC.
 	/// </summary>
-	uint8_t attackRange = 1;
+	uint8_t attackRange = 0;
 
 	/// <summary>
 	/// Whether this NPC is aggressive to players.

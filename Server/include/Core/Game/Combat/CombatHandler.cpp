@@ -163,21 +163,20 @@ void CombatHandler::queue_combat_packet(RefClientInfo _client, DM::Utils::UUID _
 	);
 }
 
-bool CombatHandler::in_range(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b, int32_t& attackRange)
+bool CombatHandler::in_range(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b, int32_t _attackRange)
 {
 	bool bRequireAdjacent = false; //If true, means the attacking entity has to be adjacent of the target.
 
 	const int32_t distance = Server::EntityHandler::get_distance(_a, _b);
 
-	int32_t attRange = attackRange;
 
-	if (attRange == 0)
+	if (_attackRange == 0)
 	{
-		attRange = 1;
+		_attackRange = 1;
 		bRequireAdjacent = true;
 	}
 
-	if (distance <= attRange && distance != 0)
+	if (distance <= _attackRange && distance != 0)
 	{
 		if (bRequireAdjacent)
 		{
