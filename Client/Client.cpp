@@ -14,7 +14,6 @@ int main(int argc, char** argv)
 
 	bool valid_connection = false;
 
-
 	Client c = Client::connect_localhost(valid_connection);
 
 	if (!valid_connection) 
