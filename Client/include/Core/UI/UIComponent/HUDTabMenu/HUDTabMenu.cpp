@@ -25,7 +25,7 @@ void HUDTab::set_icon(SpriteType _sprite, vec2 _iconSize)
 {
 	auto renderer = g_globals.renderer.lock();
 	m_icon = renderer->get_sprite(_sprite);
-	m_icon.zRenderPriority = m_sprite.zRenderPriority;
+	m_icon.zRenderPriority = m_sprite.zRenderPriority + 10;
 	m_iconSize = _iconSize;
 }
 
@@ -61,7 +61,9 @@ void HUDTab::renderBG(std::shared_ptr<Renderer> _renderer)
 {
 	const Utilities::vec2 m_position; 
 
-	_renderer->plot_raw_frame(m_icon, get_position() + (m_iconSize / 2.0f), m_iconSize);
+	const Utilities::vec2 sizeDiff = get_size() - m_iconSize;
+
+	_renderer->plot_raw_frame(m_icon, get_position() + (sizeDiff / 2.0f), m_iconSize);
 }
 
 void HUDTab::on_left_click()
@@ -82,7 +84,7 @@ void HUDTabMenu::init()
 
 	float scale = 0.625f;
 	const Size tabSize  = Utilities::vec2(84.0f) * scale;
-	const Size m_iconSize = Utilities::vec2(42.0f) * scale;
+	const Size m_iconSize = Utilities::vec2(70.0f) * scale;
 	std::shared_ptr<HUDTab> tab;
 	Position tabPos;
 	
@@ -97,7 +99,7 @@ void HUDTabMenu::init()
 				true
 			);
 		tab->set_anchor(e_AnchorPreset::CENTER);
-		tab->set_icon(SpriteType::HUD_ICON_SKILLS, m_iconSize);
+		tab->set_icon(SpriteType::HUD_ICON_COMBAT, m_iconSize);
 		add_child(tab);
 	}
 
@@ -112,6 +114,7 @@ void HUDTabMenu::init()
 				true
 			);
 		tab->set_anchor(e_AnchorPreset::CENTER);
+		tab->set_icon(SpriteType::HUD_ICON_SKILLS, m_iconSize);
 		add_child(tab);
 	}
 
@@ -126,6 +129,7 @@ void HUDTabMenu::init()
 				true
 			);
 		tab->set_anchor(e_AnchorPreset::CENTER);
+		tab->set_icon(SpriteType::HUD_ICON_INVENTORY, m_iconSize);
 		add_child(tab);
 	}
 

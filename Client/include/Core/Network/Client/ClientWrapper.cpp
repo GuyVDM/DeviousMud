@@ -41,7 +41,7 @@ Client Client::connect_localhost(bool& _succeeded)
 	return connect_host(_succeeded, ip, port);
 }
 
-Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
+Client Client::connect_host(bool& _succeeded, const char* _ip, const uint16_t _port)
 {
 	DEVIOUS_EVENT("Trying to connect to: [" << _ip << ":" << _port << "].");
 
@@ -65,11 +65,9 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		exit(EXIT_FAILURE);
 	}
 
-	if (_port > -1)
-	{
-		enet_address_set_host(&address, _ip);
-		address.port = _port;
-	}
+	enet_address_set_host(&address, _ip);
+	address.port = _port;
+	
 
 	c.m_peer = enet_host_connect(m_host, &address, 2, 0);
 
@@ -79,7 +77,9 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Wait up to 5 seconds for the connection attempt to succeed.*/
+	//*------------------------------------
+	// Wait for the connection to succeed.
+	//
 	ENetEvent e;
 	if (enet_host_service(m_host, &e, CONNECTION_TIME_MS) > 0 && e.type == ENET_EVENT_TYPE_CONNECT)
 	{
@@ -89,9 +89,6 @@ Client Client::connect_host(bool& _succeeded, const char* _ip, int32_t _port)
 	}
 	else
 	{
-		/* Either the 5 seconds are up or a disconnect event was */
-		/* received. Reset the peer in the event the 5 seconds   */
-		/* had run out without any significant event.            */
 		enet_peer_reset(c.m_peer);
 		DEVIOUS_ERR("Failed to connect to: [" << _ip << ":" << _port << "].");
 	}

@@ -36,8 +36,10 @@ void Healthbar::init()
 
 void Healthbar::render_healthbar(std::shared_ptr<Graphics::Renderer> _renderer)
 {
-    if (const auto& owner = m_owner.lock(); !m_owner.expired())
+    if (!m_owner.expired())
     {
+        const auto& owner = m_owner.lock();
+
         //Only render healthbars for npc's in combat.
         if (owner->in_combat())
         {

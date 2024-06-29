@@ -32,8 +32,7 @@ NetworkHandler NetworkHandler::create_host(const char* _address, int32_t _port, 
 	ENetHost*   server;
 
 	connection.port = _port;
-	connection.m_host = ENET_HOST_ANY;
-	//enet_address_set_host(&connection, _address);
+	enet_address_set_host(&connection, _address);
 
 	DEVIOUS_EVENT("Trying to connect to: [" << _address << ":" << _port << "]...");
 	server = enet_host_create(&connection,

@@ -83,6 +83,8 @@ void Application::load_sprites()
 	{
 		renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
 		renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
+		renderer->load_and_bind_surface("hud/tabs/icons/combat.png", Graphics::SpriteType::HUD_ICON_COMBAT);
+		renderer->load_and_bind_surface("hud/tabs/icons/inventory.png", Graphics::SpriteType::HUD_ICON_INVENTORY);
 	}
 
 	//Load in all entities

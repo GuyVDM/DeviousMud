@@ -141,8 +141,8 @@ bool Graphics::TextComponent::parse_hex_to_color(const std::string& _string, SDL
 	}
 
 	_color.r = (rgb >> 16) & 0xFF;
-	_color.g = (rgb >> 8) & 0xFF;
-	_color.b = rgb & 0xFF;
+	_color.g = (rgb >> 8)  & 0xFF;
+	_color.b = rgb         & 0xFF;
 
 	return true;
 }

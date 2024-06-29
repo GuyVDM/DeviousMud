@@ -249,19 +249,16 @@ void WorldEntity::move_to(const Utilities::ivec2 _pos)
     //*----------------------------------------------------------------------
     // We only want to move if the target is NOT the same as the current one.
     //
-    if (_pos != Utilities::to_ivec2(m_simPos.m_endPos)) 
+    if (_pos == Utilities::to_ivec2(m_simPos.m_endPos))
     {
-        using namespace Graphics::Animation;
-
-        m_simPos.set_target(Utilities::to_vec2(_pos));
-        m_sprite.bIsFlipped = _pos.x < get_position().x;
-        set_position(Utilities::to_vec2(_pos));
-
-        if (!Animator::is_playing(m_sprite, m_NPCDefinition.walkingAnim))
-        {
-            Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
-        }
+        return;
     }
+
+    using namespace Graphics::Animation;
+
+    m_simPos.set_target(Utilities::to_vec2(_pos));
+    m_sprite.bIsFlipped = _pos.x < get_position().x;
+    set_position(Utilities::to_vec2(_pos));
 }
 
 const Utilities::vec2 WorldEntity::get_position() const
@@ -362,6 +359,11 @@ void WorldEntity::update()
             // Perform animation stalling when the Entity is doing its attacking animation.
             if(!Animator::is_playing(m_sprite, m_NPCDefinition.attackAnim)) 
             {
+                if(!Animator::is_playing(m_sprite, m_NPCDefinition.walkingAnim)) 
+                {
+                    Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
+                }
+
                 m_simPos.update();
             }
         }

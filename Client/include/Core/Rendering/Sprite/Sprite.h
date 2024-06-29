@@ -36,6 +36,8 @@ namespace Graphics
 		// HUD ICONS
 		HUD_ICON_PLACEHOLDER,
 		HUD_ICON_SKILLS,
+		HUD_ICON_COMBAT,
+		HUD_ICON_INVENTORY,
 		
 		//Tab specifics,
 		SKILL_BACKGROUND,

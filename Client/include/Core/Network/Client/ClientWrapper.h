@@ -11,7 +11,7 @@ public:
 
 	static Client connect_localhost(bool& succeeded);
 
-	static Client connect_host(bool& succeeeded, const char* ip, int32_t port);
+	static Client connect_host(bool& succeeeded, const char* ip, uint16_t port);
 
 	static constexpr const char* TITLE = "DeviousMud";
 

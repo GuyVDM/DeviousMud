@@ -27,7 +27,6 @@ const bool CombatHandler::engage(std::shared_ptr<Player> _a, std::shared_ptr<Ent
 	{
 		if (_a->is_dead() || _b->is_dead())
 		{
-
 			return false;
 		}
 	}

@@ -231,9 +231,9 @@ public:
 	/// Make the NPC aggressive to the following target.
 	/// </summary>
 	virtual void try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated) override;
-
+	
 	/// <summary>
-	/// Sets target to null after it's been defeated.
+	/// Sets target to null and resets combat behaviour.
 	/// </summary>
 	virtual void disengage() override;
 
