@@ -343,10 +343,10 @@ void Graphics::Renderer::end_frame()
 					// Create a new rect with the given size and transformed position.
 					destRect =
 					{
-						(int32_t)roundf((data.position.x * (float)GRID_CELL_PX_SIZE) - camPos.x + vpWidthHalfExtends),
-						(int32_t)roundf((data.position.y * (float)GRID_CELL_PX_SIZE) - camPos.y + vpHeightHalfExtends),
-						(int32_t)roundf(data.size.x),
-						(int32_t)roundf(data.size.y)
+						(int32_t)ceil((data.position.x * (float)GRID_CELL_PX_SIZE) - camPos.x + vpWidthHalfExtends),
+						(int32_t)ceil((data.position.y * (float)GRID_CELL_PX_SIZE) - camPos.y + vpHeightHalfExtends),
+						(int32_t)ceil(data.size.x),
+						(int32_t)ceil(data.size.y)
 					};
 				}
 				else 

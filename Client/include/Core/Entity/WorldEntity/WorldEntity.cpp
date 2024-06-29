@@ -376,6 +376,9 @@ void WorldEntity::respawn()
 
 void WorldEntity::set_state(const e_EntityState& _state)
 {
+    if (m_states[_state] == m_currentState)
+        return;
+
     m_currentState->on_state_end();
     m_currentState = m_states[_state];
     m_currentState->on_state_start();

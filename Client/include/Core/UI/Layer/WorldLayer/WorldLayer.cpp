@@ -13,7 +13,7 @@ void Graphics::UI::WorldLayer::init()
 	//TODO: Data should later get loaded in chunks, size & stuff should get rendered relative to the camera.
 	const std::shared_ptr<Graphics::Renderer>& renderer = g_globals.renderer.lock();
 
-	const Utilities::vec2 WORLD_SIZE{ 10, 10 };
+	const Utilities::vec2 WORLD_SIZE{ 100, 100 };
 
 	for (int32_t i = 0; i < WORLD_SIZE.x; i++)
 	{
