@@ -43,6 +43,7 @@
     <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\WorldText\WorldText.cpp" />
     <ClCompile Include="include\Core\UI\UIComponent\Chatbox\Chatbox.cpp" />
+    <ClCompile Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\UI\Layer\Layer.h">
@@ -153,6 +154,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
@@ -204,5 +208,6 @@
     <None Include="assets\sprites\hud\tabs\Inventory_reference.pdn" />
     <None Include="assets\sprites\hud\tabs\tab.pdn" />
     <None Include="assets\sprites\hud\backdrop.pdn" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

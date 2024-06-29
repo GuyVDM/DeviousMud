@@ -26,6 +26,8 @@
 
 #include "Core/UI/UIComponent/Healthbar/Healthbar.h"
 
+#include "Core/Entity/WorldEntity/States/WorldEntityStates.h"
+
 RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::Utils::UUID _uuid)
 {
     //*-------------------------------------------------------
@@ -54,7 +56,7 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
     {
         const int8_t playerUI_zOrder = 5;
         entity->m_simPos.m_currentPos = Utilities::to_vec2(_pos);
-        entity->m_NPCDefinition = npcDef;
+        entity->m_npcDefinition = npcDef;
         entity->m_entityUUID = _uuid;
         entity->m_canvas = Canvas::create_canvas();
         entity->m_canvas->set_render_mode(UIComponent::e_RenderMode::WORLDSPACE);
@@ -74,25 +76,24 @@ RefEntity WorldEntity::create_entity(uint8_t _npcId, Utilities::ivec2 _pos, DM::
     //*
     Graphics::Animation::Animator::set_default_animation(entity->m_sprite, npcDef.idleAnim, 8.0f);
 
+    //*------------------------------------------
+    // Declare all states for the world entity.
+    //*
+    using namespace DM::State;
+
+    entity->m_states[e_EntityState::STATE_IDLE]      = std::make_shared<EntityIdleState>(shrdEntity);
+    entity->m_states[e_EntityState::STATE_WALKING]   = std::make_shared<EntityWalkingState>(shrdEntity);
+    entity->m_states[e_EntityState::STATE_ATTACKING] = std::make_shared<EntityAttackingState>(shrdEntity);
+    entity->m_states[e_EntityState::STATE_DEAD]      = std::make_shared<EntityDeathState>(shrdEntity);
+
+    entity->m_currentState = entity->m_states[e_EntityState::STATE_IDLE];
+    entity->m_currentState->on_state_start();
+
     return shrdEntity;
 }
 
 WorldEntity::WorldEntity(const Utilities::vec2& _pos, const Utilities::vec2& _size, Graphics::Sprite _sprite) : Clickable(_pos, _size, _sprite)
 {
-    //*------------------------------------------------------------------
-    // Bind callback to the end of the walking cycle to default animation.
-    //*
-    {
-        auto stop_curr_anim_func = [this]()
-        {
-            if(!m_bIsDead) 
-            {
-                Graphics::Animation::Animator::stop_current_animation(m_sprite);
-            }
-        };  
-
-        m_simPos.on_reached_dest.add_listener(stop_curr_anim_func);
-    }
 }
 
 WorldEntity::~WorldEntity()
@@ -101,7 +102,7 @@ WorldEntity::~WorldEntity()
 
 const NPCDef& WorldEntity::get_definition() const
 {
-    return m_NPCDefinition;
+    return m_npcDefinition;
 }
 
 const SimPosition& WorldEntity::get_simulated_data() const
@@ -160,7 +161,7 @@ void WorldEntity::teleport_to(Utilities::vec2 _destination)
 void WorldEntity::die()
 {
     m_bIsDead = true;
-    Graphics::Animation::Animator::play_animation_oneshot(m_sprite, m_NPCDefinition.deathAnim, 8.0f);
+    Graphics::Animation::Animator::play_animation_oneshot(m_sprite, m_npcDefinition.deathAnim, 8.0f);
 }
 
 const bool WorldEntity::in_combat() const
@@ -228,7 +229,7 @@ void WorldEntity::hit(int32_t _hitAmount)
 
 void WorldEntity::attack()
 {
-    Graphics::Animation::Animator::play_animation(m_sprite, m_NPCDefinition.attackAnim, false, 0.0f);
+    set_state(e_EntityState::STATE_ATTACKING);
 }
 
 void WorldEntity::update_skill(uint8_t _skillType, int32_t _level, int32_t _levelBoosted)
@@ -343,31 +344,14 @@ bool WorldEntity::handle_event(const SDL_Event* _event)
 
 void WorldEntity::update()
 {
-    using namespace Graphics::Animation;
-
     m_canvas->recursiveUpdateCleanup();
-    
-    if (!m_bShouldHide)
-    {
-        m_canvas->render();
 
-        //*------------------
-        // Pathing simulation
-        //*
-        if (m_simPos.is_dirty())
-        {
-            // Perform animation stalling when the Entity is doing its attacking animation.
-            if(!Animator::is_playing(m_sprite, m_NPCDefinition.attackAnim)) 
-            {
-                if(!Animator::is_playing(m_sprite, m_NPCDefinition.walkingAnim)) 
-                {
-                    Animator::play_animation(m_sprite, m_NPCDefinition.walkingAnim, true, 10.0f);
-                }
+    m_currentState->on_state_update();
 
-                m_simPos.update();
-            }
-        }
-    }
+    if (m_bShouldHide)
+        return;
+
+    m_canvas->render();
 }
 
 void WorldEntity::set_name(const std::string& _name)
@@ -382,13 +366,19 @@ const std::string& WorldEntity::get_name() const
 
 void WorldEntity::respawn() 
 {
-    //*
-    // Stop the death animation and make the entity interactable again.
+    //*-----------------------------------
+    // Make the entity interactable again.
     //*
     {
-        Graphics::Animation::Animator::stop_current_animation(m_sprite);
         m_bIsDead = false;
     }
+}
+
+void WorldEntity::set_state(const e_EntityState& _state)
+{
+    m_currentState->on_state_end();
+    m_currentState = m_states[_state];
+    m_currentState->on_state_start();
 }
 
 const bool WorldEntity::overlaps_rect(const int& _x, const int& _y) const
@@ -414,4 +404,3 @@ const bool WorldEntity::overlaps_rect(const int& _x, const int& _y) const
 
     return (_x > left && _x < right && _y > top && _y < bottom);
 }
-

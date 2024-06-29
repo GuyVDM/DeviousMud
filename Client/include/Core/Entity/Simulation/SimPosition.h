@@ -17,13 +17,11 @@ public:
 	explicit SimPosition();
 	explicit SimPosition(const Utilities::_vec2& _startPos);
 
-private:
-	EventListener<void> on_reached_dest;
-
 	const bool& is_dirty() const;
-
+	
 	void update();
 
+private:
 	void set_target(const Utilities::vec2 _details);
 
 	void set_current_position(const Utilities::vec2 _pos);

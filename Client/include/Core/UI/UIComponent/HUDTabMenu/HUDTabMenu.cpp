@@ -84,7 +84,7 @@ void HUDTabMenu::init()
 
 	float scale = 0.625f;
 	const Size tabSize  = Utilities::vec2(84.0f) * scale;
-	const Size m_iconSize = Utilities::vec2(70.0f) * scale;
+	const Size m_iconSize = Utilities::vec2(64.0f) * scale;
 	std::shared_ptr<HUDTab> tab;
 	Position tabPos;
 	

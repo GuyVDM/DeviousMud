@@ -96,7 +96,7 @@ void Graphics::Animation::Animator::set_default_animation(Sprite& _sprite, const
 		return;
 	}
 
-	DEVIOUS_WARN("You can't set a default animation as null!");
+	DEVIOUS_WARN("You can't set a default animation as null.");
 }
 
 void Graphics::Animation::Animator::stop_current_animation(Sprite& _sprite)

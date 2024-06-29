@@ -17,6 +17,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\EntityDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\PlayerDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Skill.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\State.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Navigation\AStar.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\PacketHandler.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\Packets.hpp" />

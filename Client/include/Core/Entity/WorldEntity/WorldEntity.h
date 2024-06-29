@@ -10,10 +10,30 @@
 class EntityHandler;
 class Canvas;
 
+namespace DM
+{
+	namespace State
+	{
+		template<class T>
+		class State;
+	}
+}
+
+template<class T>
+using RefState = std::shared_ptr<DM::State::State<T>>;
+
 enum class e_InteractionMode 
 {
 	STATE_INTERACTABLE = 0x00,
 	STATE_MASKED       = 0x01
+};
+
+enum class e_EntityState 
+{
+	STATE_IDLE      = 0x00,
+	STATE_WALKING   = 0x01,
+	STATE_ATTACKING = 0x02,
+	STATE_DEAD      = 0x03
 };
 
 class WorldEntity : public Clickable, public std::enable_shared_from_this<WorldEntity>
@@ -54,6 +74,11 @@ public:
 	/// Makes the entity interactable and visible again.
 	/// </summary>
 	void respawn();
+
+	/// <summary>
+	/// Update the statemachine and set a new state.
+	/// </summary>
+	void set_state(const e_EntityState& _state);
 
 	/// <summary>
 	/// Whether this Entity is in combat.
@@ -99,7 +124,6 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	const SimPosition& get_simulated_data() const;
-
 
 	/// <summary>
 	/// Returns the matching server position.
@@ -160,22 +184,41 @@ private:
 	virtual const bool overlaps_rect(const int& _x, const int& _y) const override;
 
 	friend std::shared_ptr<WorldEntity>;
+	friend class EntityWalkingState;
+	friend class EntityDeathState;
+	friend class EntityIdleState;
+	friend class EntityAttackingState;
 
 private:	
+	std::string             m_name = "null";
+	
+	DM::Utils::UUID         m_entityUUID = -1;
+
 	bool                    m_bShouldHide = false;
+
 	bool                    m_bIsDead = false;
-	DM::SKILLS::SkillMap    m_skills;
-	NPCDef                  m_NPCDefinition;
-	SimPosition             m_simPos;
+	
 	bool                    m_bInCombat = false;
 
-	DM::Utils::UUID         m_entityUUID = -1;
+	DM::SKILLS::SkillMap    m_skills;
+
+	NPCDef                  m_npcDefinition;
+
+	SimPosition             m_simPos;
+
 	e_InteractionMode       m_eInteractionMode = e_InteractionMode::STATE_INTERACTABLE;
+
 	DM::Utils::UUID         m_updateListenerUUID;
 
 	std::shared_ptr<Canvas> m_canvas;
-	std::string             m_name = "null";
+
+	RefState<WorldEntity>  m_currentState;
+
+	std::map<e_EntityState, RefState<WorldEntity>> m_states;
 };  
 
 using RefEntity = std::shared_ptr<WorldEntity>;
+
+
+
 

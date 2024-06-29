@@ -180,6 +180,7 @@
     <ClCompile Include="include\Core\Application\Application.cpp" />
     <ClCompile Include="include\Core\Application\Config\Config.cpp" />
     <ClCompile Include="include\Core\Entity\Simulation\SimPosition.cpp" />
+    <ClCompile Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.cpp" />
     <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Clickable.cpp" />
     <ClCompile Include="include\Core\Entity\WorldEntity\WorldEntity.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="include\Core\Application\Application.h" />
     <ClInclude Include="include\Core\Application\Config\Config.h" />
     <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h" />
+    <ClInclude Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.h" />
     <ClInclude Include="include\Core\NPC\NPCDef.h" />
     <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
     <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
@@ -276,6 +278,7 @@
     <None Include="assets\sprites\hud\backdrop.pdn" />
     <None Include="assets\sprites\hud\tabs\Inventory_reference.pdn" />
     <None Include="assets\sprites\hud\tabs\tab.pdn" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -77,12 +77,9 @@ void SimPosition::update()
 		m_currentPos = Utilities::vec2::lerp(START_TILE, END_TILE, LOCAL_TIMELINE);
 	}
 
-
-
 	if (timeline == MAX_TIMELINE)
 	{
 		m_bIsDirty = false;
-		on_reached_dest.invoke();
 	}
 }
 
