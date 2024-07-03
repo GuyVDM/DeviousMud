@@ -16,6 +16,8 @@
 
 #include "vendor/nolhmann/json.hpp"
 
+#include "Math/DMath.hpp"
+
 #include <iostream>
 
 #include <algorithm>

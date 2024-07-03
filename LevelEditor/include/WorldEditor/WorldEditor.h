@@ -24,15 +24,14 @@ struct Chunk
 class WorldEditor 
 {
 public:
+	void Update();
+
+public:
 	WorldEditor();
 	virtual ~WorldEditor() = default;
 
-	void Update();
-
-	void PlaceTile();
-
 private:
-	void CheckNewHighlight();
+	Utilities::ivec2 GetHoveredGridCell();
 
 	void HighlightCurrentTile();
 

@@ -48,6 +48,8 @@ void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
 	//Store the surface details and lock it behind the sprite type.
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
 
+	SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
+
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 	m_Sprites[_args.Type] = Sprite(texture, surface, _args.FrameCount);
@@ -106,26 +108,31 @@ const bool Renderer::IsVisible(const SDL_Rect& _rect) const
 	return SDL_HasIntersection(&_rect, &screen);
 }
 
-void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col)
+void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder)
 {
-	SDL_SetRenderDrawColor(m_Renderer, _col.R, _col.G, _col.B, _col.A);
-	SDL_RenderFillRect(m_Renderer, &_rect);
-}
+	SDL_Texture* texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, _rect.w, _rect.h);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-void Renderer::DrawRectViewProjection(const SDL_Rect& _rect, const Color& _col)
-{
-	Ref<Camera> camera = g_globals.Camera;
+	SDL_SetRenderTarget(m_Renderer, texture);
 
-	const SDL_Rect dstRect
-	{
-		(_rect.x - camera->Position.x) * camera->Zoom,
-		(_rect.y - camera->Position.y) * camera->Zoom,
-		(_rect.w) * camera->Zoom,
-		(_rect.h) * camera->Zoom
-	};
+	SDL_RenderClear(m_Renderer);
 
 	SDL_SetRenderDrawColor(m_Renderer, _col.R, _col.G, _col.B, _col.A);
-	SDL_RenderFillRect(m_Renderer, &dstRect);
+
+	SDL_RenderFillRect(m_Renderer, nullptr);
+
+	SDL_SetRenderTarget(m_Renderer, nullptr);
+
+	RenderQueryInstance instance;
+	instance.Color    = _col;
+	instance.Type     = Graphics::SpriteType::NONE;
+	instance.Frame    = 0;
+	instance.Position = Utilities::ivec2(_rect.x, _rect.y);
+	instance.Size     = Utilities::ivec2(_rect.w, _rect.h);
+	instance.Flags    = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
+	instance.Texture  = texture;
+
+	m_RenderQuery[_zOrder].push_back(instance);
 }
 
 void Renderer::StartFrame()
@@ -140,42 +147,61 @@ void Renderer::EndFrame()
 {
 	Ref<Camera> camera = g_globals.Camera;
 
-	for(auto&[zOrder, queryItem] : m_RenderQuery)
+	for (auto& [zOrder, renderList] : m_RenderQuery)
 	{
-		const SDL_Rect dstRect
+		for (auto& queryItem : renderList)
 		{
-			(queryItem.Position.x - camera->Position.x) * camera->Zoom,
-			(queryItem.Position.y - camera->Position.y) * camera->Zoom,
-			(queryItem.Size.x) * camera->Zoom,
-			(queryItem.Size.y) * camera->Zoom
-		};
+			const SDL_Rect dstRect
+			{
+				(queryItem.Position.x - camera->Position.x) * camera->Zoom,
+				(queryItem.Position.y - camera->Position.y) * camera->Zoom,
+				 queryItem.Size.x * camera->Zoom,
+				 queryItem.Size.y * camera->Zoom
+			};
 
-		if(!IsVisible(dstRect)) 
-		{
-			continue;
+			if (!IsVisible(dstRect))
+			{
+				continue;
+			}
+
+			U32 texWidth, texHeight;
+			SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &texWidth, &texHeight);
+
+			U32 frame = 0;
+			U32 spriteWidth = 0;
+			{
+				if (queryItem.Type == Graphics::SpriteType::NONE)
+				{
+					spriteWidth = texWidth;
+					frame = 0;
+				}
+				else
+				{
+					Sprite& sprite = m_Sprites[queryItem.Type];
+					spriteWidth = sprite.FrameCount == 0 ? texWidth : texWidth / sprite.FrameCount;
+					frame = std::clamp<U32>(queryItem.Frame, 0, sprite.FrameCount);
+				}
+			}
+
+			const SDL_Rect srcRect
+			{
+				frame == 0 ? 0 : spriteWidth * frame,
+				0,
+				spriteWidth,
+				texHeight,
+			};
+
+			SDL_SetTextureColorMod(queryItem.Texture, queryItem.Color.R, queryItem.Color.G, queryItem.Color.B);
+
+			SDL_RenderCopy(m_Renderer, queryItem.Texture, &srcRect, &dstRect);
+
+			SDL_SetTextureColorMod(queryItem.Texture, 255, 255, 255);
+
+			if (queryItem.Flags & e_TextureFlags::TEXTURE_DESTROY_AFTER_USE)
+			{
+				SDL_DestroyTexture(queryItem.Texture);
+			}
 		}
-
-		Sprite& sprite = m_Sprites[queryItem.Type];
-
-		U32 texWidth, texHeight;
-		SDL_QueryTexture(sprite.Texture, nullptr, nullptr, &texWidth, &texHeight);
-
-		const U32 spriteWidth = sprite.FrameCount == 0 ? texWidth : texWidth / sprite.FrameCount;
-		const U32 frame = std::clamp<U32>(queryItem.Frame, 0, sprite.FrameCount);
-
-		const SDL_Rect srcRect
-		{
-			frame == 0 ? 0 : spriteWidth * frame,
-			0,
-			spriteWidth,
-			texHeight,
-		};
-
-		SDL_SetTextureColorMod(sprite.Texture, queryItem.Color.R, queryItem.Color.G, queryItem.Color.B);
-
-		SDL_RenderCopy(m_Renderer, sprite.Texture, &srcRect, &dstRect);
-
-		SDL_SetTextureColorMod(sprite.Texture, 255, 255, 255);
 	}
 
 	m_RenderQuery.clear();
@@ -186,5 +212,14 @@ void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
 	if (_query.Type == Graphics::SpriteType::NONE)
 		return;
 
-	m_RenderQuery[_zOrder] = _query;
+	RenderQueryInstance instance;
+	instance.Color    = _query.Color;
+	instance.Type     = _query.Type;
+	instance.Frame    = _query.Frame;
+	instance.Position = _query.Position;
+	instance.Size     = _query.Size;
+	instance.Flags    = e_TextureFlags::TEXTURE_NONE;
+	instance.Texture  = m_Sprites[_query.Type].Texture;
+
+	m_RenderQuery[_zOrder].push_back(instance);
 }

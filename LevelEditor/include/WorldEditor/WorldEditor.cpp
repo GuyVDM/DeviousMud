@@ -17,80 +17,52 @@ WorldEditor::WorldEditor()
 
 void WorldEditor::Update()
 {
-	CheckNewHighlight();
 	HighlightCurrentTile();
 }
 
-void WorldEditor::PlaceTile()
+Utilities::ivec2 WorldEditor::GetHoveredGridCell()
 {
-
-}
-
-void WorldEditor::CheckNewHighlight()
-{
-	using namespace Utilities;
-
 	Utilities::ivec2 mousePos;
 	SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
-	const Utilities::ivec2 camPos = m_Camera->Position;
-
-	//*---------------------------
-	// Mouse mapped to worldspace.
-	// 
-	Utilities::ivec2 wsMousePos =
+	Utilities::ivec2 worldPos
 	{
-		static_cast<U32>((mousePos.x + camPos.x)),
-		static_cast<U32>((mousePos.y + camPos.y))
+		static_cast<int>((mousePos.x / m_Camera->Zoom) + m_Camera->Position.x),
+		static_cast<int>((mousePos.y / m_Camera->Zoom) + m_Camera->Position.y)
 	};
 
-	const U32 modGridSize = App::Config::GRIDSIZE * m_Camera->Zoom;
-	Utilities::ivec2 gridSpaceCoord =
+	if (worldPos.x < 0)
+		worldPos.x -= App::Config::GRIDSIZE - 1;
+	if (worldPos.y < 0)
+		worldPos.y -= App::Config::GRIDSIZE - 1;
+
+	Utilities::ivec2 gridPos =
 	{
-		wsMousePos.x / modGridSize,
-		wsMousePos.y / modGridSize
+		static_cast<int>(worldPos.x / App::Config::GRIDSIZE),
+		static_cast<int>(worldPos.y / App::Config::GRIDSIZE)
 	};
 
-	gridSpaceCoord = gridSpaceCoord;
-
-	//*------------------------------------
-	// Account for negative screenspace too
-	//*
-	{
-		if (wsMousePos.x < 0)
-		{
-			gridSpaceCoord.x * -1;
-		}
-
-		if (wsMousePos.y < 0)
-		{
-			gridSpaceCoord.y * -1;
-		}
-	}
-
-	m_HoveredGridCell = gridSpaceCoord;
-	DEVIOUS_LOG("Gridspace is: " << gridSpaceCoord.x << " , " << gridSpaceCoord.y);
+	return gridPos;
 }
 
 void WorldEditor::HighlightCurrentTile()
 {
-	static float elapsedTime = 1.0f;
+	static float elapsedTime = 0.f;
 
 	elapsedTime += App::Config::Configuration::GetDT();
 
-	const float frequency = 3.0f;
-	const U8 alpha = static_cast<U8>(30 + (std::sinf(frequency * elapsedTime) + 1) * 30.0f);
-	const Color col = { 255, 255, 0, alpha };
+	m_HoveredGridCell = GetHoveredGridCell();
 
 	const SDL_Rect rect
 	{
-		(m_HoveredGridCell.x * App::Config::GRIDSIZE),
-		(m_HoveredGridCell.y * App::Config::GRIDSIZE),
+		m_HoveredGridCell.x * App::Config::GRIDSIZE,
+		m_HoveredGridCell.y * App::Config::GRIDSIZE,
 		App::Config::GRIDSIZE,
 		App::Config::GRIDSIZE
 	};
 
-	g_globals.Renderer->DrawRectViewProjection(rect, col);
+	const Color col = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, elapsedTime)};
+	g_globals.Renderer->DrawRect(rect, col, 10);
 	
 }
 

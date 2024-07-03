@@ -28,7 +28,19 @@ struct RenderQuery
 	Utilities::ivec2     Position = {1, 1};
 	Utilities::ivec2     Size     = {1, 1};
 	Color                Color    = {255,255,255,255};
-	U8                   Frame    = 0; //What frame of the spritesheet to display.
+	U8                   Frame    = 0;
+};
+
+enum e_TextureFlags : U8
+{
+	TEXTURE_NONE = 0x00,
+	TEXTURE_DESTROY_AFTER_USE = 0x01
+};
+
+struct RenderQueryInstance : public RenderQuery
+{
+	SDL_Texture*   Texture;
+	e_TextureFlags Flags;
 };
 
 struct Sprite
@@ -44,9 +56,7 @@ struct Sprite
 class Renderer 
 {
 public:
-	void DrawRect(const SDL_Rect& _rect, const Color& _col);
-
-	void DrawRectViewProjection(const SDL_Rect& _rect, const Color& _col);
+	void DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder = 0);
 
 	void StartFrame();
 
@@ -68,7 +78,7 @@ private:
 private:
 	SDL_Renderer* m_Renderer;
 
-	std::map<U8, RenderQuery> m_RenderQuery;
+	std::map<U8, std::vector<RenderQueryInstance>> m_RenderQuery;
 
 	std::map<Graphics::SpriteType, Sprite> m_Sprites;
 };
