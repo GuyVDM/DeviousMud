@@ -50,10 +50,10 @@ struct Animations
              { e_AnimationType::GOBLIN_ATTACK,           Animation2D(32, 39)},
              { e_AnimationType::GOBLIN_DEATH,            Animation2D(40, 49)},
 
-             { e_AnimationType::INU_IDLE,             Animation2D(8 , 11) },
-             { e_AnimationType::INU_WALK,             Animation2D(12, 17)},
-             { e_AnimationType::INU_ATTACK,           Animation2D(0, 3)},
-             { e_AnimationType::INU_DEATH,            Animation2D(4, 7)}
+             { e_AnimationType::INU_IDLE,                Animation2D(8 , 11)},
+             { e_AnimationType::INU_WALK,                Animation2D(12, 17)},
+             { e_AnimationType::INU_ATTACK,              Animation2D(0, 3)  },
+             { e_AnimationType::INU_DEATH,               Animation2D(4, 7)  }
 
         };
 

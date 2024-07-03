@@ -3,7 +3,7 @@
 
 #include "Core/Rendering/Sprite/Sprite.h"
 
-#include "Core/Rendering/Animation/Animations.h"
+#include "Shared/Game/Animations.h"
 
 namespace Graphics
 {

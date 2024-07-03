@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcx
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DMInstaller", "DMInstaller\DMInstaller.vdproj", "{A559B2D1-1A20-4C38-AB3E-6F3371311396}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LevelEditor", "LevelEditor\LevelEditor.vcxproj", "{02A3AEFF-56CC-4AFC-969C-82D292E429FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,14 @@ Global
 		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Debug|x86.ActiveCfg = Debug
 		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Release|x64.ActiveCfg = Release
 		{A559B2D1-1A20-4C38-AB3E-6F3371311396}.Release|x86.ActiveCfg = Release
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Debug|x64.ActiveCfg = Debug|x64
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Debug|x64.Build.0 = Debug|x64
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Debug|x86.ActiveCfg = Debug|Win32
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Debug|x86.Build.0 = Debug|Win32
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Release|x64.ActiveCfg = Release|x64
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Release|x64.Build.0 = Release|x64
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Release|x86.ActiveCfg = Release|Win32
+		{02A3AEFF-56CC-4AFC-969C-82D292E429FF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Rendering/Sprite/Sprite.h"
 
-#include "Core/Rendering/Animation/Animations.h"
+#include "Shared/Game/Animations.h"
 
 #include <map>
 
@@ -32,7 +32,7 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 	case 0:
 		npc.name = "Player";
 		npc.combatLevel = 0;
-		npc.sprite = SpriteType::PLAYER;
+		npc.sprite      = SpriteType::PLAYER;
 		npc.size = 1;
 		/// THESE ANIMATIONS NEEDS TO GET GRABBED FROM THE PLAYER HANDLER IN THE FUTURE.
 		///
@@ -46,8 +46,8 @@ inline const static NPCDef get_npc_definition(uint8_t _id)
 	case 1:
 		npc.name = "Goblin";
 		npc.combatLevel = 3;
-		npc.size = 1;
 		npc.sprite      = SpriteType::NPC_GOBLIN;
+		npc.size = 1;
 		npc.idleAnim    = e_AnimationType::GOBLIN_IDLE;
 		npc.walkingAnim = e_AnimationType::GOBLIN_WALK;
 		npc.attackAnim  = e_AnimationType::GOBLIN_ATTACK;

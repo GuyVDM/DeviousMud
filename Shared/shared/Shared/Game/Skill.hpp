@@ -92,7 +92,7 @@ namespace DM
 				for(uint8_t i = 0; i < SKILL_COUNT; i++) 
 				{
 					//Set all skill stats to their default value.
-					const e_skills skillType = (e_skills)i;
+					const e_skills skillType = static_cast<e_skills>(i);
 					{
 						m_skills[skillType].level        = 1;
 						m_skills[skillType].levelboosted = 1;

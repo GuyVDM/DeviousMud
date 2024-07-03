@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Skill.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\PlayerDetails.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\EntityDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\EventListener.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\Globals.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Utilities\UUID.hpp" />
@@ -35,6 +32,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Navigation\AStar.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\Packets.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\PacketHandler.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\EntityDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\PlayerDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Skill.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\State.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\SpriteTypes.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Animations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\NPCDef.h" />
   </ItemGroup>
 </Project>

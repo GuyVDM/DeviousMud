@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 
+#include "Shared/Game/SpriteTypes.hpp"
+
 #include "Shared/Utilities/UUID.hpp"
 
 #include "Shared/Utilities/vec2.hpp"
@@ -9,53 +11,6 @@
 
 namespace Graphics 
 {
-	enum class SpriteType : uint16_t
-	{
-		NONE = 0,
-
-		// RANKS
-		PLAYER_RANK_OWNER = 1,
-
-		//*--------------
-		// Not an actual entry.
-		// We use this for counting.
-		//*
-		PLAYER_ICON_COUNT,
-
-		TILE_DEFAULT,
-		CROSS,
-		PLAYER,
-
-		// HUD
-		HUD_BACKDROP,
-		HUD_TAB,
-		HUD_FRAME,
-		HUD_OPTIONS_BOX,
-		HUD_CHATBOX,
-
-		// HUD ICONS
-		HUD_ICON_PLACEHOLDER,
-		HUD_ICON_SKILLS,
-		HUD_ICON_COMBAT,
-		HUD_ICON_INVENTORY,
-		
-		//Tab specifics,
-		SKILL_BACKGROUND,
-
-		// MISC
-		HITSPLAT,
-
-		//Entities
-		NPC_GOBLIN,
-		NPC_INU,
-		
-		//*--------------
-		// Not an actual entry.
-		// We use this for counting.
-		//*
-		SPRITE_COUNT 
-	}; 
-
 	constexpr uint32_t SPRITE_COUNT = static_cast<uint32_t>(SpriteType::SPRITE_COUNT) - 1;
 
 	constexpr uint32_t ICON_COUNT = static_cast<uint32_t>(SpriteType::PLAYER_ICON_COUNT);

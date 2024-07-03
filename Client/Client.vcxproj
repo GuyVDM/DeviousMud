@@ -75,6 +75,7 @@
     <OutDir>$(SolutionDir)Client\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\intermediate\$(Configuration)\</IntDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\guy_l\Desktop\RS_Raknet\RS_RaknetDemo\RS_RaknetDemo\include\caca</IncludePath>
@@ -84,6 +85,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Client\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\intermediate\$(Configuration)\</IntDir>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Client\build\$(Platform)\$(Configuration)\</OutDir>
@@ -220,7 +222,6 @@
     <ClInclude Include="include\Core\Application\Config\Config.h" />
     <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h" />
     <ClInclude Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.h" />
-    <ClInclude Include="include\Core\NPC\NPCDef.h" />
     <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
     <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
     <ClInclude Include="include\Core\Entity\WorldEntity\WorldEntity.h" />
@@ -231,7 +232,6 @@
     <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
     <ClInclude Include="include\Core\Entity\EntityHandler.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h" />
-    <ClInclude Include="include\Core\Rendering\Animation\Animations.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
     <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h" />

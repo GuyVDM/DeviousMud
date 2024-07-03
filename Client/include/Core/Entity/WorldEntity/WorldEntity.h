@@ -1,9 +1,10 @@
 #pragma once
 #include "Core/Events/Clickable/Clickable.h"
 
-#include "Core/NPC/NPCDef.h"
 
 #include "Core/Entity/Simulation/SimPosition.h"
+
+#include "Shared/Game/NPCDef.h"
 
 #include "Shared/Game/Skill.hpp"
 

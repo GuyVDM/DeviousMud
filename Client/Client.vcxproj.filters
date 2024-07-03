@@ -100,9 +100,6 @@
     <ClInclude Include="include\precomp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Rendering\Animation\Animations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -128,9 +125,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\NPC\NPCDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h">

@@ -14,9 +14,12 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Animations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\EntityDetails.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\NPCDef.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\PlayerDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Skill.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\SpriteTypes.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\State.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Navigation\AStar.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Network\Packets\PacketHandler.hpp" />

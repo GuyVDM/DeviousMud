@@ -53,44 +53,11 @@ void Application::init()
 void Application::load_sprites()
 {
 	std::shared_ptr<Graphics::Renderer> renderer = g_globals.renderer.lock();
-
-	//TODO: Remove all of this and move it to a static const map.
-	// Miscelaneous sprites
+	
+	for(auto& sprite : Graphics::SpriteConfig::spriteMap()) 
 	{
-		renderer->load_and_bind_surface("player/Player_Sheet.png", Graphics::SpriteType::PLAYER, 28);
-		renderer->load_and_bind_surface("player/rank_owner.png", Graphics::SpriteType::PLAYER_RANK_OWNER);
-		renderer->load_and_bind_surface("Tile.png",  Graphics::SpriteType::TILE_DEFAULT);
-		renderer->load_and_bind_surface("Cross.png", Graphics::SpriteType::CROSS, 14);
-	}
-
-	// Load in all HUD elements.
-	{
-		renderer->load_and_bind_surface("hud/backdrop.png", Graphics::SpriteType::HUD_BACKDROP);
-		renderer->load_and_bind_surface("hud/tabs/tab.png", Graphics::SpriteType::HUD_TAB);
-		renderer->load_and_bind_surface("hud/frame.png",    Graphics::SpriteType::HUD_FRAME);
-		renderer->load_and_bind_surface("hud/box.png",      Graphics::SpriteType::HUD_OPTIONS_BOX);
-		renderer->load_and_bind_surface("hud/chatbox.png",  Graphics::SpriteType::HUD_CHATBOX);
-
-		renderer->load_and_bind_surface("hud/skill/skillcontainer.png", Graphics::SpriteType::SKILL_BACKGROUND);
-	}
-
-	// Load in misc.
-	{
-		renderer->load_and_bind_surface("hitsplat.png", Graphics::SpriteType::HITSPLAT);
-	}
-
-	// Load in all icons.
-	{
-		renderer->load_and_bind_surface("hud/tabs/icons/default.png", Graphics::SpriteType::HUD_ICON_PLACEHOLDER);
-		renderer->load_and_bind_surface("hud/tabs/icons/skills.png", Graphics::SpriteType::HUD_ICON_SKILLS);
-		renderer->load_and_bind_surface("hud/tabs/icons/combat.png", Graphics::SpriteType::HUD_ICON_COMBAT);
-		renderer->load_and_bind_surface("hud/tabs/icons/inventory.png", Graphics::SpriteType::HUD_ICON_INVENTORY);
-	}
-
-	//Load in all entities
-	{
-		renderer->load_and_bind_surface("entity/0.png", Graphics::SpriteType::NPC_GOBLIN, 50);
-		renderer->load_and_bind_surface("entity/1.png", Graphics::SpriteType::NPC_INU, 18);
+		Graphics::SpriteArgs args = sprite;
+		renderer->load_and_bind_surface(args.Path, args.Type, args.FrameCount);
 	}
 }
 
