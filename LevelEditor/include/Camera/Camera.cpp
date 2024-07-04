@@ -5,6 +5,7 @@
 void Camera::Reset() 
 {
 	Position = Utilities::ivec2(0);
+	Zoom = 1;
 }
 
 Camera::Camera() 

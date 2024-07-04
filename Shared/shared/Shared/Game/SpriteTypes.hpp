@@ -1,3 +1,5 @@
+#pragma once
+
 typedef unsigned short uint16_t;
 
 namespace Graphics
@@ -48,6 +50,10 @@ namespace Graphics
 		//*
 		SPRITE_COUNT
 	};
+
+	constexpr inline uint32_t SPRITE_COUNT = static_cast<uint32_t>(SpriteType::SPRITE_COUNT) - 1;
+
+	constexpr inline uint32_t ICON_COUNT = static_cast<uint32_t>(SpriteType::PLAYER_ICON_COUNT);
 
 	typedef int int32_t;
 

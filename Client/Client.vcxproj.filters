@@ -28,7 +28,6 @@
     <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
     <ClCompile Include="include\precomp.cpp" />
     <ClCompile Include="include\Core\Events\Clickable\Tile\WorldTile.cpp" />
-    <ClCompile Include="include\Core\Rendering\Animation\Animation2D.cpp" />
     <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
     <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
     <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
@@ -62,9 +61,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Entity\EntityHandler.h">

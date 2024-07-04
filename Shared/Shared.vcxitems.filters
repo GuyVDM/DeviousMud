@@ -39,5 +39,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\SpriteTypes.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Animations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\NPCDef.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)shared\Shared\Game\Animation2D.hpp" />
   </ItemGroup>
 </Project>

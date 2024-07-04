@@ -6,16 +6,32 @@
 
 #include "Config/Config.h"
 
-float App::Config::Configuration::s_DeltaTime;
+#include "Tile/Tile.h"
 
-std::chrono::time_point<std::chrono::high_resolution_clock> App::Config::Configuration::s_LastTime;
+#include "Shared/Game/SpriteTypes.hpp"
 
-float App::Config::Configuration::GetDT()
+App::Config::TileConfig App::Config::TileConfiguration = TileConfig
+(
+	/* CurrentTileType */ e_EntityType::ENTITY_SCENIC,
+	/* SpriteType      */ Graphics::SpriteType::HUD_CHATBOX,
+	/* isWalkable      */ true,
+	/* RenderOrder     */ 0,
+	/* NPCRespawnTime  */ 1.0f,
+	/* NPCId           */ 1
+);
+
+
+#pragma region EDITOR_CONFIG
+float App::Config::EditorConfig::s_DeltaTime;
+
+std::chrono::time_point<std::chrono::high_resolution_clock> App::Config::EditorConfig::s_LastTime;
+
+float App::Config::EditorConfig::GetDT()
 {
 	return s_DeltaTime;
 }
 
-void App::Config::Configuration::UpdateDT()
+void App::Config::EditorConfig::UpdateDT()
 {
 	const float MAX_DELTATIME = 0.1f;
 
@@ -27,3 +43,4 @@ void App::Config::Configuration::UpdateDT()
 
 	s_DeltaTime = std::min(s, MAX_DELTATIME);
 }
+#pragma endregion

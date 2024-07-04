@@ -15,12 +15,78 @@ WorldEditor::WorldEditor()
 	m_Camera = g_globals.Camera;
 }
 
+WorldEditor::~WorldEditor()
+{
+	m_Chunks.clear();
+}
+
 void WorldEditor::Update()
 {
 	HighlightCurrentTile();
+	RenderTiles();
 }
 
-Utilities::ivec2 WorldEditor::GetHoveredGridCell()
+void WorldEditor::PlaceTile()
+{
+	using namespace App::Config;
+
+	const Utilities::ivec2 chunkCoords      = GetChunkCoords(m_HoveredGridCell);
+	const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(m_HoveredGridCell);
+
+	const U32 tileIndex = localChunkCoords.x + localChunkCoords.y * SIZE_CHUNK_TILES;
+
+	switch(TileConfiguration.CurrentTileType) 
+	{
+		case e_EntityType::ENTITY_SCENIC:
+		{
+			Ref<ScenicTile> tile = std::make_shared<ScenicTile>();
+			tile->Coords = m_HoveredGridCell;
+			tile->bIsWalkable = TileConfiguration.bIsWalkable;
+
+			m_Chunks[chunkCoords].Tiles[tileIndex] = tile;
+		}
+		break;
+
+		case e_EntityType::ENTITY_NPC: 
+		{
+		}
+		break;
+	}
+
+}
+
+void WorldEditor::RemoveTile()
+{
+	const Utilities::ivec2 chunkCoords = GetChunkCoords(m_HoveredGridCell);
+
+	if(m_Chunks.find(chunkCoords) != m_Chunks.end()) 
+	{
+		const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(m_HoveredGridCell);
+
+		const U32 tileIndex = localChunkCoords.x + localChunkCoords.y * SIZE_CHUNK_TILES;
+
+		m_Chunks[chunkCoords].Tiles[tileIndex] = nullptr;
+	}
+}
+
+void WorldEditor::RenderTiles()
+{
+	//TODO:
+	// Only render the chunk if the chunk is on screen and if the chunk is not empty.
+
+	for(auto&[chunkCoords, chunk] : m_Chunks) 
+	{
+		for(auto& tile : chunk.Tiles) 
+		{
+			if (tile != nullptr)
+			{
+				tile->Render();
+			}
+		}
+	}
+}
+
+Utilities::ivec2 WorldEditor::GetHoveredGridCell() const
 {
 	Utilities::ivec2 mousePos;
 	SDL_GetMouseState(&mousePos.x, &mousePos.y);
@@ -49,9 +115,11 @@ void WorldEditor::HighlightCurrentTile()
 {
 	static float elapsedTime = 0.f;
 
-	elapsedTime += App::Config::Configuration::GetDT();
+	elapsedTime += App::Config::EditorConfig::GetDT();
 
 	m_HoveredGridCell = GetHoveredGridCell();
+
+	ToLocalChunkCoords(m_HoveredGridCell);
 
 	const SDL_Rect rect
 	{
@@ -64,6 +132,45 @@ void WorldEditor::HighlightCurrentTile()
 	const Color col = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, elapsedTime)};
 	g_globals.Renderer->DrawRect(rect, col, 10);
 	
+}
+
+Utilities::ivec2 WorldEditor::GetChunkCoords(const Utilities::ivec2& _worldCoords) const
+{
+	const U32 chunkSize = SIZE_CHUNK_TILES; // Size of each chunk in tiles
+
+	Utilities::ivec2 chunkCoords
+	{
+		_worldCoords.x / chunkSize,
+		_worldCoords.y / chunkSize
+	};
+
+	if (_worldCoords.x < 0)
+	{
+		chunkCoords.x -= 1;
+	}
+	if (_worldCoords.y < 0) 
+	{
+		chunkCoords.y -= 1;
+	}
+
+	return chunkCoords;
+}
+
+Utilities::ivec2 WorldEditor::ToLocalChunkCoords(const Utilities::ivec2& _worldCoords) const
+{
+	const U32 chunkSize = SIZE_CHUNK_TILES; // Size of each chunk in tiles
+
+	// Get chunk coordinates
+	const Utilities::ivec2 chunkCoords = GetChunkCoords(_worldCoords);
+
+	// Calculate local chunk coordinates
+	const Utilities::ivec2 localChunkCoords
+	{
+		(_worldCoords.x % chunkSize + chunkSize) % chunkSize,
+		(_worldCoords.y % chunkSize + chunkSize) % chunkSize
+	};
+
+	return localChunkCoords;
 }
 
 

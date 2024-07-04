@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 
-#include "Core/Rendering/Animation/Animation2D.h"
+#include "Shared/Game/Animation2D.hpp"
 
 enum class e_AnimationType : uint8_t
 {

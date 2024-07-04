@@ -11,10 +11,6 @@
 
 namespace Graphics 
 {
-	constexpr uint32_t SPRITE_COUNT = static_cast<uint32_t>(SpriteType::SPRITE_COUNT) - 1;
-
-	constexpr uint32_t ICON_COUNT = static_cast<uint32_t>(SpriteType::PLAYER_ICON_COUNT);
-
 	struct SpriteRenderData 
 	{
 		enum e_SpriteRenderFlags : uint8_t 

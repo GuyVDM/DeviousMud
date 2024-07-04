@@ -3,13 +3,15 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
-#include "Shared/Game/SpriteTypes.hpp"
-
-#include "Config/Config.h"
-
 #include <unordered_map>
 
 #include <vector>
+
+namespace Graphics
+{
+	struct SpriteArgs;
+	enum class SpriteType : uint16_t;
+}
 
 struct SDL_Texture;
 struct SDL_Surface;
@@ -24,7 +26,7 @@ struct Color
 
 struct RenderQuery 
 {
-	Graphics::SpriteType Type     = Graphics::SpriteType::NONE;
+	Graphics::SpriteType Type;
 	Utilities::ivec2     Position = {1, 1};
 	Utilities::ivec2     Size     = {1, 1};
 	Color                Color    = {255,255,255,255};
@@ -56,6 +58,8 @@ struct Sprite
 class Renderer 
 {
 public:
+	const Opt<Sprite> GetSprite(const Graphics::SpriteType& _type);
+
 	void DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder = 0);
 
 	void StartFrame();

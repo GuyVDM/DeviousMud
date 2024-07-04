@@ -17,4 +17,8 @@ private:
 	void DrawImGUI();
 
 	void DrawMenuBar();
+
+	void DrawContentBrowser();
+
+	void DrawTileWindow();
 };

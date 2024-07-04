@@ -6,6 +6,8 @@
 
 #include "Core/Application/Config/Config.h"
 
+#include "Shared/Game/Animation2D.hpp"
+
 using namespace Graphics;
 using namespace Animation;
 

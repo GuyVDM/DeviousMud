@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Rendering/Sprite/Sprite.h"
+#include "Shared/Game/SpriteTypes.hpp"
 
 #include "Shared/Game/Animations.h"
 
@@ -7,12 +7,17 @@
 
 #include <string>
 
+namespace Graphics
+{
+	enum class SpriteType : uint16_t;
+}
+
 struct NPCDef 
 {
 	std::string          name           = "null";
 	uint32_t             combatLevel    = 0;
 	uint8_t              size           = 1;                             //UNUSED
-	Graphics::SpriteType sprite         = Graphics::SpriteType::NONE;
+	Graphics::SpriteType sprite;
 	e_AnimationType      walkingAnim    = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      attackAnim     = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      idleAnim       = e_AnimationType::NO_ANIMATION;

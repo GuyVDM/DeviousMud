@@ -25,6 +25,16 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
             {
                 bHoldingMiddleMouse = true;
             }
+
+            if(_event.button.button == SDL_BUTTON_LEFT) 
+            {
+                m_WorldEditor->PlaceTile();
+            }
+
+            if(_event.button.button == SDL_BUTTON_RIGHT) 
+            {
+                m_WorldEditor->RemoveTile();
+            }
         }
         break;
 

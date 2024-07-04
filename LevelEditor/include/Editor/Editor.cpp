@@ -10,9 +10,13 @@
 
 #include "Renderer/Renderer.h"
 
+#include "Config/Config.h"
+
 #include "Camera/Camera.h"
 
 #include "Globals/Globals.h"
+
+#include "Shared/Game/SpriteTypes.hpp"
 
 Globals g_globals;
 
@@ -63,7 +67,6 @@ bool Editor::CreateEditorWindow(int _width, int _height)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
 		m_SDLRenderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
@@ -77,8 +80,8 @@ bool Editor::CreateEditorWindow(int _width, int _height)
 	// Create globals
 	//
 	{
-		g_globals.Renderer			= std::make_shared<Renderer>(m_SDLRenderer);
-		g_globals.Camera			= std::make_shared<Camera>();
+		g_globals.Renderer = std::make_shared<Renderer>(m_SDLRenderer);
+		g_globals.Camera   = std::make_shared<Camera>();
 	}
 
 	m_Renderer = g_globals.Renderer;
@@ -97,7 +100,7 @@ void Editor::Start()
 
 	while (bIsRunning)
 	{
-		App::Config::Configuration::UpdateDT();
+		App::Config::EditorConfig::UpdateDT();
 
 		m_Renderer->StartFrame();
 
@@ -153,8 +156,8 @@ void Editor::GenerateLayers()
 {
 	m_LayerStack = std::make_shared<LayerStack>();
 
-	m_LayerStack->PushBackLayer(std::make_shared<ImGUILayer>());
 	m_LayerStack->PushBackLayer(std::make_shared<InputLayer>());
+	m_LayerStack->PushBackLayer(std::make_shared<ImGUILayer>());
 }
 
 Editor::~Editor()

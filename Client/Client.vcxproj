@@ -191,7 +191,6 @@
     <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
     <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
     <ClCompile Include="include\Core\Entity\EntityHandler.cpp" />
-    <ClCompile Include="include\Core\Rendering\Animation\Animation2D.cpp" />
     <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
     <ClCompile Include="include\Core\Rendering\Camera\Camera.cpp" />
     <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
@@ -231,7 +230,6 @@
     <ClInclude Include="include\Core\Network\Client\ClientWrapper.h" />
     <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
     <ClInclude Include="include\Core\Entity\EntityHandler.h" />
-    <ClInclude Include="include\Core\Rendering\Animation\Animation2D.h" />
     <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
     <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
     <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h" />

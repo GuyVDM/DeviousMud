@@ -6,6 +6,10 @@
 
 #include "Globals/Globals.h"
 
+#include "Shared/Game/SpriteTypes.hpp"
+
+#include "Config/Config.h"
+
 #include "Editor/Editor.h"
 
 Renderer::Renderer(SDL_Renderer* _renderer) : m_Renderer(_renderer)
@@ -108,6 +112,16 @@ const bool Renderer::IsVisible(const SDL_Rect& _rect) const
 	return SDL_HasIntersection(&_rect, &screen);
 }
 
+const Opt<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
+{
+	if(m_Sprites.find(_type) != m_Sprites.end()) 
+	{
+		return m_Sprites[_type];
+	}
+	
+	return std::nullopt;
+}
+
 void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder)
 {
 	SDL_Texture* texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, _rect.w, _rect.h);
@@ -123,14 +137,16 @@ void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOr
 
 	SDL_SetRenderTarget(m_Renderer, nullptr);
 
-	RenderQueryInstance instance;
-	instance.Color    = _col;
-	instance.Type     = Graphics::SpriteType::NONE;
-	instance.Frame    = 0;
-	instance.Position = Utilities::ivec2(_rect.x, _rect.y);
-	instance.Size     = Utilities::ivec2(_rect.w, _rect.h);
-	instance.Flags    = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
-	instance.Texture  = texture;
+	RenderQueryInstance instance; 
+	{
+		instance.Color = _col;
+		instance.Type = Graphics::SpriteType::NONE;
+		instance.Position = Utilities::ivec2(_rect.x, _rect.y);
+		instance.Size = Utilities::ivec2(_rect.w, _rect.h);
+		instance.Texture = texture;
+		instance.Frame = 0;
+		instance.Flags = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
+	}
 
 	m_RenderQuery[_zOrder].push_back(instance);
 }
