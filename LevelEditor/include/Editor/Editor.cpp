@@ -31,7 +31,7 @@ bool Editor::CreateEditorWindow(int _width, int _height)
 		return false;
 	}
 
-	Uint32 flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+	U32 flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 	if(_width == 0 && _height == 0) 
 	{
@@ -104,12 +104,6 @@ void Editor::Start()
 
 		m_Renderer->StartFrame();
 
-		RenderQuery query;
-		query.Type = Graphics::SpriteType::HUD_FRAME;
-		query.Position = { 32, 32 };
-		query.Size = { 32, 32 };
-		m_Renderer->Render(query, 1);
-
 		while (SDL_PollEvent(&event))
 		{
 			switch (event.type) 
@@ -141,14 +135,6 @@ void Editor::Start()
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), m_SDLRenderer);
 
 		SDL_RenderPresent(m_SDLRenderer);
-
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			SDL_Window*   backup_current_window  = SDL_GL_GetCurrentWindow();
-			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-		}
 	}
 }
 
@@ -162,8 +148,10 @@ void Editor::GenerateLayers()
 
 Editor::~Editor()
 {
+	SDL_DestroyWindow(m_Window);
+	SDL_DestroyRenderer(m_SDLRenderer);
+
 	ImGui_ImplSDLRenderer2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	SDL_DestroyWindow(m_Window);
 }

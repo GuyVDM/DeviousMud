@@ -18,6 +18,8 @@ Renderer::Renderer(SDL_Renderer* _renderer) : m_Renderer(_renderer)
 	{
 		LoadSprites(sprite);
 	}
+
+	CreateRectTexture();
 }
 
 Renderer::~Renderer()
@@ -30,6 +32,8 @@ Renderer::~Renderer()
 
 	m_Sprites.clear();
 	m_RenderQuery.clear();
+
+	SDL_DestroyTexture(m_RectTexture);
 }
 
 void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
@@ -97,6 +101,22 @@ void Renderer::DrawGrid()
 	}
 }
 
+void Renderer::CreateRectTexture()
+{
+	m_RectTexture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
+	SDL_SetTextureBlendMode(m_RectTexture, SDL_BLENDMODE_BLEND);
+
+	SDL_SetRenderTarget(m_Renderer, m_RectTexture);
+
+	SDL_RenderClear(m_Renderer);
+
+	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+
+	SDL_RenderFillRect(m_Renderer, nullptr);
+
+	SDL_SetRenderTarget(m_Renderer, nullptr);
+}
+
 const bool Renderer::IsVisible(const SDL_Rect& _rect) const
 {
 	const Utilities::ivec2 windowSize = { Editor::s_WindowWidth, Editor::s_WindowHeight };
@@ -124,29 +144,16 @@ const Opt<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 
 void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder)
 {
-	SDL_Texture* texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, _rect.w, _rect.h);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-	SDL_SetRenderTarget(m_Renderer, texture);
-
-	SDL_RenderClear(m_Renderer);
-
-	SDL_SetRenderDrawColor(m_Renderer, _col.R, _col.G, _col.B, _col.A);
-
-	SDL_RenderFillRect(m_Renderer, nullptr);
-
-	SDL_SetRenderTarget(m_Renderer, nullptr);
-
-	RenderQueryInstance instance; 
+	const RenderQueryInstance instance =
 	{
-		instance.Color = _col;
-		instance.Type = Graphics::SpriteType::NONE;
-		instance.Position = Utilities::ivec2(_rect.x, _rect.y);
-		instance.Size = Utilities::ivec2(_rect.w, _rect.h);
-		instance.Texture = texture;
-		instance.Frame = 0;
-		instance.Flags = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
-	}
+		/* Type     */ Graphics::SpriteType::NONE,
+		/* Position */ Utilities::ivec2(_rect.x, _rect.y),
+		/* Size     */ Utilities::ivec2(_rect.w, _rect.h),
+		/* Color    */ _col,
+		/* Frame    */ 0,
+		/* Texture  */ m_RectTexture,
+		/* Flags    */ e_TextureFlags::TEXTURE_NONE,
+	};
 
 	m_RenderQuery[_zOrder].push_back(instance);
 }
@@ -208,10 +215,12 @@ void Renderer::EndFrame()
 			};
 
 			SDL_SetTextureColorMod(queryItem.Texture, queryItem.Color.R, queryItem.Color.G, queryItem.Color.B);
+			SDL_SetTextureAlphaMod(queryItem.Texture, queryItem.Color.A);
 
 			SDL_RenderCopy(m_Renderer, queryItem.Texture, &srcRect, &dstRect);
 
 			SDL_SetTextureColorMod(queryItem.Texture, 255, 255, 255);
+			SDL_SetTextureAlphaMod(queryItem.Texture, queryItem.Color.A);
 
 			if (queryItem.Flags & e_TextureFlags::TEXTURE_DESTROY_AFTER_USE)
 			{

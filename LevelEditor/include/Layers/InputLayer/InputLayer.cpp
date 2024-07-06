@@ -17,6 +17,16 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
 {
     static bool bHoldingMiddleMouse = false;
 
+    if (_event.button.button == SDL_BUTTON_LEFT)
+    {
+        m_WorldEditor->Place();
+    }
+
+    if (_event.button.button == SDL_BUTTON_RIGHT)
+    {
+        m_WorldEditor->Remove();
+    }
+
     switch(_event.type) 
     {
         case SDL_MOUSEBUTTONDOWN:
@@ -24,16 +34,6 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
             if (_event.button.button == SDL_BUTTON_MIDDLE)
             {
                 bHoldingMiddleMouse = true;
-            }
-
-            if(_event.button.button == SDL_BUTTON_LEFT) 
-            {
-                m_WorldEditor->PlaceTile();
-            }
-
-            if(_event.button.button == SDL_BUTTON_RIGHT) 
-            {
-                m_WorldEditor->RemoveTile();
             }
         }
         break;

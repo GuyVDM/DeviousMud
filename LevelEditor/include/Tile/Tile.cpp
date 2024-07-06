@@ -19,14 +19,6 @@ void ScenicTile::Render()
 {
 	Graphics::SpriteType type = static_cast<Graphics::SpriteType>(SpriteHandle);
 
-	/*-------Check if the sprite type is valid---------*/
-	if (!g_globals.Renderer->GetSprite(type).has_value())
-	{
-		return;
-	}
-
-
-
 	RenderQuery query;
 	query.Color = { 255,255,255,255 };
 	query.Frame = 0;
@@ -44,17 +36,23 @@ void ScenicTile::Render()
 		query.Size.y
 	};
 
-	Color color;
-	if(bIsWalkable) 
+	//*---------------------------------------
+	// Draw whether tiles are walkable or not.
+	//
+	if (App::Config::SettingsConfiguration.bShowWalkableTiles)
 	{
-		color = { 0, 255, 0, 10 };
-	}
-	else 
-	{
-		color = { 255, 0, 0, 10 };
-	}
+		Color color;
+		if (bIsWalkable)
+		{
+			color = { 0, 255, 0, 70 };
+		}
+		else
+		{
+			color = { 255, 0, 0, 70 };
+		}
 
-	g_globals.Renderer->DrawRect(rect, color);
+		g_globals.Renderer->DrawRect(rect, color);
+	}
 
 }
 

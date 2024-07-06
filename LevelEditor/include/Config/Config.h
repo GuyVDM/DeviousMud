@@ -36,6 +36,14 @@ namespace App
 
 		extern TileConfig TileConfiguration;
 
+		struct SettingsConfig
+		{
+			bool bShowWalkableTiles = false;
+			bool bFillChunks        = false;
+		};
+
+		extern SettingsConfig SettingsConfiguration;
+
 		class EditorConfig
 		{
 		public:

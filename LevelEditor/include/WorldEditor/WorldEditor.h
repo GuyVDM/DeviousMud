@@ -12,7 +12,7 @@
 
 struct Camera;
 
-constexpr U16 SIZE_CHUNK_TILES = 32;
+constexpr U16 SIZE_CHUNK_TILES = 16;
 
 struct Chunk 
 {
@@ -25,18 +25,30 @@ class WorldEditor
 public:
 	void Update();
 
-	void PlaceTile();
+	void Place();
 
-	void RemoveTile();
+	void Remove();
 
 public:
 	WorldEditor();
 	virtual ~WorldEditor();
 
 private:
+	void PlaceTile();
+
+	void RemoveTile();
+
+	void FillChunk();
+
+	void RemoveChunk();
+
+	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
+
 	void RenderTiles();
 
 	void HighlightCurrentTile();
+
+	Ref<Tile> CreateTile(const Utilities::ivec2& _worldCoords) const;
 
 	Utilities::ivec2 GetHoveredGridCell() const;
 
@@ -49,5 +61,5 @@ private:
 
 	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
 
-	std::map<Utilities::ivec2, Chunk> m_Chunks;
+	std::map<Utilities::ivec2, Ref<Chunk>> m_Chunks;
 };

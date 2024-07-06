@@ -13,11 +13,16 @@
 App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 (
 	/* CurrentTileType */ e_EntityType::ENTITY_SCENIC,
-	/* SpriteType      */ Graphics::SpriteType::HUD_CHATBOX,
+	/* SpriteType      */ static_cast<Graphics::SpriteType>(1),
 	/* isWalkable      */ true,
 	/* RenderOrder     */ 0,
 	/* NPCRespawnTime  */ 1.0f,
 	/* NPCId           */ 1
+);
+
+App::Config::SettingsConfig App::Config::SettingsConfiguration = SettingsConfig
+(
+	/* bShowWalkableTiles */ false
 );
 
 

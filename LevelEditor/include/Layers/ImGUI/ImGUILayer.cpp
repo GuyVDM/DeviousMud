@@ -167,6 +167,13 @@ void ImGUILayer::DrawTileWindow()
             TileConfiguration.RenderOrder = std::clamp<U32>(TileConfiguration.RenderOrder, 0, 255);
         }
     }
+    ImGui::End();
+
+    if (ImGui::Begin("Tool Settings:", 0, ImGuiWindowFlags_NoCollapse))
+    {
+        ImGui::Checkbox("Show Walkable Tiles:",  &SettingsConfiguration.bShowWalkableTiles);
+        ImGui::Checkbox("Fill chunks:",          &SettingsConfiguration.bFillChunks);
+    }
 
     ImGui::End();
 }

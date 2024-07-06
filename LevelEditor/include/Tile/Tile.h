@@ -3,9 +3,6 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
-constexpr U32 TILE_SIZE  = 32;
-constexpr U32 CHUNK_SIZE = 32;
-
 enum class e_EntityType
 {
 	ENTITY_SCENIC = 0,

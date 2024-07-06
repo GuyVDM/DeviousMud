@@ -77,6 +77,8 @@ private:
 
 	void DrawGrid();
 
+	void CreateRectTexture();
+
 	const bool IsVisible(const SDL_Rect& _rect) const;
 
 private:
@@ -85,4 +87,6 @@ private:
 	std::map<U8, std::vector<RenderQueryInstance>> m_RenderQuery;
 
 	std::map<Graphics::SpriteType, Sprite> m_Sprites;
+
+	SDL_Texture* m_RectTexture;
 };
