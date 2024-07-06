@@ -16,13 +16,15 @@ InputLayer::InputLayer()
 const bool InputLayer::HandleEvent(const SDL_Event& _event)
 {
     static bool bHoldingMiddleMouse = false;
+    static bool bLeftMouse  = false;
+    static bool bRightMouse = false;
 
-    if (_event.button.button == SDL_BUTTON_LEFT)
+    if (bLeftMouse)
     {
         m_WorldEditor->Place();
     }
 
-    if (_event.button.button == SDL_BUTTON_RIGHT)
+    if (bRightMouse)
     {
         m_WorldEditor->Remove();
     }
@@ -31,19 +33,31 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
     {
         case SDL_MOUSEBUTTONDOWN:
         {
+            if (_event.button.button == SDL_BUTTON_LEFT)
+                bLeftMouse = true;
+            
+
+            if (_event.button.button == SDL_BUTTON_RIGHT)
+                bRightMouse = true;
+            
+
             if (_event.button.button == SDL_BUTTON_MIDDLE)
-            {
-                bHoldingMiddleMouse = true;
-            }
+                bHoldingMiddleMouse = true;       
         }
         break;
 
         case SDL_MOUSEBUTTONUP:
         {
+            if (_event.button.button == SDL_BUTTON_LEFT)
+                bLeftMouse = false;
+
+
+            if (_event.button.button == SDL_BUTTON_RIGHT)
+                bRightMouse = false;
+
+
             if (_event.button.button == SDL_BUTTON_MIDDLE)
-            {
                 bHoldingMiddleMouse = false;
-            }
         }
         break;
 

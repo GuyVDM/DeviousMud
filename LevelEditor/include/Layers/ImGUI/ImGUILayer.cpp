@@ -130,8 +130,13 @@ void ImGUILayer::DrawMenuBar()
 
 void ImGUILayer::DrawContentBrowser()
 {
+    using namespace App::Config;
+
     if (ImGui::Begin("Content Browser", 0, ImGuiWindowFlags_NoCollapse))
     {
+        ImGui::SeparatorText("Select Scenic Tile Texture:");
+        ImGui::Spacing();
+
         for(U16 i = 0; i < Graphics::SPRITE_COUNT; i++) 
         {
             Opt<Sprite> optSprite = g_globals.Renderer->GetSprite(static_cast<Graphics::SpriteType>(i));
@@ -145,7 +150,7 @@ void ImGUILayer::DrawContentBrowser()
                 const ImVec2 buttonSize = { 42.0f, 42.0f };
                 if (ImGui::ImageButton(sprite.Texture, buttonSize))
                 {
-                    App::Config::TileConfiguration.SpriteType = static_cast<Graphics::SpriteType>(i);
+                    TileConfiguration.SpriteType = static_cast<Graphics::SpriteType>(i);
                 }
             }
         }
@@ -166,6 +171,20 @@ void ImGUILayer::DrawTileWindow()
         {
             TileConfiguration.RenderOrder = std::clamp<U32>(TileConfiguration.RenderOrder, 0, 255);
         }
+
+        ImGui::SeparatorText("Preview Window:");
+
+        ImVec2 windowSize  = ImGui::GetWindowSize();
+        ImVec2 previewSize = { 84.0f, 84.0f };
+
+        ImGui::SameLine((windowSize.x * 0.5f) - previewSize.x * 0.5f);
+        
+        ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+        const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f; 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
+
+        Opt<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SpriteType);
+        ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f });
     }
     ImGui::End();
 

@@ -175,8 +175,8 @@ void WorldEditor::HighlightCurrentTile()
 	}
 
 	const Color col = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, elapsedTime)};
+
 	g_globals.Renderer->DrawRect(rect, col, 10);
-	
 }
 
 void WorldEditor::FillChunk()
