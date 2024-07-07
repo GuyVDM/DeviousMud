@@ -53,7 +53,6 @@ void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
 		DEVIOUS_ASSERT(surface == nullptr);
 	}
 
-	//Store the surface details and lock it behind the sprite type.
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
 
 	SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
@@ -73,12 +72,12 @@ void Renderer::DrawGrid()
 	const ivec2 camPos = g_globals.Camera->Position;
 	const ivec2 offset =
 	{
-		-(camPos.x % GRIDSIZE),
-		-(camPos.y % GRIDSIZE)
+		-(camPos.x % GRIDCELLSIZE),
+		-(camPos.y % GRIDCELLSIZE)
 	};
 
 	const U32 camZoom = g_globals.Camera->Zoom;
-	const U32 modGridSize = GRIDSIZE * camZoom;
+	const U32 modGridSize = GRIDCELLSIZE * camZoom;
 
 	//*---------------------
 	// Draw infinite grid.
@@ -132,6 +131,17 @@ const bool Renderer::IsVisible(const SDL_Rect& _rect) const
 	return SDL_HasIntersection(&_rect, &screen);
 }
 
+const Utilities::ivec2 Renderer::ScreenToWorld(const Utilities::ivec2& _screenCoords)
+{
+	Ref<Camera> camera = g_globals.Camera;
+
+	return Utilities::ivec2
+	(
+		static_cast<U32>((_screenCoords.x / camera->Zoom) + camera->Position.x),
+		static_cast<U32>((_screenCoords.y / camera->Zoom) + camera->Position.y)
+	);
+}
+
 const Opt<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 {
 	if(m_Sprites.find(_type) != m_Sprites.end()) 
@@ -156,6 +166,49 @@ void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOr
 	};
 
 	m_RenderQuery[_zOrder].push_back(instance);
+}
+
+void Renderer::DrawRectOutline(const SDL_Rect& _rect, const Color& _col, const U32& _outlWidth, const U8& _zOrder)
+{
+	const SDL_Rect top =
+	{
+		_rect.x,
+		_rect.y,
+		_rect.w,
+		_outlWidth
+	};
+
+	DrawRect(top, _col, _zOrder);
+
+	const SDL_Rect bot =
+	{
+		_rect.x,
+		_rect.y + _rect.h - _outlWidth,
+		_rect.w,
+		_outlWidth
+	};
+
+	DrawRect(bot, _col, _zOrder);
+
+	const SDL_Rect left =
+	{
+		_rect.x,
+		_rect.y,
+		_outlWidth,
+		_rect.h
+	};
+
+	DrawRect(left, _col, _zOrder);
+
+	const SDL_Rect right =
+	{
+		_rect.x + _rect.w - _outlWidth,
+		_rect.y,
+		_outlWidth,
+		_rect.h
+	};
+
+	DrawRect(right, _col, _zOrder);
 }
 
 void Renderer::StartFrame()

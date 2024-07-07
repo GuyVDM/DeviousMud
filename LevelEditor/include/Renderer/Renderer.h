@@ -58,9 +58,14 @@ struct Sprite
 class Renderer 
 {
 public:
+	static const Utilities::ivec2 ScreenToWorld(const Utilities::ivec2& _screenCoords);
+
+public:
 	const Opt<Sprite> GetSprite(const Graphics::SpriteType& _type);
 
 	void DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder = 0);
+
+	void DrawRectOutline(const SDL_Rect& _rect, const Color& _col = {255,255,255,255}, const U32& _outlWidth = 1, const U8& _zOrder = 0);
 
 	void StartFrame();
 

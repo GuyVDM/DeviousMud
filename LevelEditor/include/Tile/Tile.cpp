@@ -22,8 +22,8 @@ void ScenicTile::Render()
 	RenderQuery query;
 	query.Color = { 255,255,255,255 };
 	query.Frame = 0;
-	query.Position = Coords * App::Config::GRIDSIZE;
-	query.Size = Utilities::ivec2(App::Config::GRIDSIZE);
+	query.Position = Coords * App::Config::GRIDCELLSIZE;
+	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE);
 	query.Type = type;
 
 	g_globals.Renderer->Render(query, RenderOrder);
@@ -71,8 +71,8 @@ void NPCTile::Render()
 	RenderQuery query;
 	query.Color = { 255,255,255,255 };
 	query.Frame = 0;
-	query.Position = Coords * App::Config::GRIDSIZE;
-	query.Size = Utilities::ivec2(App::Config::GRIDSIZE);
+	query.Position = Coords * App::Config::GRIDCELLSIZE;
+	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE);
 	query.Type = definition.sprite;
 
 	g_globals.Renderer->Render(query, RenderOrder);

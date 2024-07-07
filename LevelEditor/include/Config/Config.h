@@ -18,7 +18,7 @@ namespace App
 {
 	namespace Config 
 	{
-		const U32 GRIDSIZE = 32;
+		const U32 GRIDCELLSIZE = 32;
 
 		struct TileConfig 
 		{
@@ -34,15 +34,14 @@ namespace App
 			U32          NPCId;
 		};
 
-		extern TileConfig TileConfiguration;
-
 		struct SettingsConfig
 		{
-			bool bShowWalkableTiles = false;
-			bool bFillChunks        = false;
+			U32  BrushSizeX           = 1;
+			U32  BrushSizeY			  = 1;
+			bool bShowWalkableTiles   = false;
+			bool bRenderChunkOutlines = true;
+			bool bFillChunks          = false;
 		};
-
-		extern SettingsConfig SettingsConfiguration;
 
 		class EditorConfig
 		{
@@ -54,5 +53,8 @@ namespace App
 			static float s_DeltaTime;
 			static std::chrono::time_point<std::chrono::high_resolution_clock> s_LastTime;
 		};
+
+		extern TileConfig     TileConfiguration;
+		extern SettingsConfig SettingsConfiguration;
 	}
 }

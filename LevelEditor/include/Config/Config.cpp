@@ -22,9 +22,12 @@ App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 
 App::Config::SettingsConfig App::Config::SettingsConfiguration = SettingsConfig
 (
-	/* bShowWalkableTiles */ false
+	/* BrushSizeX           */  1,
+	/* BrushSizeY           */  1,
+	/* bShowWalkableTiles   */  false,
+	/* bRenderChunkOutlines */  true,
+	/* bFillChunks          */  false
 );
-
 
 #pragma region EDITOR_CONFIG
 float App::Config::EditorConfig::s_DeltaTime;

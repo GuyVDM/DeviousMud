@@ -64,6 +64,7 @@ void ImGUILayer::DrawImGUI()
 {
     if (ImGui::DockSpaceOverViewport(0, 0, ImGuiDockNodeFlags_PassthruCentralNode))
     {
+ 
         DrawMenuBar();
         DrawContentBrowser();
         DrawTileWindow();
@@ -166,6 +167,7 @@ void ImGUILayer::DrawTileWindow()
     if (ImGui::Begin("Tile Settings:", 0, ImGuiWindowFlags_NoCollapse))
     {
         ImGui::Checkbox("Is Walkable:", &TileConfiguration.bIsWalkable);
+        ImGui::Spacing();
 
         if (ImGui::InputInt("Z-Layer:", &TileConfiguration.RenderOrder))
         {
@@ -190,8 +192,33 @@ void ImGUILayer::DrawTileWindow()
 
     if (ImGui::Begin("Tool Settings:", 0, ImGuiWindowFlags_NoCollapse))
     {
-        ImGui::Checkbox("Show Walkable Tiles:",  &SettingsConfiguration.bShowWalkableTiles);
-        ImGui::Checkbox("Fill chunks:",          &SettingsConfiguration.bFillChunks);
+        ImGui::Spacing();
+        ImGui::Checkbox("Show Walkable Tiles:", &SettingsConfiguration.bShowWalkableTiles);
+
+        ImGui::Spacing();
+        ImGui::Checkbox("Show Chunk Outlines:", &SettingsConfiguration.bRenderChunkOutlines);
+
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::SeparatorText("Transformation:");
+
+        ImGui::Spacing();
+        ImGui::Checkbox("Fill chunks:", &SettingsConfiguration.bFillChunks);
+
+        if (!SettingsConfiguration.bFillChunks)
+        {
+            ImGui::Spacing();
+            ImGui::SetNextItemWidth(100);
+            ImGui::SliderInt("Tile Brush Size X:", &SettingsConfiguration.BrushSizeX, 1, 40);
+
+            ImGui::Spacing();
+            ImGui::SetNextItemWidth(100);
+            ImGui::SliderInt("Tile Brush Size Y:", &SettingsConfiguration.BrushSizeY, 1, 40);
+        }
+        else 
+        {
+            ImGui::Text("Uncheck fill chunks for customization.");
+        }
     }
 
     ImGui::End();

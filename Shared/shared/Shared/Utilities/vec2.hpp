@@ -66,27 +66,14 @@ namespace Utilities
             return _ivec2(x * _other.x, y * _other.y);
         }
 
-        inline _ivec2 operator/(const _ivec2& _other) //TODO: Possibly broken, needs unit test
+        inline _ivec2 operator/(const int32_t& divisor) const 
         {
-            _ivec2 a = { this->x, this->y };
-
-            try 
+            if (divisor == 0)
             {
-                a.x = x /= _other.x;
-                a.y = y /= _other.y;
-            }
-            // catch block catches exception if any 
-            // of type Exception 
-            catch (std::invalid_argument& e) 
-            {
-                // prints that exception has occurred 
-                // calls the what function using object of 
-                // the user defined class called Exception 
-                std::cout << "Exception occurred" << std::endl << e.what();
+                throw std::runtime_error("Division by zero");
             }
 
-
-            return a;
+            return { x / divisor, y / divisor };
         }
 
         inline bool operator==(const _ivec2& a) const

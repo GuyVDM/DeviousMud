@@ -38,7 +38,7 @@ struct ScenicTile : public Tile
 
 struct NPCTile : public Tile
 {
-	U16   NPCId;
+	U8    NPCId;
 	float RespawnTimer;
 
 	NPCTile()
