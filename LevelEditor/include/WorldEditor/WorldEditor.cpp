@@ -91,7 +91,7 @@ void WorldEditor::RenderChunkBorders()
 				size				
 			};
 
-			renderer->DrawRectOutline(rect, { 100, 100, 100, 255 }, 1, 15);
+			renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 15);
 		}
 	}
 }
