@@ -140,10 +140,10 @@ void Client::start_ticking()
 
 	//Setup globals
 	{
-		g_globals.renderer = renderer;
+		g_globals.renderer      = renderer;
 		g_globals.packetHandler = packetHandler;
 		g_globals.entityHandler = entityHandler;
-		g_globals.timerHandler = timerHandler;
+		g_globals.timerHandler  = timerHandler;
 	}
 
 	//Create application

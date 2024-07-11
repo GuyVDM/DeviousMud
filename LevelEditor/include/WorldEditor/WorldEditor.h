@@ -6,6 +6,8 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
+#include "Serialization/JsonSerializable.h"
+
 #include <array>
 
 #include <map>
@@ -15,9 +17,11 @@ struct Camera;
 constexpr U16 SIZE_CHUNK_TILES = 16;
 constexpr U16 TILE_COUNT_CHUNK = SIZE_CHUNK_TILES * SIZE_CHUNK_TILES;
 
-class Chunk 
+class Chunk : JsonSerializable<Chunk>
 {
 public:
+	IMPLEMENT_SERIALIZABLE;
+
 	inline bool AddTile(Ref<Tile> _tile, const Utilities::ivec2& _localChunkCoords)
 	{
 		const U32 tileIndex = _localChunkCoords.x + _localChunkCoords.y * SIZE_CHUNK_TILES;
@@ -27,12 +31,14 @@ public:
 			return false;
 		}
 
-		if(Tiles[tileIndex] == nullptr) 
+		if(m_Tiles[tileIndex] == nullptr) 
 		{
-			TileCount++;
+			m_TileCount++;
 		}
 
-		Tiles[tileIndex] = _tile;
+		_tile->ChunkCoords      = m_ChunkCoords;
+		_tile->LocalChunkCoords = _localChunkCoords;
+		m_Tiles[tileIndex] = _tile;
 		return true;
 	}
 
@@ -45,27 +51,29 @@ public:
 			return false;
 		}
 
-		if (Tiles[tileIndex] != nullptr)
+		if (m_Tiles[tileIndex] != nullptr)
 		{
-			TileCount--;
+			m_TileCount--;
 		}
 
-		Tiles[tileIndex] = nullptr;
+		m_Tiles[tileIndex] = nullptr;
 		return true;
 	}
 
 	inline const bool IsEmpty() const 
 	{
-		return TileCount == 0;
+		return m_TileCount == 0;
 	}
 
 public:
-	Chunk() = default;
+	Chunk(Utilities::ivec2 _chunkCoords) : m_ChunkCoords(_chunkCoords) {};
 	virtual ~Chunk() = default;
 
 public:
-	U32 TileCount = 0;
-	std::array<Ref<Tile>, TILE_COUNT_CHUNK> Tiles;
+	Utilities::ivec2 m_ChunkCoords = { 0 };
+	U32 m_TileCount = 0;
+	std::array<Ref<Tile>,    TILE_COUNT_CHUNK> m_Tiles;
+	std::array<Ref<NPCTile>, TILE_COUNT_CHUNK> m_NPCs;
 };
 
 class WorldEditor 
@@ -77,14 +85,19 @@ public:
 
 	void Remove();
 
+	void CopyChunk();
+
+	void PasteChunk();
+
+	void SerializeHoveredChunk();
 public:
 	WorldEditor();
 	virtual ~WorldEditor();
 
 private:
-	void RenderChunkBorders();
+	void PickTile();
 
-	void Highlight00();
+	void RenderChunkBorders();
 
 	void PlaceTile();
 
@@ -100,7 +113,7 @@ private:
 
 	void HighlightCurrentTile();
 
-	Ref<Tile> CreateTile(const Utilities::ivec2& _worldCoords) const;
+	Ref<Tile> CreateTile() const;
 
 	const Utilities::ivec2 GetHoveredGridCell() const;
 

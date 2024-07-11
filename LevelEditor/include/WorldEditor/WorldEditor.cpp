@@ -25,37 +25,132 @@ WorldEditor::~WorldEditor()
 void WorldEditor::Update()
 {
 	RenderChunkBorders();
-	Highlight00();
 	HighlightCurrentTile();
 	RenderTiles();
 }
 
 void WorldEditor::Place()
 {
-	using namespace App::Config;
+	switch (App::Config::TileConfiguration.InteractionMode)
+	{
+		case e_InteractionMode::BRUSH:
+		{
+			PlaceTile();
+		}
+		break;
 
-	if(SettingsConfiguration.bFillChunks) 
-	{
-		FillChunk();
-	}
-	else 
-	{
-		PlaceTile();
+		case e_InteractionMode::FILL:
+		{
+			FillChunk();
+		}
+		break;
+
+		case e_InteractionMode::TILEPICKER:
+		{
+			PickTile();
+		}
+		break;
 	}
 }
 
 void WorldEditor::Remove() 
 {
+	switch(App::Config::TileConfiguration.InteractionMode) 
+	{
+		case e_InteractionMode::FILL:
+		{
+			RemoveChunk();
+		}
+		break;
+
+		case e_InteractionMode::BRUSH:
+		{
+			RemoveTile();
+
+		}
+		break;
+	}
+}
+
+void WorldEditor::CopyChunk()
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+
+	if (m_Chunks.find(chunkCoords) == m_Chunks.end())
+		return;
+
+	App::Config::TileConfiguration.ChunkClipboard = m_Chunks[chunkCoords];
+}
+
+void WorldEditor::PasteChunk()
+{
 	using namespace App::Config;
 
-	if (SettingsConfiguration.bFillChunks)
+	if (TileConfiguration.ChunkClipboard.expired())
+		return;
+
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+
+	Chunk* chunkClipboard = TileConfiguration.ChunkClipboard.lock().get();
+
+	if (m_Chunks[chunkCoords].get() == chunkClipboard)
+		return;
+
+	//*-------------------
+	// Duplicate the chunk.
+	//
 	{
-		RemoveChunk();
+		m_Chunks.erase(chunkCoords);
+
+		Ref<Chunk> chunk = m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
+
+		for(U32 x = 0; x < SIZE_CHUNK_TILES; x++) 
+		{
+			for (U32 y = 0; y < SIZE_CHUNK_TILES; y++)
+			{
+				const U32 tileIndex = x + y * SIZE_CHUNK_TILES;
+
+				if (chunkClipboard->m_Tiles[tileIndex] == nullptr)
+					continue;
+				
+				Ref<ScenicTile> tileToCopy = std::static_pointer_cast<ScenicTile>(chunkClipboard->m_Tiles[tileIndex]);
+
+				Ref<ScenicTile> tile = std::make_shared<ScenicTile>(*tileToCopy);
+				chunk->AddTile(tile, Utilities::ivec2(x, y));
+			}
+		}
 	}
-	else
-	{
-		RemoveTile();
-	}
+}
+
+void WorldEditor::SerializeHoveredChunk()
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+
+	if (m_Chunks.find(chunkCoords) == m_Chunks.end())
+		return;
+
+	m_Chunks[chunkCoords]->Serialize();
+}
+
+void WorldEditor::PickTile()
+{
+	using namespace App::Config;
+
+	const Utilities::ivec2 chunkCoords      = ToChunkCoords(m_HoveredGridCell);
+	const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(m_HoveredGridCell);
+
+	if (!IsValidChunk(chunkCoords))
+		return;
+
+	const U32 tileIndex = localChunkCoords.x + localChunkCoords.y * SIZE_CHUNK_TILES;
+
+	Ref<Tile> tile = m_Chunks[chunkCoords]->m_Tiles[tileIndex];
+	if (tile == nullptr)
+		return;
+
+	Ref<ScenicTile> scenicTile = std::static_pointer_cast<ScenicTile>(tile);
+	TileConfiguration.SpriteType  = static_cast<Graphics::SpriteType>(scenicTile->SpriteHandle);
+	TileConfiguration.bIsWalkable = scenicTile->bIsWalkable;
 }
 
 void WorldEditor::RenderChunkBorders()
@@ -67,16 +162,16 @@ void WorldEditor::RenderChunkBorders()
 		return;
 	}
 
-	Ref<Renderer> renderer = g_globals.Renderer;
 
-	Utilities::ivec2 camPos = g_globals.Camera->Position;
+	const Utilities::ivec2 camPos     = g_globals.Camera->Position;
 
-	const Utilities::ivec2 startTile = ScreenToGridSpace({ 0, 0});
-	const Utilities::ivec2 endTile   = ScreenToGridSpace(Utilities::ivec2{ Editor::s_WindowWidth, Editor::s_WindowHeight });
+	const Utilities::ivec2 startTile  = ScreenToGridSpace({ 0, 0});
+	const Utilities::ivec2 endTile    = ScreenToGridSpace(Utilities::ivec2{ Editor::s_WindowWidth, Editor::s_WindowHeight });
 
 	const Utilities::ivec2 chunkStart = ToChunkCoords(startTile);
 	const Utilities::ivec2 chunkEnd   = ToChunkCoords(endTile);
 
+	Ref<Renderer> renderer = g_globals.Renderer;
 	constexpr U32 size = GRIDCELLSIZE * SIZE_CHUNK_TILES;
 
 	for (U32 startX = chunkStart.x; startX < chunkEnd.x + 1; startX++)
@@ -96,44 +191,27 @@ void WorldEditor::RenderChunkBorders()
 	}
 }
 
-void WorldEditor::Highlight00()
-{
-	using namespace App::Config;
-
-	const SDL_Rect rect =
-	{
-		0,
-		0,
-		GRIDCELLSIZE,
-		GRIDCELLSIZE
-	};
-
-	g_globals.Renderer->DrawRect(rect, { 0, 0, 120, 120 });
-}
-
 void WorldEditor::PlaceTile()
 {
 	using namespace App::Config;
 
-	for (U32 x = 0; x < SettingsConfiguration.BrushSizeX; x++)
+	for (U32 x = 0; x < SettingsConfiguration.BrushSize.x; x++)
 	{
-		for (U32 y = 0; y < SettingsConfiguration.BrushSizeY; y++)
+		for (U32 y = 0; y < SettingsConfiguration.BrushSize.y; y++)
 		{
-			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2{ x, y };
+			const Utilities::ivec2 position    = m_HoveredGridCell + Utilities::ivec2(x, y);
 			const Utilities::ivec2 chunkCoords = ToChunkCoords(position);
 
 			if (!IsValidChunk(chunkCoords))
 			{
-				m_Chunks[chunkCoords] = std::make_shared<Chunk>();
+				m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
 			}
-
-			const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(position);
 
 			switch (TileConfiguration.CurrentTileType)
 			{
 				case e_EntityType::ENTITY_SCENIC:
 				{
-					m_Chunks[chunkCoords]->AddTile(CreateTile(position), localChunkCoords);
+					m_Chunks[chunkCoords]->AddTile(CreateTile(), ToLocalChunkCoords(position));
 				}
 				break;
 
@@ -150,11 +228,11 @@ void WorldEditor::RemoveTile()
 {
 	using namespace App::Config;
 
-	for (U32 x = 0; x < SettingsConfiguration.BrushSizeX; x++)
+	for (U32 x = 0; x < SettingsConfiguration.BrushSize.x; x++)
 	{
-		for (U32 y = 0; y < SettingsConfiguration.BrushSizeY; y++)
+		for (U32 y = 0; y < SettingsConfiguration.BrushSize.y; y++)
 		{
-			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2{ x, y };
+			const Utilities::ivec2 position    = m_HoveredGridCell + Utilities::ivec2{ x, y };
 			const Utilities::ivec2 chunkCoords = ToChunkCoords(position);
 
 			if (m_Chunks.find(chunkCoords) != m_Chunks.end())
@@ -175,17 +253,14 @@ void WorldEditor::RemoveTile()
 
 const bool WorldEditor::IsValidChunk(const Utilities::ivec2& _chunkCoords) const
 {
-	return (m_Chunks.find(_chunkCoords) != m_Chunks.end());
+	return m_Chunks.find(_chunkCoords) != m_Chunks.end();
 }
 
 void WorldEditor::RenderTiles()
 {
-	//TODO:
-	// Only render the chunk if the chunk is on screen and if the chunk is not empty.
-
 	for(auto&[chunkCoords, chunk] : m_Chunks) 
 	{
-		for(auto& tile : chunk->Tiles) 
+		for(auto& tile : chunk->m_Tiles) 
 		{
 			if (tile != nullptr)
 			{
@@ -208,7 +283,6 @@ void WorldEditor::HighlightCurrentTile()
 	using namespace App::Config;
 
 	static float elapsedTime = 0.f;
-
 	elapsedTime += App::Config::EditorConfig::GetDT();
 
 	m_HoveredGridCell = GetHoveredGridCell();
@@ -216,21 +290,37 @@ void WorldEditor::HighlightCurrentTile()
 	const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(m_HoveredGridCell);
 
 	SDL_Rect rect{};
-	if(SettingsConfiguration.bFillChunks) 
-	{
-		const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
 
-		rect.x = (chunkCoords.x * SIZE_CHUNK_TILES * GRIDCELLSIZE);
-		rect.y = (chunkCoords.y * SIZE_CHUNK_TILES * GRIDCELLSIZE);
-		rect.w = GRIDCELLSIZE * SIZE_CHUNK_TILES;
-		rect.h = GRIDCELLSIZE * SIZE_CHUNK_TILES;
-	}
-	else 
+	switch(TileConfiguration.InteractionMode) 
 	{
-		rect.x = m_HoveredGridCell.x * GRIDCELLSIZE;
-		rect.y = m_HoveredGridCell.y * GRIDCELLSIZE;
-		rect.w = GRIDCELLSIZE * SettingsConfiguration.BrushSizeX;
-		rect.h = GRIDCELLSIZE * SettingsConfiguration.BrushSizeY;
+		case e_InteractionMode::FILL:
+		{
+			const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+
+			rect.x = (chunkCoords.x * SIZE_CHUNK_TILES * GRIDCELLSIZE);
+			rect.y = (chunkCoords.y * SIZE_CHUNK_TILES * GRIDCELLSIZE);
+			rect.w = GRIDCELLSIZE * SIZE_CHUNK_TILES;
+			rect.h = GRIDCELLSIZE * SIZE_CHUNK_TILES;
+		}
+		break;
+
+		case e_InteractionMode::BRUSH:
+		{
+			rect.x = m_HoveredGridCell.x * GRIDCELLSIZE;
+			rect.y = m_HoveredGridCell.y * GRIDCELLSIZE;
+			rect.w = GRIDCELLSIZE * SettingsConfiguration.BrushSize.x;
+			rect.h = GRIDCELLSIZE * SettingsConfiguration.BrushSize.y;
+		}
+		break;
+
+		case e_InteractionMode::TILEPICKER:
+		{
+			rect.x = m_HoveredGridCell.x * GRIDCELLSIZE;
+			rect.y = m_HoveredGridCell.y * GRIDCELLSIZE;
+			rect.w = GRIDCELLSIZE;
+			rect.h = GRIDCELLSIZE;
+		}
+		break;
 	}
 
 	const Color col = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, elapsedTime)};
@@ -247,7 +337,7 @@ void WorldEditor::FillChunk()
 
 	if(!IsValidChunk(chunkCoords))
 	{
-		m_Chunks[chunkCoords] = std::make_shared<Chunk>();
+		m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
 	}
 
 	for (U32 x = 0; x < SIZE_CHUNK_TILES; x++)
@@ -260,7 +350,7 @@ void WorldEditor::FillChunk()
 				chunkCoords.y * SIZE_CHUNK_TILES + y
 			};
 
-			m_Chunks[chunkCoords]->AddTile(CreateTile(worldCoords), Utilities::ivec2{ x, y });
+			m_Chunks[chunkCoords]->AddTile(CreateTile(), Utilities::ivec2{ x, y });
 		}
 	}
 }
@@ -271,11 +361,10 @@ void WorldEditor::RemoveChunk()
 	m_Chunks.erase(chunkCoords);
 }
 
-Ref<Tile> WorldEditor::CreateTile(const Utilities::ivec2& _worldCoords) const
+Ref<Tile> WorldEditor::CreateTile() const
 {
-	Ref<ScenicTile> tile = std::make_shared<ScenicTile>();
-	tile->Coords = _worldCoords;
-	tile->bIsWalkable = App::Config::TileConfiguration.bIsWalkable;
+	Ref<ScenicTile> tile   = std::make_shared<ScenicTile>();
+	tile->bIsWalkable      = App::Config::TileConfiguration.bIsWalkable;
 
 	return tile;
 }
@@ -333,4 +422,65 @@ const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _s
 	};
 }
 
+void Chunk::Deserialize(nlohmann::json& _json) 
+{
 
+}
+
+void Chunk::Serialize() 
+{
+	using namespace nlohmann;
+
+	json data;
+
+	//*------------------------
+	// Dump the chunk finger print.
+	//
+	data["Chunk"].push_back
+	(
+		{
+			{ "X", m_ChunkCoords.x },
+			{ "Y", m_ChunkCoords.y }
+		}
+	);
+
+	for(U32 x = 0; x < SIZE_CHUNK_TILES; x++) 
+	{
+		for(U32 y = 0; y < SIZE_CHUNK_TILES; y++) 
+		{
+			const U32 tileIndex = x + y * SIZE_CHUNK_TILES;
+			
+			if (m_Tiles[tileIndex] == nullptr)
+				continue;
+
+			Ref<ScenicTile> tile = std::static_pointer_cast<ScenicTile>(m_Tiles[tileIndex]);
+
+			data["Tiles"].push_back
+			(
+				{
+					{"X", x },
+					{"Y", y },
+					{"SpriteId",   tile->SpriteHandle },
+					{"IsWalkable", tile->bIsWalkable  }
+				}
+			);
+		}
+	}
+
+	const std::string fileName = "chunk(" + std::to_string(m_ChunkCoords.x) + ',' + std::to_string(m_ChunkCoords.y) + ").json";
+	const std::string filePath = "data/chunks/" + fileName;
+
+	std::ofstream outputFile(filePath);
+
+	if (!outputFile.is_open())
+	{
+		DEVIOUS_ERR("Failed to serialize file: " + filePath);
+	}
+	else
+	{
+		DEVIOUS_EVENT("Saved chunk: " << m_ChunkCoords.x << " , "  << m_ChunkCoords.y << " to " << filePath);
+		outputFile << data.dump(4);
+
+		outputFile.close();
+	}
+}

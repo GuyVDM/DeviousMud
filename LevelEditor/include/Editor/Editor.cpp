@@ -18,6 +18,8 @@
 
 #include "Shared/Game/SpriteTypes.hpp"
 
+#include "WorldEditor/WorldEditor.h"
+
 Globals g_globals;
 
 U32 Editor::s_WindowWidth  = 1;
@@ -50,38 +52,17 @@ bool Editor::CreateEditorWindow(int _width, int _height)
 		DEVIOUS_LOG("Window couldn't get created: " << SDL_GetError());
 	}
 
-	//*----------------------------
-	// Initialise IMGUI
-	//*
-	{
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-		ImGui::StyleColorsDark();
-
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			style.WindowRounding = 0.0f;
-		}
-
-		m_SDLRenderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
-		SDL_SetRenderDrawBlendMode(m_SDLRenderer, SDL_BLENDMODE_BLEND);
-
-		ImGui_ImplSDL2_InitForSDLRenderer(m_Window, m_SDLRenderer);
-		ImGui_ImplSDLRenderer2_Init(m_SDLRenderer);
-	}
+	m_SDLRenderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_SetRenderDrawBlendMode(m_SDLRenderer, SDL_BLENDMODE_BLEND);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
 	//*-----------------
 	// Create globals
 	//
 	{
-		g_globals.Renderer = std::make_shared<Renderer>(m_SDLRenderer);
-		g_globals.Camera   = std::make_shared<Camera>();
+		g_globals.Renderer    = std::make_shared<Renderer>(m_SDLRenderer);
+		g_globals.Camera      = std::make_shared<Camera>();
+		g_globals.WorldEditor = std::make_shared<WorldEditor>();
 	}
 
 	m_Renderer = g_globals.Renderer;
@@ -95,8 +76,6 @@ void Editor::Start()
 
 	bool bIsRunning = true;
 	SDL_Event event;
-
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	while (bIsRunning)
 	{
@@ -143,15 +122,11 @@ void Editor::GenerateLayers()
 	m_LayerStack = std::make_shared<LayerStack>();
 
 	m_LayerStack->PushBackLayer(std::make_shared<InputLayer>());
-	m_LayerStack->PushBackLayer(std::make_shared<ImGUILayer>());
+	m_LayerStack->PushBackLayer(std::make_shared<ImGUILayer>(m_Window, m_SDLRenderer));
 }
 
 Editor::~Editor()
 {
 	SDL_DestroyWindow(m_Window);
 	SDL_DestroyRenderer(m_SDLRenderer);
-
-	ImGui_ImplSDLRenderer2_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
 }

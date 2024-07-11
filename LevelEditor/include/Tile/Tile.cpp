@@ -10,6 +10,8 @@
 
 #include "Globals/Globals.h"
 
+#include "WorldEditor/WorldEditor.h"
+
 ScenicTile::ScenicTile()
 {
 	SpriteHandle = static_cast<U16>(App::Config::TileConfiguration.SpriteType);
@@ -17,16 +19,20 @@ ScenicTile::ScenicTile()
 
 void ScenicTile::Render()
 {
-	Graphics::SpriteType type = static_cast<Graphics::SpriteType>(SpriteHandle);
+	const Graphics::SpriteType type = static_cast<Graphics::SpriteType>(SpriteHandle);
+
+	const Utilities::ivec2 chunkCoords = ChunkCoords * SIZE_CHUNK_TILES;
+
+	const Utilities::ivec2 position = (LocalChunkCoords + chunkCoords) * App::Config::GRIDCELLSIZE;
 
 	RenderQuery query;
-	query.Color = { 255,255,255,255 };
-	query.Frame = 0;
-	query.Position = Coords * App::Config::GRIDCELLSIZE;
-	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE);
-	query.Type = type;
+	query.Color    = { 255,255,255,255 };
+	query.Frame    = 0;
+	query.Position = position;
+	query.Size     = Utilities::ivec2(App::Config::GRIDCELLSIZE);
+	query.Type     = type;
 
-	g_globals.Renderer->Render(query, RenderOrder);
+	g_globals.Renderer->Render(query, 0);
 
 	SDL_Rect rect
 	{
@@ -44,11 +50,11 @@ void ScenicTile::Render()
 		Color color;
 		if (bIsWalkable)
 		{
-			color = { 0, 255, 0, 70 };
+			color = Color(0, 255, 0, 70);
 		}
 		else
 		{
-			color = { 255, 0, 0, 70 };
+			color = Color(255, 0, 0, 70);
 		}
 
 		g_globals.Renderer->DrawRect(rect, color);
@@ -71,9 +77,9 @@ void NPCTile::Render()
 	RenderQuery query;
 	query.Color = { 255,255,255,255 };
 	query.Frame = 0;
-	query.Position = Coords * App::Config::GRIDCELLSIZE;
-	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE);
+	query.Position = (ChunkCoords * SIZE_CHUNK_TILES) * App::Config::GRIDCELLSIZE;
+	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE) * definition.size;
 	query.Type = definition.sprite;
 
-	g_globals.Renderer->Render(query, RenderOrder);
+	g_globals.Renderer->Render(query, 1);
 }

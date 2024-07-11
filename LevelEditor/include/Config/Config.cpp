@@ -15,18 +15,16 @@ App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 	/* CurrentTileType */ e_EntityType::ENTITY_SCENIC,
 	/* SpriteType      */ static_cast<Graphics::SpriteType>(1),
 	/* isWalkable      */ true,
-	/* RenderOrder     */ 0,
-	/* NPCRespawnTime  */ 1.0f,
-	/* NPCId           */ 1
+	/* NPCDefinition   */ get_npc_definition(0),
+	/* InteractionMode */ e_InteractionMode::BRUSH
+	/* ChunkClipboard  */ 
 );
 
 App::Config::SettingsConfig App::Config::SettingsConfiguration = SettingsConfig
 (
-	/* BrushSizeX           */  1,
-	/* BrushSizeY           */  1,
+	/* BrushSize            */  Utilities::ivec2(1),
 	/* bShowWalkableTiles   */  false,
-	/* bRenderChunkOutlines */  true,
-	/* bFillChunks          */  false
+	/* bRenderChunkOutlines */  true
 );
 
 #pragma region EDITOR_CONFIG

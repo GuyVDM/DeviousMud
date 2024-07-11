@@ -37,7 +37,7 @@ void Server::ConnectionHandler::update_idle_timers()
 		}
 		else if(ticks >= TICKS_TILL_TIMEOUT) 
 		{
-			m_pendingDisconnects.push_back((enet_uint32)clientInfo->clientId);
+			m_pendingDisconnects.push_back(static_cast<enet_uint32>(clientInfo->clientId));
 			DEVIOUS_LOG("Registered client: " << clientInfo->clientId << " for disconnect.");
 			continue;
 		}
@@ -92,15 +92,13 @@ void Server::ConnectionHandler::register_client(ENetPeer* _peer)
 	}
 
 	RefClientInfo newClient = std::make_shared<ClientInfo>();
-	{
-		newClient->peer = _peer;
-		newClient->clientId = (uint64_t)clientId;
-		newClient->playerId = DM::Utils::UUID::generate();
-		newClient->bAwaitingPing = false;
-		newClient->idleticks = 0;
-		newClient->ticksSinceLastResponse = 0;
-		newClient->packetquery = new EventQuery();
-	}
+	newClient->peer = _peer;
+	newClient->clientId = (uint64_t)clientId;
+	newClient->playerId = DM::Utils::UUID::generate();
+	newClient->bAwaitingPing = false;
+	newClient->idleticks = 0;
+	newClient->ticksSinceLastResponse = 0;
+	newClient->packetquery = new EventQuery();
 
 	//Generate Client info & Register the handle.
 	{

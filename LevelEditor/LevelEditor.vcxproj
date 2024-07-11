@@ -254,6 +254,8 @@
     <ClInclude Include="include\Editor\Editor.h" />
     <ClInclude Include="include\FileHandler\FileHandler.h" />
     <ClInclude Include="include\Globals\Globals.h" />
+    <ClInclude Include="include\Serialization\CerealSerializable.h" />
+    <ClInclude Include="include\Serialization\JsonSerializable.h" />
     <ClInclude Include="include\Layers\ImGUI\ImGUILayer.h" />
     <ClInclude Include="include\Layers\InputLayer\InputLayer.h" />
     <ClInclude Include="include\Layers\Layer.h" />

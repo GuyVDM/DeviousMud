@@ -11,17 +11,16 @@ enum class e_EntityType
 
 struct Tile
 {
-	Utilities::ivec2 Coords;
+	Utilities::ivec2 LocalChunkCoords;
+	Utilities::ivec2 ChunkCoords;
 	e_EntityType     EntityType;
 	bool             bIsWalkable;
-	U8               RenderOrder;
 
 	Tile()
 	{
-		Coords      = Utilities::ivec2(0);
+		ChunkCoords      = Utilities::ivec2(0);
 		EntityType  = e_EntityType::ENTITY_SCENIC;
 		bIsWalkable = true;
-		RenderOrder = 0;
 	};
 
 	virtual void Render() = 0;

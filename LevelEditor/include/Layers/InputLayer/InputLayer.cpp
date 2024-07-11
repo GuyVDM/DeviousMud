@@ -10,7 +10,7 @@
 
 InputLayer::InputLayer()
 {
-    m_WorldEditor = std::make_shared<WorldEditor>();
+    m_WorldEditor = g_globals.WorldEditor;
 }
 
 const bool InputLayer::HandleEvent(const SDL_Event& _event)
@@ -18,19 +18,41 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
     static bool bHoldingMiddleMouse = false;
     static bool bLeftMouse  = false;
     static bool bRightMouse = false;
+    static bool bCtrlPressed = false;
 
     if (bLeftMouse)
     {
         m_WorldEditor->Place();
     }
-
-    if (bRightMouse)
+    else
+    if(bRightMouse) 
     {
-        m_WorldEditor->Remove();
+        if (!bCtrlPressed)
+        {
+            m_WorldEditor->Remove();
+        }
     }
 
     switch(_event.type) 
     {
+        case SDL_KEYDOWN:
+        {
+            if(_event.key.keysym.sym == SDLK_LCTRL || _event.key.keysym.sym == SDLK_RCTRL)
+            {
+                bCtrlPressed = true;
+            }
+        }
+        break;
+
+        case SDL_KEYUP:
+        {
+            if (_event.key.keysym.sym == SDLK_LCTRL || _event.key.keysym.sym == SDLK_RCTRL)
+            {
+                bCtrlPressed = false;
+            }
+        }
+        break;
+
         case SDL_MOUSEBUTTONDOWN:
         {
             if (_event.button.button == SDL_BUTTON_LEFT)

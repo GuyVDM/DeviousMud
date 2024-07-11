@@ -2,10 +2,13 @@
 
 #include "Core/Core.hpp"
 
+#include "Shared/Game/NPCDef.h"
+
 struct Tile;
 struct ScenicTile;
 struct ObjectTile;
 struct NPC;
+class Chunk;
 
 enum class e_EntityType;
 
@@ -14,33 +17,34 @@ namespace Graphics
 	enum class SpriteType : uint16_t;
 }
 
+enum class e_InteractionMode : U8
+{
+	BRUSH = 0x00,
+	FILL,
+	TILEPICKER
+};
+
 namespace App 
 {
 	namespace Config 
 	{
-		const U32 GRIDCELLSIZE = 32;
+		constexpr U32 GRIDCELLSIZE = 32;
 
 		struct TileConfig 
 		{
-			e_EntityType CurrentTileType;
-
-			/* Tile Variables */
+			e_EntityType		 CurrentTileType;
 			Graphics::SpriteType SpriteType;
 			bool                 bIsWalkable;
-			U32                  RenderOrder;
-
-			/* NPC Specific Variables */
-			float        NPCRespawnTime;
-			U32          NPCId;
+			NPCDef               NPCDefinition;
+			e_InteractionMode    InteractionMode;
+			WeakRef<Chunk>       ChunkClipboard;
 		};
 
 		struct SettingsConfig
 		{
-			U32  BrushSizeX           = 1;
-			U32  BrushSizeY			  = 1;
-			bool bShowWalkableTiles   = false;
-			bool bRenderChunkOutlines = true;
-			bool bFillChunks          = false;
+			Utilities::ivec2 BrushSize = 1;
+			bool bShowWalkableTiles    = false;
+			bool bRenderChunkOutlines  = true;
 		};
 
 		class EditorConfig
