@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Core/Core.hpp"
 
 #include "Shared/Game/NPCDef.h"
@@ -19,16 +18,19 @@ namespace Graphics
 
 enum class e_InteractionMode : U8
 {
-	BRUSH = 0x00,
-	FILL,
-	TILEPICKER
+	MODE_BRUSH = 0x00,
+	MODE_FILL,
+	MODE_PICKER,
+	MODE_SELECTION,
+	MODE_WAND
 };
 
 namespace App 
 {
 	namespace Config 
 	{
-		constexpr U32 GRIDCELLSIZE = 32;
+		constexpr I32 GRIDCELLSIZE = 32;
+
 
 		struct TileConfig 
 		{
@@ -40,6 +42,7 @@ namespace App
 			WeakRef<Chunk>       ChunkClipboard;
 		};
 
+
 		struct SettingsConfig
 		{
 			Utilities::ivec2 BrushSize = 1;
@@ -47,16 +50,6 @@ namespace App
 			bool bRenderChunkOutlines  = true;
 		};
 
-		class EditorConfig
-		{
-		public:
-			static float GetDT();
-			static void  UpdateDT();
-
-		private:
-			static float s_DeltaTime;
-			static std::chrono::time_point<std::chrono::high_resolution_clock> s_LastTime;
-		};
 
 		extern TileConfig     TileConfiguration;
 		extern SettingsConfig SettingsConfiguration;

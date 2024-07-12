@@ -2,8 +2,7 @@
 #include "precomp.h"
 
 #include "Core/Core.hpp"
-
-#include "Editor/Editor.h"
+#include "Core/Editor/Editor.h"
 
 int main(int argc, char** argv)
 {

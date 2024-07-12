@@ -1,31 +1,26 @@
 #include "precomp.h"
 
-#include "Editor/Editor.h"
+#include "Core/Editor/Editor.h"
 
-#include "Layers/LayerStack.h"
-
-#include "Layers/ImGUI/ImGUILayer.h"
-
-#include "Layers/InputLayer/InputLayer.h"
-
-#include "Renderer/Renderer.h"
-
-#include "Config/Config.h"
-
-#include "Camera/Camera.h"
-
-#include "Globals/Globals.h"
+#include "Core/Config/Config.h"
+#include "Core/Config/Time/Time.hpp"
+#include "Core/Camera/Camera.h"
+#include "Core/Globals/Globals.h"
+#include "Core/Layers/LayerStack.h"
+#include "Core/Layers/ImGUI/ImGUILayer.h"
+#include "Core/Layers/InputLayer/InputLayer.h"
+#include "Core/Renderer/Renderer.h"
+#include "Core/WorldEditor/WorldEditor.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
 
-#include "WorldEditor/WorldEditor.h"
 
 Globals g_globals;
 
-U32 Editor::s_WindowWidth  = 1;
-U32 Editor::s_WindowHeight = 1;
+I32 Editor::s_WindowWidth  = 1;
+I32 Editor::s_WindowHeight = 1;
 
-bool Editor::CreateEditorWindow(int _width, int _height)
+bool Editor::CreateEditorWindow(const I32& _width, const I32& _height)
 {
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) 
 	{
@@ -79,7 +74,7 @@ void Editor::Start()
 
 	while (bIsRunning)
 	{
-		App::Config::EditorConfig::UpdateDT();
+		Time::Update();
 
 		m_Renderer->StartFrame();
 

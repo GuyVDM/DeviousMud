@@ -2,7 +2,7 @@
 
 #include "Core/Core.hpp"
 
-#include "Layers/Layer.h"
+#include "Core/Layers/Layer.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -14,7 +14,9 @@ enum class e_ImGuiIconType
 	ICON_PATH,
 	ICON_RESET,
 	ICON_PICKER,
-	ICON_GRID
+	ICON_GRID,
+	ICON_SELECT,
+	ICON_WAND
 };
 
 class ImguiIcons 
@@ -31,7 +33,9 @@ public:
 			{ e_ImGuiIconType::ICON_PATH,   "icons/path.png"  },
 			{ e_ImGuiIconType::ICON_RESET,  "icons/reset.png" },
 			{ e_ImGuiIconType::ICON_PICKER, "icons/picker.png"},
-			{ e_ImGuiIconType::ICON_GRID,   "icons/grid.png"  }
+			{ e_ImGuiIconType::ICON_GRID,   "icons/grid.png"  },
+			{ e_ImGuiIconType::ICON_SELECT, "icons/select.png"},
+			{ e_ImGuiIconType::ICON_WAND,   "icons/wand.png"  }
 		};
 
 		return iconMap;

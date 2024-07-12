@@ -1,6 +1,6 @@
 #include "precomp.h"
 
-#include "Camera/Camera.h"
+#include "Core/Camera/Camera.h"
 
 void Camera::Reset() 
 {

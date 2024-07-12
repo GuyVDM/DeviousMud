@@ -1,16 +1,12 @@
 #include "precomp.h"
 
-#include "FileHandler/FileHandler.h"
-
-#include <shlobj.h>
-
-#include <Windows.h>
-
-#include <locale>
+#include "Core/FileHandler/FileHandler.h"
 
 #include <codecvt>
-
 #include <commdlg.h>
+#include <locale>
+#include <shlobj.h>
+#include <Windows.h>
 
 const bool FileHandler::ExportLevelToJSON() 
 {

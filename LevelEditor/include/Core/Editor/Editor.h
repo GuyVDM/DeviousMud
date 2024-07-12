@@ -11,9 +11,9 @@ class Renderer;
 class Editor 
 {
 public:
-	static U32 s_WindowWidth;
+	static I32 s_WindowWidth;
 
-	static U32 s_WindowHeight;
+	static I32 s_WindowHeight;
 
 	/// <summary>
 	/// Create window with specified sizes.
@@ -21,7 +21,7 @@ public:
 	/// </summary>
 	/// <param name="_width"></param>
 	/// <param name="_height"></param>
-	bool CreateEditorWindow(int _width = 0, int _height = 0);
+	bool CreateEditorWindow(const I32& _width = 0, const I32& _height = 0);
 
 	void Start();
 

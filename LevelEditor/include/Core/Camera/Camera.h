@@ -6,7 +6,7 @@
 struct Camera 
 {
 	Utilities::ivec2 Position = { 0 };
-	U32              Zoom     = 1;
+	I32              Zoom     = 1;
 
 	void Reset();
 

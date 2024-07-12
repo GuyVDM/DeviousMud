@@ -1,16 +1,13 @@
 #include "precomp.h"
 
-#include "Tile/Tile.h"
+#include "Core/Tile/Tile.h"
+
+#include "Core/Config/Config.h"
+#include "Core/Globals/Globals.h"
+#include "Core/Renderer/Renderer.h"
+#include "Core/WorldEditor/WorldEditor.h"
 
 #include "Shared/Game/NPCDef.h"
-
-#include "Renderer/Renderer.h"
-
-#include "Config/Config.h"
-
-#include "Globals/Globals.h"
-
-#include "WorldEditor/WorldEditor.h"
 
 ScenicTile::ScenicTile()
 {

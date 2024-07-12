@@ -1,8 +1,8 @@
 #include "precomp.h"
 
-#include "Layers/Layer.h"
+#include "Core/Layers/LayerStack.h"
 
-#include "Layers/LayerStack.h"
+#include "Core/Layers/Layer.h"
 
 void LayerStack::PushBackLayer(Ref<Layer> _layer)
 {
@@ -29,7 +29,7 @@ void LayerStack::HandleEvent(const SDL_Event& _event)
 
 	for (auto rit = m_Layers.rbegin(); rit != m_Layers.rend(); ++rit)
 	{
-		int i = std::distance(rit, m_Layers.rend()) - 1;
+		U64 i = std::distance(rit, m_Layers.rend()) - 1;
 		
 		if(m_Layers[i]->HandleEvent(_event)) 
 		{
@@ -42,7 +42,7 @@ void LayerStack::Update()
 {
 	for (auto rit = m_Layers.rbegin(); rit != m_Layers.rend(); ++rit) 
 	{
-		int i = std::distance(rit, m_Layers.rend()) - 1;
+		U64 i = std::distance(rit, m_Layers.rend()) - 1;
 		m_Layers[i]->Update();
 	}
 }

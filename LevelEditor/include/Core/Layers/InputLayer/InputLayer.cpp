@@ -1,12 +1,10 @@
 #include "precomp.h"
 
-#include "Layers/InputLayer/InputLayer.h"
+#include "Core/Layers/InputLayer/InputLayer.h"
 
-#include "Camera/Camera.h"
-
-#include "Globals/Globals.h"
-
-#include "WorldEditor/WorldEditor.h"
+#include "Core/Camera/Camera.h"
+#include "Core/Globals/Globals.h"
+#include "Core/WorldEditor/WorldEditor.h"
 
 InputLayer::InputLayer()
 {
@@ -24,7 +22,7 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
     {
         m_WorldEditor->Place();
     }
-    else
+
     if(bRightMouse) 
     {
         if (!bCtrlPressed)
@@ -70,8 +68,11 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
 
         case SDL_MOUSEBUTTONUP:
         {
-            if (_event.button.button == SDL_BUTTON_LEFT)
+            if (_event.button.button == SDL_BUTTON_LEFT) 
+            {
+                m_WorldEditor->Release();
                 bLeftMouse = false;
+            }
 
 
             if (_event.button.button == SDL_BUTTON_RIGHT)

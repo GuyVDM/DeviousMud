@@ -1,20 +1,14 @@
 #include "precomp.h"
 
-#include "Layers/ImGUI/ImGUILayer.h"
-
-#include "FileHandler/FileHandler.h"
-
-#include "Camera/Camera.h"
-
-#include "Globals/Globals.h"
-
-#include "Config/Config.h"
+#include "Core/Camera/Camera.h"
+#include "Core/Config/Config.h"
+#include "Core/FileHandler/FileHandler.h"
+#include "Core/Globals/Globals.h"
+#include "Core/Layers/ImGUI/ImGUILayer.h"
+#include "Core/Renderer/Renderer.h"
+#include "Core/WorldEditor/WorldEditor.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
-
-#include "Renderer/Renderer.h"
-
-#include "WorldEditor/WorldEditor.h"
 
 ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
 {
@@ -206,7 +200,7 @@ void ImGUILayer::DrawViewPortHelperButtons()
         return bIsPressed;
     };
 
-    constexpr ImVec2 windowSize = { 64.0f, 250.0f };
+    constexpr ImVec2 windowSize = { 64.0f, 320.0f };
 
     constexpr U32 viewportFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDocking;
 
@@ -219,15 +213,15 @@ void ImGUILayer::DrawViewPortHelperButtons()
         const ImVec2 menuPos = ImGui::GetItemRectMin();
 
         if (ImGuiDrawButton("##Single", menuPos, 30.0f, m_Icons[e_ImGuiIconType::ICON_BRUSH], 
-            TileConfiguration.InteractionMode == e_InteractionMode::BRUSH))
+            TileConfiguration.InteractionMode == e_InteractionMode::MODE_BRUSH))
         {
-            TileConfiguration.InteractionMode = e_InteractionMode::BRUSH;
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_BRUSH;
         }
 
         if(ImGuiDrawButton("##Fill", menuPos, 65.0f, m_Icons[e_ImGuiIconType::ICON_FILL],
-           TileConfiguration.InteractionMode == e_InteractionMode::FILL))
+           TileConfiguration.InteractionMode == e_InteractionMode::MODE_FILL))
         {
-            TileConfiguration.InteractionMode = e_InteractionMode::FILL;
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_FILL;
         } 
 
         if (ImGuiDrawButton("##Path", menuPos, 100.0f, m_Icons[e_ImGuiIconType::ICON_PATH], 
@@ -248,9 +242,21 @@ void ImGUILayer::DrawViewPortHelperButtons()
         }
 
         if (ImGuiDrawButton("##Picker", menuPos, 205.0f, m_Icons[e_ImGuiIconType::ICON_PICKER],
-            TileConfiguration.InteractionMode == e_InteractionMode::TILEPICKER))
+            TileConfiguration.InteractionMode == e_InteractionMode::MODE_PICKER))
         {
-            TileConfiguration.InteractionMode = e_InteractionMode::TILEPICKER;
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_PICKER;
+        }
+
+        if (ImGuiDrawButton("##Select", menuPos, 240.0f, m_Icons[e_ImGuiIconType::ICON_SELECT],
+            TileConfiguration.InteractionMode == e_InteractionMode::MODE_SELECTION))
+        {
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_SELECTION;
+        }
+
+        if (ImGuiDrawButton("##Wand", menuPos, 275.0f, m_Icons[e_ImGuiIconType::ICON_WAND],
+            TileConfiguration.InteractionMode == e_InteractionMode::MODE_WAND))
+        {
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_WAND;
         }
     }
     ImGui::End();
@@ -326,7 +332,7 @@ void ImGUILayer::DrawContentBrowser()
 
         for(U16 i = 0; i < Graphics::SPRITE_COUNT; i++) 
         {
-            Opt<Sprite> optSprite = g_globals.Renderer->GetSprite(static_cast<Graphics::SpriteType>(i));
+            Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(static_cast<Graphics::SpriteType>(i));
 
             if(optSprite.has_value())
             {
@@ -395,7 +401,7 @@ void ImGUILayer::DrawTileWindow()
         ImGui::Spacing();
         ImGui::SeparatorText("Transformation:");
 
-        if (TileConfiguration.InteractionMode == e_InteractionMode::BRUSH)
+        if (TileConfiguration.InteractionMode == e_InteractionMode::MODE_BRUSH)
         {
             ImGui::Spacing();
             ImGui::SetNextItemWidth(100);
@@ -490,7 +496,7 @@ void ImGUILayer::DrawScenicSettings()
     const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
-    Opt<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SpriteType);
+    Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SpriteType);
 
     if (!optSprite.has_value())
     {
@@ -510,7 +516,7 @@ void ImGUILayer::DrawNPCSettings()
 
     ImGui::Spacing();
 
-    static U32 npcId = 1;
+    static I32 npcId = 1;
     ImGui::SeparatorText("NPC Settings:");
     ImGui::Text("Id:");
     if (ImGui::InputInt("##NPCId", &npcId)) 
@@ -561,7 +567,7 @@ void ImGUILayer::DrawNPCSettings()
         const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
-        Opt<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.NPCDefinition.sprite);
+        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.NPCDefinition.sprite);
 
         if (!optSprite.has_value())
         {

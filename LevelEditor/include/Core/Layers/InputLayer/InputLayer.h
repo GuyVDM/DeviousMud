@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/Core.hpp"
+#include "Core/Layers/Layer.h"
 
-#include "Layers/Layer.h"
+#include "Core/Core.hpp"
 
 class WorldEditor;
 

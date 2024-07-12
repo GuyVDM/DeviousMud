@@ -1,16 +1,13 @@
 #include "precomp.h"
 
-#include "Renderer/Renderer.h"
+#include "Core/Renderer/Renderer.h"
 
-#include "Camera/Camera.h"
-
-#include "Globals/Globals.h"
+#include "Core/Camera/Camera.h"
+#include "Core/Globals/Globals.h"
+#include "Core/Config/Config.h"
+#include "Core/Editor/Editor.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
-
-#include "Config/Config.h"
-
-#include "Editor/Editor.h"
 
 Renderer::Renderer(SDL_Renderer* _renderer) : m_Renderer(_renderer)
 {
@@ -76,8 +73,8 @@ void Renderer::DrawGrid()
 		-(camPos.y % GRIDCELLSIZE)
 	};
 
-	const U32 camZoom = g_globals.Camera->Zoom;
-	const U32 modGridSize = GRIDCELLSIZE * camZoom;
+	const I32 camZoom = g_globals.Camera->Zoom;
+	const I32 modGridSize = GRIDCELLSIZE * camZoom;
 
 	//*---------------------
 	// Draw infinite grid.
@@ -87,12 +84,12 @@ void Renderer::DrawGrid()
 
 		const ivec2 start = offset * camZoom;
 
-		for (U32 x = start.x; x < windowSize.x; x += modGridSize)
+		for (I32 x = start.x; x < windowSize.x; x += modGridSize)
 		{
 			SDL_RenderDrawLine(m_Renderer, x, 0, x, windowSize.y);
 		}
 
-		for (U32 y = start.y; y < windowSize.y; y += modGridSize)
+		for (I32 y = start.y; y < windowSize.y; y += modGridSize)
 		{
 
 			SDL_RenderDrawLine(m_Renderer, 0, y, windowSize.x, y);
@@ -142,7 +139,7 @@ const Utilities::ivec2 Renderer::ScreenToWorld(const Utilities::ivec2& _screenCo
 	);
 }
 
-const Opt<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
+const Optional<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 {
 	if(m_Sprites.find(_type) != m_Sprites.end()) 
 	{
@@ -168,7 +165,7 @@ void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOr
 	m_RenderQuery[_zOrder].push_back(instance);
 }
 
-void Renderer::DrawRectOutline(const SDL_Rect& _rect, const Color& _col, const U32& _outlWidth, const U8& _zOrder)
+void Renderer::DrawRectOutline(const SDL_Rect& _rect, const Color& _col, const I32& _outlWidth, const U8& _zOrder)
 {
 	const SDL_Rect top =
 	{
@@ -240,11 +237,11 @@ void Renderer::EndFrame()
 				continue;
 			}
 
-			U32 texWidth, texHeight;
+			I32 texWidth, texHeight;
 			SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &texWidth, &texHeight);
 
-			U32 frame = 0;
-			U32 spriteWidth = 0;
+			I32 frame = 0;
+			I32 spriteWidth = 0;
 			{
 				if (queryItem.Type == Graphics::SpriteType::NONE)
 				{

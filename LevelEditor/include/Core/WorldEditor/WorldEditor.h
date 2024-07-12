@@ -1,26 +1,34 @@
 #pragma once
-
 #include "Core/Core.hpp"
 
-#include "Tile/Tile.h"
+#include "Core/Tile/Tile.h"
+#include "Core/Serialization/JsonSerializable.h"
+#include "Core/WorldEditor/Selection/Selection.h"
 
 #include "Shared/Utilities/vec2.hpp"
 
-#include "Serialization/JsonSerializable.h"
-
 #include <array>
-
 #include <map>
 
 struct Camera;
 
-constexpr U16 SIZE_CHUNK_TILES = 16;
-constexpr U16 TILE_COUNT_CHUNK = SIZE_CHUNK_TILES * SIZE_CHUNK_TILES;
+namespace Graphics 
+{
+	enum class SpriteType : U16;
+}
+
+constexpr I16 SIZE_CHUNK_TILES = 16;
+constexpr I16 TILE_COUNT_CHUNK = SIZE_CHUNK_TILES * SIZE_CHUNK_TILES;
 
 class Chunk : JsonSerializable<Chunk>
 {
 public:
 	IMPLEMENT_SERIALIZABLE;
+
+	inline static const U32 ToTileIndex(const Utilities::ivec2& _localChunkCoords) 
+	{
+		return _localChunkCoords.x + _localChunkCoords.y * SIZE_CHUNK_TILES;
+	}
 
 	inline bool AddTile(Ref<Tile> _tile, const Utilities::ivec2& _localChunkCoords)
 	{
@@ -60,6 +68,14 @@ public:
 		return true;
 	}
 
+	inline const bool IsValidIndex(const U32& _index) const
+	{
+		if (_index < 0 || _index >= TILE_COUNT_CHUNK)
+			return false;
+
+		return m_Tiles[_index] != nullptr;
+	};
+
 	inline const bool IsEmpty() const 
 	{
 		return m_TileCount == 0;
@@ -79,11 +95,13 @@ public:
 class WorldEditor 
 {
 public:
-	void Update();
-
 	void Place();
 
 	void Remove();
+
+	void Release();
+
+	void Update();
 
 	void CopyChunk();
 
@@ -95,15 +113,27 @@ public:
 	virtual ~WorldEditor();
 
 private:
+	Optional<Ref<Tile>> TryGetTile(const Utilities::ivec2& _gridCoords);
+
+	void CreateSelection();
+
+	void ClearSelection();
+
+	void CreateWandSelection();
+
+	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, std::vector<Utilities::ivec2>& _visitedTiles, const Utilities::ivec2& _gridCoords);
+
 	void PickTile();
 
 	void RenderChunkBorders();
 
 	void PlaceTile();
 
-	void RemoveTile();
+	void RemoveTiles();
 
-	void FillChunk();
+	void RemoveTilesWandSelection();
+
+	void Fill();
 
 	void RemoveChunk();
 
@@ -111,7 +141,9 @@ private:
 
 	void RenderTiles();
 
-	void HighlightCurrentTile();
+	void DrawBrush();
+
+	void DrawSelection();
 
 	Ref<Tile> CreateTile() const;
 
@@ -124,6 +156,10 @@ private:
 	const Utilities::ivec2 ScreenToGridSpace(const Utilities::ivec2& _screenCoords) const;
 
 private:
+	SelectionArgs m_SelectionArgs;
+
+	std::vector<Utilities::ivec2> m_WandSelectedTiles;
+
 	Ref<Camera> m_Camera;
 
 	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
