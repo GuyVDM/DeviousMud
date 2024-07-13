@@ -15,7 +15,7 @@ void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 		WandSelectedTiles[i] = StartWandSelectedTiles[i] + offset;
 	}
 
-	for (DragArgs& dragArgs : selectedTiles)
+	for (DragArgs& dragArgs : SelectedTiles)
 	{
 		const Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
 

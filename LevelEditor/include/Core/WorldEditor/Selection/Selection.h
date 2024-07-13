@@ -23,10 +23,8 @@ struct SelectionArgs
 	Utilities::ivec2              startPointA    = { 0 };
 	Utilities::ivec2              startPointB    = { 0 };
 	Utilities::ivec2              startDragPos   = { 0 };
-	std::vector<DragArgs>         selectedTiles;
+	std::vector<DragArgs>         SelectedTiles;
 	std::vector<Utilities::ivec2> StartWandSelectedTiles;
-
-	void Reset();
 
 	/// <summary>
 	/// Moves the entirety of the selection with the start dragging position relative

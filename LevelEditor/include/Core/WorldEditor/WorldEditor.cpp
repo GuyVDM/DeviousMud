@@ -336,7 +336,7 @@ void WorldEditor::DragSelectedTiles()
 			DragArgs args;
 			args.Tile  = optTile.value();
 			args.StartGridPos = (args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + args.Tile->LocalChunkCoords;
-			m_SelectionArgs.selectedTiles.push_back(args);
+			m_SelectionArgs.SelectedTiles.push_back(args);
 		}
 	}
 
@@ -345,13 +345,13 @@ void WorldEditor::DragSelectedTiles()
 
 void WorldEditor::TryPlaceSelectedTiles()
 {
-	for(const DragArgs& _args : m_SelectionArgs.selectedTiles) 
+	for(const DragArgs& _args : m_SelectionArgs.SelectedTiles) 
 	{
 		const Utilities::ivec2 gridPos = (_args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + _args.Tile->LocalChunkCoords;
 		MoveTileTo(_args.Tile, gridPos);
 	}
 
-	m_SelectionArgs.selectedTiles.clear();
+	m_SelectionArgs.SelectedTiles.clear();
 	m_SelectionArgs.bIsDragging = false;
 }
 
@@ -376,7 +376,7 @@ void WorldEditor::ClearSelection()
 {
 	TryPlaceSelectedTiles();
 
-	m_SelectionArgs.selectedTiles.clear();
+	m_SelectionArgs.SelectedTiles.clear();
 	m_SelectionArgs.WandSelectedTiles.clear();
 	m_SelectionArgs.startDragPos = { 0 };
 	m_SelectionArgs.startPointA  = { 0 };
@@ -585,6 +585,8 @@ void WorldEditor::RemoveTilesSelection()
 	{
 		RemoveTile(_pos);
 	}
+
+	m_SelectionArgs.SelectedTiles.clear();
 }
 
 void WorldEditor::Fill()
@@ -594,18 +596,9 @@ void WorldEditor::Fill()
 		return;
 	}
 
-	//*-----------------------------------------------
-	// In the case that the wand selection is inactive,
-	// Just fill the selection instead.
-	if(m_SelectionArgs.IsWandActive())
+	if(!m_SelectionArgs.IsOverlapping(m_HoveredGridCell)) 
 	{
-		if(!m_SelectionArgs.IsOverlappingWand(m_HoveredGridCell))
-			return;
-	}
-	else 
-	{
-		if (!m_SelectionArgs.IsOverlappingSelection(m_HoveredGridCell))
-			return;
+		return;
 	}
 
 	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
@@ -690,7 +683,7 @@ void WorldEditor::DrawSelection()
 	//Render the dragged tiles if applicable.
 	if(m_SelectionArgs.bIsDragging) 
 	{
-		for(const DragArgs& item : m_SelectionArgs.selectedTiles) 
+		for(const DragArgs& item : m_SelectionArgs.SelectedTiles) 
 		{
 			item.Tile->Render();
 		}
