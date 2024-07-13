@@ -25,32 +25,30 @@ class Chunk : JsonSerializable<Chunk>
 public:
 	IMPLEMENT_SERIALIZABLE;
 
-	inline static const U32 ToTileIndex(const Utilities::ivec2& _localChunkCoords) 
+	inline static const U32 ToTileIndex(const Utilities::ivec2& _localChunkCoords)
 	{
 		return _localChunkCoords.x + _localChunkCoords.y * SIZE_CHUNK_TILES;
 	}
 
-	inline bool AddTile(Ref<Tile> _tile, const Utilities::ivec2& _localChunkCoords)
+	inline bool AddTile(Ref<Tile> _tile)
 	{
-		const U32 tileIndex = _localChunkCoords.x + _localChunkCoords.y * SIZE_CHUNK_TILES;
+		const U32 tileIndex = _tile->LocalChunkCoords.x + _tile->LocalChunkCoords.y * SIZE_CHUNK_TILES;
 
-		if(tileIndex < 0 && tileIndex > TILE_COUNT_CHUNK)
+		if (tileIndex < 0 && tileIndex > TILE_COUNT_CHUNK)
 		{
 			return false;
 		}
 
-		if(m_Tiles[tileIndex] == nullptr) 
+		if (m_Tiles[tileIndex] == nullptr)
 		{
 			m_TileCount++;
 		}
 
-		_tile->ChunkCoords      = m_ChunkCoords;
-		_tile->LocalChunkCoords = _localChunkCoords;
 		m_Tiles[tileIndex] = _tile;
 		return true;
 	}
 
-	inline bool RemoveTile(const Utilities::ivec2& _localChunkCoords) 
+	inline bool RemoveTile(const Utilities::ivec2& _localChunkCoords)
 	{
 		const U32 tileIndex = _localChunkCoords.x + _localChunkCoords.y * SIZE_CHUNK_TILES;
 
@@ -76,9 +74,54 @@ public:
 		return m_Tiles[_index] != nullptr;
 	};
 
-	inline const bool IsEmpty() const 
+	inline const bool IsEmpty() const
 	{
 		return m_TileCount == 0;
+	}
+
+	inline const Optional<Ref<Tile>> TryGetTile(const Utilities::ivec2& _localChunkCoords) const
+	{
+		const U16 i = Chunk::ToTileIndex(_localChunkCoords);
+
+		if (m_Tiles[i] != nullptr)
+		{
+			return m_Tiles[i];
+		}
+		else
+		{
+			return std::nullopt;
+		}
+	}
+
+	inline static const Utilities::ivec2 ToChunkCoords(const Utilities::ivec2& _gridCoords)
+	{
+		const I32 chunkSize = SIZE_CHUNK_TILES;
+
+		Utilities::ivec2 chunkCoords
+		{
+			_gridCoords.x / chunkSize,
+			_gridCoords.y / chunkSize
+		};
+
+		if (_gridCoords.x < 0)
+		{
+			chunkCoords.x -= 1;
+		}
+		if (_gridCoords.y < 0)
+		{
+			chunkCoords.y -= 1;
+		}
+
+		return chunkCoords;
+	}
+
+	inline static const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _gridCoords)
+	{
+		return Utilities::ivec2
+		{
+			(_gridCoords.x % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES,
+			(_gridCoords.y % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES
+		};
 	}
 
 public:
@@ -95,6 +138,8 @@ public:
 class WorldEditor 
 {
 public:
+	void MoveTileTo(Ref<Tile> _tile, Utilities::ivec2 _gridCoords);
+
 	void Place();
 
 	void Remove();
@@ -103,11 +148,20 @@ public:
 
 	void Update();
 
-	void CopyChunk();
+	void CloneChunk();
 
 	void PasteChunk();
 
+	void RemoveChunk();
+
 	void SerializeHoveredChunk();
+
+	void ClearSelection();
+
+	const bool IsSelectionActive() const;
+
+	const bool IsHoveringOverActiveChunk() const;
+
 public:
 	WorldEditor();
 	virtual ~WorldEditor();
@@ -115,9 +169,24 @@ public:
 private:
 	Optional<Ref<Tile>> TryGetTile(const Utilities::ivec2& _gridCoords);
 
-	void CreateSelection();
+	/// <summary>
+	/// Try remove tile from attached chunk and return shared pointer.
+	/// </summary>
+	/// <param name="_gridCoords"></param>
+	/// <returns></returns>
+	Optional<Ref<Tile>> TryDetachTile(const Utilities::ivec2& _gridCoords);
+ 
+	Optional<Ref<Chunk>> TryGetChunk(const Utilities::ivec2& _gridCoords);
 
-	void ClearSelection();
+	void PlaceTile(const Utilities::ivec2& _gridCoords);
+
+	void RemoveTile(const Utilities::ivec2& _gridCoords);
+
+	void DragSelectedTiles();
+
+	void TryPlaceSelectedTiles();
+
+	void CreateSelection();
 
 	void CreateWandSelection();
 
@@ -127,17 +196,13 @@ private:
 
 	void RenderChunkBorders();
 
-	void PlaceTile();
+	void PlaceBrushTiles();
 
-	void RemoveTiles();
+	void RemoveBrushTiles();
 
-	void RemoveTilesWandSelection();
+	void RemoveTilesSelection();
 
 	void Fill();
-
-	void RemoveChunk();
-
-	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
 
 	void RenderTiles();
 
@@ -145,20 +210,18 @@ private:
 
 	void DrawSelection();
 
-	Ref<Tile> CreateTile() const;
-
 	const Utilities::ivec2 GetHoveredGridCell() const;
 
-	const Utilities::ivec2 ToChunkCoords(const Utilities::ivec2& _worldCoords) const;
+	const Utilities::ivec2 ToChunkCoords(const Utilities::ivec2& _gridCoords) const;
 
-	const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _worldCoords) const;
+	const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _gridCoords) const;
 
 	const Utilities::ivec2 ScreenToGridSpace(const Utilities::ivec2& _screenCoords) const;
 
+	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
+
 private:
 	SelectionArgs m_SelectionArgs;
-
-	std::vector<Utilities::ivec2> m_WandSelectedTiles;
 
 	Ref<Camera> m_Camera;
 

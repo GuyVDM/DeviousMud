@@ -9,7 +9,7 @@
 
 App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 (
-	/* CurrentTileType */ e_EntityType::ENTITY_SCENIC,
+	/* CurrentTileType */ e_EntityType::ENTITY_DEFAULT,
 	/* SpriteType      */ static_cast<Graphics::SpriteType>(1),
 	/* isWalkable      */ true,
 	/* NPCDefinition   */ get_npc_definition(0),

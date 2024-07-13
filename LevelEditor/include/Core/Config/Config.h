@@ -18,7 +18,8 @@ namespace Graphics
 
 enum class e_InteractionMode : U8
 {
-	MODE_BRUSH = 0x00,
+	MODE_DRAG = 0x00,
+	MODE_BRUSH,
 	MODE_FILL,
 	MODE_PICKER,
 	MODE_SELECTION,

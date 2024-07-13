@@ -9,6 +9,8 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Renderer/Renderer.h"
 
+#include "Shared/Game/SpriteTypes.hpp"
+
 WorldEditor::WorldEditor()
 {
 	m_Camera = g_globals.Camera;
@@ -27,13 +29,49 @@ void WorldEditor::Update()
 	DrawSelection();
 }
 
+void WorldEditor::MoveTileTo(Ref<Tile> _tile, Utilities::ivec2 _gridCoords)
+{
+	//*---------------------------------------------
+	//Remove tile from previous chunk if applicable.
+	//
+	{
+		const Utilities::ivec2 chunkCoords = _tile->ChunkCoords;
+		if (IsValidChunk(chunkCoords))
+		{
+			m_Chunks[chunkCoords]->RemoveTile(ToLocalChunkCoords(_gridCoords));
+		}
+	}
+
+	//*---------------------------------------------
+	// Move the tile over to it's new chunk
+	// If the chunk doesn't exist yet, we create it.
+	{
+		const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+
+		Ref<Chunk> chunk;
+		if(!IsValidChunk(chunkCoords)) 
+		{
+			chunk = m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
+		}
+		else 
+		{
+			chunk = m_Chunks[chunkCoords];
+		}
+
+		_tile->ChunkCoords      = chunkCoords;
+		_tile->LocalChunkCoords = ToLocalChunkCoords(_gridCoords);
+		
+		chunk->AddTile(_tile);
+	}
+}
+
 void WorldEditor::Place()
 {
 	switch (App::Config::TileConfiguration.InteractionMode)
 	{
 		case e_InteractionMode::MODE_BRUSH:
 		{
-			PlaceTile();
+			PlaceBrushTiles();
 		}
 		break;
 
@@ -60,6 +98,12 @@ void WorldEditor::Place()
 			CreateWandSelection();
 		}
 		break;
+
+		case e_InteractionMode::MODE_DRAG:
+		{
+			DragSelectedTiles();
+		}
+		break;
 	}
 }
 
@@ -69,13 +113,13 @@ void WorldEditor::Remove()
 	{
 		case e_InteractionMode::MODE_BRUSH:
 		{
-			RemoveTiles();
+			RemoveBrushTiles();
 		}
 		break;
 
 		case e_InteractionMode::MODE_FILL:
 		{
-			RemoveTilesWandSelection();
+			RemoveTilesSelection();
 		}
 		break;
 	}
@@ -92,10 +136,16 @@ void WorldEditor::Release()
 			m_SelectionArgs.bLeftClicked = false;
 		}
 		break;
+
+		case e_InteractionMode::MODE_DRAG:
+		{
+			TryPlaceSelectedTiles();
+		}
+		break;
 	}
 }
 
-void WorldEditor::CopyChunk()
+void WorldEditor::CloneChunk()
 {
 	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
 
@@ -116,11 +166,11 @@ void WorldEditor::PasteChunk()
 		return;
 	}
 
-
-	Chunk* chunkClipboard = TileConfiguration.ChunkClipboard.lock().get();
-
 	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
-	if (m_Chunks[chunkCoords].get() == chunkClipboard)
+
+	Ref<Chunk> cbChunk = TileConfiguration.ChunkClipboard.lock();
+
+	if (m_Chunks[chunkCoords] == cbChunk)
 		return;
 
 	m_Chunks.erase(chunkCoords);
@@ -136,13 +186,12 @@ void WorldEditor::PasteChunk()
 			{
 				const U32 tileIndex = x + y * SIZE_CHUNK_TILES;
 
-				if (chunkClipboard->m_Tiles[tileIndex] == nullptr)
+				if (cbChunk->m_Tiles[tileIndex] == nullptr)
 					continue;
 				
-				const Ref<ScenicTile> tileToCopy = std::static_pointer_cast<ScenicTile>(chunkClipboard->m_Tiles[tileIndex]);
-
-				Ref<ScenicTile> tile = std::make_shared<ScenicTile>(*tileToCopy);
-				chunk->AddTile(tile, Utilities::ivec2(x, y));
+				const Ref<Tile> tileCopy = std::make_shared<Tile>(cbChunk->m_Tiles[tileIndex].get());
+				tileCopy->ChunkCoords    = chunkCoords;
+				chunk->AddTile(tileCopy);
 			}
 		}
 	}
@@ -177,6 +226,135 @@ Optional<Ref<Tile>> WorldEditor::TryGetTile(const Utilities::ivec2& _gridCoords)
 	return m_Chunks[chunkCoords]->m_Tiles[tileIndex];
 }
 
+Optional<Ref<Tile>> WorldEditor::TryDetachTile(const Utilities::ivec2& _gridCoords)
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+
+	if (!IsValidChunk(chunkCoords))
+	{
+		return std::nullopt;
+	}
+
+	const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(_gridCoords);
+	const U32 tileIndex = Chunk::ToTileIndex(localChunkCoords);
+
+	Ref<Chunk> chunk = m_Chunks[chunkCoords];
+	if (!chunk->IsValidIndex(tileIndex))
+	{
+		return std::nullopt;
+	}
+
+	Ref<Tile> tile = chunk->m_Tiles[tileIndex];
+	chunk->RemoveTile(localChunkCoords);
+
+	return tile;
+}
+
+Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoords)
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+
+	if(IsValidChunk(chunkCoords)) 
+	{
+		return m_Chunks[chunkCoords];
+	}
+
+	return std::nullopt;
+}
+
+void WorldEditor::PlaceTile(const Utilities::ivec2& _gridCoords)
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+
+	if (!IsValidChunk(chunkCoords)) 
+	{
+		m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
+	}
+
+	Ref<Tile> tile;
+	switch(App::Config::TileConfiguration.CurrentTileType) 
+	{
+		case e_EntityType::ENTITY_DEFAULT:
+		{
+			tile = std::make_shared<Tile>();
+		}
+		break;
+	}
+
+	tile->sprite           = App::Config::TileConfiguration.SpriteType;
+	tile->bIsWalkable      = App::Config::TileConfiguration.bIsWalkable;
+	tile->LocalChunkCoords = ToLocalChunkCoords(_gridCoords);
+	tile->ChunkCoords      = ToChunkCoords(_gridCoords);
+
+	m_Chunks[chunkCoords]->AddTile(tile);
+}
+
+void WorldEditor::RemoveTile(const Utilities::ivec2& _gridCoords)
+{
+	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+
+	Optional<Ref<Chunk>> optChunk = TryGetChunk(_gridCoords);
+
+	if(optChunk.has_value()) 
+	{
+		Ref<Chunk> chunk = optChunk.value();
+		chunk->RemoveTile(ToLocalChunkCoords(_gridCoords));
+		
+		//Destroy the chunk if there's no tiles left.
+		if(chunk->IsEmpty()) 
+		{
+			m_Chunks.erase(chunkCoords);
+		}
+	}
+}
+
+void WorldEditor::DragSelectedTiles()
+{
+	if (!m_SelectionArgs.bIsActive)
+	{
+		return;
+	}
+
+	if (!m_SelectionArgs.bIsDragging)
+	{
+		m_SelectionArgs.bIsDragging  = true;
+		m_SelectionArgs.startDragPos = m_HoveredGridCell;
+		m_SelectionArgs.startPointA  = m_SelectionArgs.PointA;
+		m_SelectionArgs.startPointB  = m_SelectionArgs.PointB;
+		m_SelectionArgs.StartWandSelectedTiles = m_SelectionArgs.WandSelectedTiles;
+		
+		//Collect tiles from wand
+		for (const Utilities::ivec2& selectionPos : m_SelectionArgs.GetAffectedTiles())
+		{
+			Optional<Ref<Tile>> optTile = TryDetachTile(selectionPos);
+
+			if (!optTile.has_value())
+			{
+				continue;
+			}
+
+			DragArgs args;
+			args.Tile  = optTile.value();
+			args.StartGridPos = (args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + args.Tile->LocalChunkCoords;
+			m_SelectionArgs.selectedTiles.push_back(args);
+		}
+	}
+
+	m_SelectionArgs.MoveSelectionRelativeTo(m_HoveredGridCell);
+}
+
+void WorldEditor::TryPlaceSelectedTiles()
+{
+	for(const DragArgs& _args : m_SelectionArgs.selectedTiles) 
+	{
+		const Utilities::ivec2 gridPos = (_args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + _args.Tile->LocalChunkCoords;
+		MoveTileTo(_args.Tile, gridPos);
+	}
+
+	m_SelectionArgs.selectedTiles.clear();
+	m_SelectionArgs.bIsDragging = false;
+}
+
 void WorldEditor::CreateSelection()
 {
 	//Enable Grid Selection.
@@ -196,15 +374,32 @@ void WorldEditor::CreateSelection()
 
 void WorldEditor::ClearSelection()
 {
-	m_WandSelectedTiles.clear();
+	TryPlaceSelectedTiles();
+
+	m_SelectionArgs.selectedTiles.clear();
+	m_SelectionArgs.WandSelectedTiles.clear();
+	m_SelectionArgs.startDragPos = { 0 };
+	m_SelectionArgs.startPointA  = { 0 };
+	m_SelectionArgs.startPointB  = { 0 };
 	m_SelectionArgs.bIsActive	 = false;
 	m_SelectionArgs.bLeftClicked = false;
+	m_SelectionArgs.bIsDragging  = false;
+}
+
+const bool WorldEditor::IsSelectionActive() const
+{
+	return m_SelectionArgs.bIsActive;
+}
+
+const bool WorldEditor::IsHoveringOverActiveChunk() const
+{
+	return IsValidChunk(ToChunkCoords(m_HoveredGridCell));
 }
 
 void WorldEditor::CreateWandSelection()
 {
 	//Clear the previous wand selection.
-	m_WandSelectedTiles.clear();
+	m_SelectionArgs.WandSelectedTiles.clear();
 
 	//*-------------------------
 	// We need a selection field to be active
@@ -215,15 +410,13 @@ void WorldEditor::CreateWandSelection()
 
 	Graphics::SpriteType type = Graphics::SpriteType::NONE;
 
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
-	if(IsValidChunk(chunkCoords)) 
+	if(IsValidChunk(ToChunkCoords(m_HoveredGridCell)))
 	{
 		Optional<Ref<Tile>> tile = TryGetTile(m_HoveredGridCell);
 
 		if (tile.has_value())
 		{
-			const Ref<ScenicTile> scenicTile = std::static_pointer_cast<ScenicTile>(tile.value());
-			type = static_cast<Graphics::SpriteType>(scenicTile->SpriteHandle);
+			type = tile.value()->sprite;
 		}
 	}
 
@@ -248,20 +441,18 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 	//*-------------------------------------------------------------
 	// Only deal with it if the point is within the selection field.
 	//
-	if (!m_SelectionArgs.IsPointOverlapping(_gridCoords))
+	if (!m_SelectionArgs.IsOverlappingSelection(_gridCoords))
 	{
 		return;
 	}
 
 	Optional<Ref<Tile>> optTile = TryGetTile(_gridCoords);
-
 	if(optTile.has_value())
 	{
 		if (_toCompare == Graphics::SpriteType::NONE)
 			return;
 
-		Ref<ScenicTile> tile = std::static_pointer_cast<ScenicTile>(optTile.value());
-		Graphics::SpriteType tileSprite = static_cast<Graphics::SpriteType>(tile->SpriteHandle);
+		const Graphics::SpriteType tileSprite = optTile.value()->sprite;
 
 		if (tileSprite != _toCompare)
 			return;
@@ -285,7 +476,7 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 		RecursivelyGenWandSelection(_toCompare, _visitedTiles, neighbour);
 	}
 
-	m_WandSelectedTiles.push_back(_gridCoords);
+	m_SelectionArgs.WandSelectedTiles.push_back(_gridCoords);
 }
 
 void WorldEditor::PickTile()
@@ -297,8 +488,8 @@ void WorldEditor::PickTile()
 	if (!optTile.has_value())
 		return;
 
-	const Ref<ScenicTile> tile = std::static_pointer_cast<ScenicTile>(optTile.value());
-	TileConfiguration.SpriteType  = static_cast<Graphics::SpriteType>(tile->SpriteHandle);
+	const Ref<Tile> tile = optTile.value();
+	TileConfiguration.SpriteType  = tile->sprite;
 	TileConfiguration.bIsWalkable = tile->bIsWalkable;
 }
 
@@ -311,15 +502,12 @@ void WorldEditor::RenderChunkBorders()
 		return;
 	}
 
-	const Utilities::ivec2 camPos     = g_globals.Camera->Position;
-
-	const Utilities::ivec2 startTile  = ScreenToGridSpace({ 0, 0});
+	const Utilities::ivec2 startTile  = ScreenToGridSpace(Utilities::ivec2(0, 0));
 	const Utilities::ivec2 endTile    = ScreenToGridSpace(Utilities::ivec2{ Editor::s_WindowWidth, Editor::s_WindowHeight });
 
 	const Utilities::ivec2 chunkStart = ToChunkCoords(startTile);
 	const Utilities::ivec2 chunkEnd   = ToChunkCoords(endTile);
 
-	const Ref<Renderer> renderer = g_globals.Renderer;
 	constexpr I32 size = GRIDCELLSIZE * SIZE_CHUNK_TILES;
 
 	for (I32 startX = chunkStart.x; startX < chunkEnd.x + 1; startX++)
@@ -334,12 +522,12 @@ void WorldEditor::RenderChunkBorders()
 				size				
 			};
 
-			renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 15);
+			g_globals.Renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 5);
 		}
 	}
 }
 
-void WorldEditor::PlaceTile()
+void WorldEditor::PlaceBrushTiles()
 {
 	using namespace App::Config;
 
@@ -347,39 +535,28 @@ void WorldEditor::PlaceTile()
 	{
 		for (I32 y = 0; y < SettingsConfiguration.BrushSize.y; y++)
 		{
-			const Utilities::ivec2 position    = m_HoveredGridCell + Utilities::ivec2(x, y);
+			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2(x, y);
 
 			if (m_SelectionArgs.bIsActive)
 			{
-				if (!m_SelectionArgs.IsPointOverlapping(position))
-					continue;
+				if(m_SelectionArgs.IsWandActive()) 
+				{
+					if (!m_SelectionArgs.IsOverlappingWand(position))
+						continue;
+				}
+				else
+				{
+					if (!m_SelectionArgs.IsOverlappingSelection(position))
+						continue;
+				}
 			}
 			
-			const Utilities::ivec2 chunkCoords = ToChunkCoords(position);
-
-			if (!IsValidChunk(chunkCoords))
-			{
-				m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
-			}
-
-			switch (TileConfiguration.CurrentTileType)
-			{
-				case e_EntityType::ENTITY_SCENIC:
-				{
-					m_Chunks[chunkCoords]->AddTile(CreateTile(), ToLocalChunkCoords(position));
-				}
-				break;
-
-				case e_EntityType::ENTITY_NPC:
-				{
-				}
-				break;
-			}
+			PlaceTile(position);
 		}
 	}
 }
 
-void WorldEditor::RemoveTiles()
+void WorldEditor::RemoveBrushTiles()
 {
 	using namespace App::Config;
 
@@ -387,38 +564,26 @@ void WorldEditor::RemoveTiles()
 	{
 		for (I32 y = 0; y < SettingsConfiguration.BrushSize.y; y++)
 		{
-			const Utilities::ivec2 position    = m_HoveredGridCell + Utilities::ivec2{ x, y };
-			const Utilities::ivec2 chunkCoords = ToChunkCoords(position);
+			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2{ x, y };
 
-			if (m_Chunks.find(chunkCoords) != m_Chunks.end())
+			if (m_SelectionArgs.bIsActive)
 			{
-				const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(position);
-
-				Ref<Chunk> chunk = m_Chunks[chunkCoords];
-				chunk->RemoveTile(localChunkCoords);
-
-				if(chunk->IsEmpty()) 
+				if (!m_SelectionArgs.IsOverlappingSelection(position)) 
 				{
-					m_Chunks.erase(chunkCoords);
+					continue;
 				}
 			}
+
+			RemoveTile(position);
 		}
 	}
 }
 
-void WorldEditor::RemoveTilesWandSelection()
+void WorldEditor::RemoveTilesSelection()
 {
-	for(const Utilities::ivec2 _tile : m_WandSelectedTiles) 
+	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
 	{
-		const Utilities::ivec2 chunkCoords = ToChunkCoords(_tile);
-		
-		if (!IsValidChunk(chunkCoords))
-			continue;
-
-		const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(_tile);
-		const I16 tileIndex = Chunk::ToTileIndex(localChunkCoords);
-
-		m_Chunks[chunkCoords]->m_Tiles[tileIndex] = nullptr;
+		RemoveTile(_pos);
 	}
 }
 
@@ -429,23 +594,23 @@ void WorldEditor::Fill()
 		return;
 	}
 
-	if(m_WandSelectedTiles.size() == 0) 
+	//*-----------------------------------------------
+	// In the case that the wand selection is inactive,
+	// Just fill the selection instead.
+	if(m_SelectionArgs.IsWandActive())
 	{
-		return;
+		if(!m_SelectionArgs.IsOverlappingWand(m_HoveredGridCell))
+			return;
+	}
+	else 
+	{
+		if (!m_SelectionArgs.IsOverlappingSelection(m_HoveredGridCell))
+			return;
 	}
 
-	for(const Utilities::ivec2& _pos : m_WandSelectedTiles) 
+	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
 	{
-		const Utilities::ivec2 chunkCoords      = ToChunkCoords(_pos);
-		const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(_pos);
-
-		if(!IsValidChunk(chunkCoords)) 
-		{
-			m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
-		}
-
-		const I32 tileIndex = Chunk::ToTileIndex(localChunkCoords);
-		m_Chunks[chunkCoords]->AddTile(CreateTile(), localChunkCoords);
+		PlaceTile(_pos);
 	}
 }
 
@@ -515,10 +680,21 @@ void WorldEditor::DrawBrush()
 
 void WorldEditor::DrawSelection()
 {
-	if (!m_SelectionArgs.bIsActive)
-		return;
-
 	using namespace App::Config;
+
+	if (!m_SelectionArgs.bIsActive)
+	{
+		return;
+	}
+
+	//Render the dragged tiles if applicable.
+	if(m_SelectionArgs.bIsDragging) 
+	{
+		for(const DragArgs& item : m_SelectionArgs.selectedTiles) 
+		{
+			item.Tile->Render();
+		}
+	}
 
 	const Utilities::ivec2 min =
 	{
@@ -544,26 +720,26 @@ void WorldEditor::DrawSelection()
 	{
 		const SDL_Rect rect
 		{
-			min.x * GRIDCELLSIZE,
-			min.y * GRIDCELLSIZE,
+			min.x  * GRIDCELLSIZE,
+			min.y  * GRIDCELLSIZE,
 			size.x * GRIDCELLSIZE,
 			size.y * GRIDCELLSIZE
 		};
 
-		constexpr Color outlineCol = { 0, 0, 120, 150 };
-		constexpr Color rectCol = { 200, 200, 255, 20 };
+		constexpr Color outlineCol = { 0, 92, 158, 255 };
+		constexpr Color rectCol    = { 0, 92, 158, 30 };
 
 		g_globals.Renderer->DrawRect(rect, rectCol, 10);
-		g_globals.Renderer->DrawRectOutline(rect, outlineCol, 2, 10);
+		g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
 	}
 
 	//*-------------------------------
 	// Draw magic wand selection field.
 	//
 	{
-		constexpr Color rectCol = { 255, 255, 0, 40 };
+		const Color rectCol = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 50.0f, 4.0f, Time::GetElapsedTime())};
 
-		for (const Utilities::ivec2& _tile : m_WandSelectedTiles)
+		for (const Utilities::ivec2& _tile : m_SelectionArgs.WandSelectedTiles)
 		{
 			const SDL_Rect rect
 			{
@@ -580,33 +756,24 @@ void WorldEditor::DrawSelection()
 
 void WorldEditor::RemoveChunk()
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
-	m_Chunks.erase(chunkCoords);
+	m_Chunks.erase(ToChunkCoords(m_HoveredGridCell));
 }
 
-Ref<Tile> WorldEditor::CreateTile() const
-{
-	Ref<ScenicTile> tile   = std::make_shared<ScenicTile>();
-	tile->bIsWalkable      = App::Config::TileConfiguration.bIsWalkable;
-
-	return tile;
-}
-
-const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _worldCoords) const
+const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _gridCoords) const
 {
 	const I32 chunkSize = SIZE_CHUNK_TILES; // Size of each chunk in tiles
 
 	Utilities::ivec2 chunkCoords
 	{
-		_worldCoords.x / chunkSize,
-		_worldCoords.y / chunkSize
+		_gridCoords.x / chunkSize,
+		_gridCoords.y / chunkSize
 	};
 
-	if (_worldCoords.x < 0)
+	if (_gridCoords.x < 0)
 	{
 		chunkCoords.x -= 1;
 	}
-	if (_worldCoords.y < 0) 
+	if (_gridCoords.y < 0)
 	{
 		chunkCoords.y -= 1;
 	}
@@ -614,19 +781,13 @@ const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _world
 	return chunkCoords;
 }
 
-const Utilities::ivec2 WorldEditor::ToLocalChunkCoords(const Utilities::ivec2& _worldCoords) const
+const Utilities::ivec2 WorldEditor::ToLocalChunkCoords(const Utilities::ivec2& _gridCoords) const
 {
-	const U32 chunkSize = SIZE_CHUNK_TILES; // Size of each chunk in tiles
-
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_worldCoords);
-
-	const Utilities::ivec2 localChunkCoords
+	return Utilities::ivec2
 	{
-		(_worldCoords.x % chunkSize + chunkSize) % chunkSize,
-		(_worldCoords.y % chunkSize + chunkSize) % chunkSize
+		(_gridCoords.x % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES,
+		(_gridCoords.y % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES
 	};
-
-	return localChunkCoords;
 }
 
 const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _screenCoords) const
@@ -676,15 +837,15 @@ void Chunk::Serialize()
 			if (m_Tiles[tileIndex] == nullptr)
 				continue;
 
-			Ref<ScenicTile> tile = std::static_pointer_cast<ScenicTile>(m_Tiles[tileIndex]);
+			Ref<Tile> tile = m_Tiles[tileIndex];
 
 			data["Tiles"].push_back
 			(
 				{
 					{"X", x },
 					{"Y", y },
-					{"SpriteId",   tile->SpriteHandle },
-					{"IsWalkable", tile->bIsWalkable  }
+					{"SpriteId",   static_cast<U16>(tile->sprite)},
+					{"IsWalkable", tile->bIsWalkable             }
 				}
 			);
 		}

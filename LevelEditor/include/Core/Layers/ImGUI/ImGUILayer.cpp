@@ -200,7 +200,7 @@ void ImGUILayer::DrawViewPortHelperButtons()
         return bIsPressed;
     };
 
-    constexpr ImVec2 windowSize = { 64.0f, 320.0f };
+    constexpr ImVec2 windowSize = { 64.0f, 350.0f };
 
     constexpr U32 viewportFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDocking;
 
@@ -212,48 +212,54 @@ void ImGUILayer::DrawViewPortHelperButtons()
     {
         const ImVec2 menuPos = ImGui::GetItemRectMin();
 
-        if (ImGuiDrawButton("##Single", menuPos, 30.0f, m_Icons[e_ImGuiIconType::ICON_BRUSH], 
+        if (ImGuiDrawButton("##Drag", menuPos, 30.0f, m_Icons[e_ImGuiIconType::ICON_DRAG],
+            TileConfiguration.InteractionMode == e_InteractionMode::MODE_DRAG))
+        {
+            TileConfiguration.InteractionMode = e_InteractionMode::MODE_DRAG;
+        }
+
+        if (ImGuiDrawButton("##Single", menuPos, 65.0f, m_Icons[e_ImGuiIconType::ICON_BRUSH], 
             TileConfiguration.InteractionMode == e_InteractionMode::MODE_BRUSH))
         {
             TileConfiguration.InteractionMode = e_InteractionMode::MODE_BRUSH;
         }
 
-        if(ImGuiDrawButton("##Fill", menuPos, 65.0f, m_Icons[e_ImGuiIconType::ICON_FILL],
+        if(ImGuiDrawButton("##Fill", menuPos, 100.0f, m_Icons[e_ImGuiIconType::ICON_FILL],
            TileConfiguration.InteractionMode == e_InteractionMode::MODE_FILL))
         {
             TileConfiguration.InteractionMode = e_InteractionMode::MODE_FILL;
         } 
 
-        if (ImGuiDrawButton("##Path", menuPos, 100.0f, m_Icons[e_ImGuiIconType::ICON_PATH], 
+        if (ImGuiDrawButton("##Path", menuPos, 135.0f, m_Icons[e_ImGuiIconType::ICON_PATH], 
             SettingsConfiguration.bShowWalkableTiles))
         {
             SettingsConfiguration.bShowWalkableTiles = !SettingsConfiguration.bShowWalkableTiles;
         }
 
-        if (ImGuiDrawButton("##Reset", menuPos, 135.0f, m_Icons[e_ImGuiIconType::ICON_RESET]))
+        if (ImGuiDrawButton("##Reset", menuPos, 170.0f, m_Icons[e_ImGuiIconType::ICON_RESET]))
         {
             g_globals.Camera->Reset();
         }
 
-        if (ImGuiDrawButton("##ChunkGrid", menuPos, 170.0f, m_Icons[e_ImGuiIconType::ICON_GRID],
+        if (ImGuiDrawButton("##ChunkGrid", menuPos, 205.0f, m_Icons[e_ImGuiIconType::ICON_GRID],
             SettingsConfiguration.bRenderChunkOutlines))
         {
             SettingsConfiguration.bRenderChunkOutlines = !SettingsConfiguration.bRenderChunkOutlines;
         }
 
-        if (ImGuiDrawButton("##Picker", menuPos, 205.0f, m_Icons[e_ImGuiIconType::ICON_PICKER],
+        if (ImGuiDrawButton("##Picker", menuPos, 240.0f, m_Icons[e_ImGuiIconType::ICON_PICKER],
             TileConfiguration.InteractionMode == e_InteractionMode::MODE_PICKER))
         {
             TileConfiguration.InteractionMode = e_InteractionMode::MODE_PICKER;
         }
 
-        if (ImGuiDrawButton("##Select", menuPos, 240.0f, m_Icons[e_ImGuiIconType::ICON_SELECT],
+        if (ImGuiDrawButton("##Select", menuPos, 275.0f, m_Icons[e_ImGuiIconType::ICON_SELECT],
             TileConfiguration.InteractionMode == e_InteractionMode::MODE_SELECTION))
         {
             TileConfiguration.InteractionMode = e_InteractionMode::MODE_SELECTION;
         }
 
-        if (ImGuiDrawButton("##Wand", menuPos, 275.0f, m_Icons[e_ImGuiIconType::ICON_WAND],
+        if (ImGuiDrawButton("##Wand", menuPos, 310.0f, m_Icons[e_ImGuiIconType::ICON_WAND],
             TileConfiguration.InteractionMode == e_InteractionMode::MODE_WAND))
         {
             TileConfiguration.InteractionMode = e_InteractionMode::MODE_WAND;
@@ -322,7 +328,7 @@ void ImGUILayer::DrawContentBrowser()
 {
     using namespace App::Config;
 
-    if (TileConfiguration.CurrentTileType != e_EntityType::ENTITY_SCENIC)
+    if (TileConfiguration.CurrentTileType != e_EntityType::ENTITY_DEFAULT)
         return;
 
     if (ImGui::Begin("Content Browser", 0, ImGuiWindowFlags_NoCollapse))
@@ -365,7 +371,7 @@ void ImGUILayer::DrawTileWindow()
         {
             if(ImGui::BeginTabItem("Tile"))
             {
-                TileConfiguration.CurrentTileType = e_EntityType::ENTITY_SCENIC;
+                TileConfiguration.CurrentTileType = e_EntityType::ENTITY_DEFAULT;
                 ImGui::EndTabItem();
             }
 
@@ -380,7 +386,7 @@ void ImGUILayer::DrawTileWindow()
 
         switch(TileConfiguration.CurrentTileType) 
         {
-            case e_EntityType::ENTITY_SCENIC:
+            case e_EntityType::ENTITY_DEFAULT:
             {
                 DrawScenicSettings();
             }
@@ -441,16 +447,30 @@ void ImGUILayer::DrawRightClickMenu() const
         {
             bIsOpened = true;
 
-            ImGui::Separator();
+            ImGui::MenuItem("(camera)", NULL, false, false);
             if (ImGui::MenuItem("Reset Camera")) g_globals.Camera->Reset();
- 
             ImGui::Separator();
-            if (ImGui::MenuItem("Copy Chunk")) g_globals.WorldEditor->CopyChunk();
+
+            ImGui::MenuItem("(chunk)", NULL, false, false);
+            ImGui::Separator();
 
             if (!TileConfiguration.ChunkClipboard.expired())
             {
                 if (ImGui::MenuItem("Paste Chunk")) g_globals.WorldEditor->PasteChunk();
-            }        
+            }
+
+            if (g_globals.WorldEditor->IsHoveringOverActiveChunk())
+            {
+                if (ImGui::MenuItem("Clone Chunk"))   g_globals.WorldEditor->CloneChunk();  
+                if (ImGui::MenuItem("Delete Chunk"))  g_globals.WorldEditor->RemoveChunk();
+            }
+
+            if(g_globals.WorldEditor->IsSelectionActive()) 
+            {
+                ImGui::Separator();
+                ImGui::MenuItem("(selection)", NULL, false, false);
+                if (ImGui::MenuItem("Clear Selection")) g_globals.WorldEditor->ClearSelection();
+            }
 
             //*------------------------------------------------------------
             // For some reason the first two frames the menu is opened

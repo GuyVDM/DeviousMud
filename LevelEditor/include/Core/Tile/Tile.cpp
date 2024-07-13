@@ -9,17 +9,9 @@
 
 #include "Shared/Game/NPCDef.h"
 
-ScenicTile::ScenicTile()
+void Tile::Render()
 {
-	SpriteHandle = static_cast<U16>(App::Config::TileConfiguration.SpriteType);
-}
-
-void ScenicTile::Render()
-{
-	const Graphics::SpriteType type = static_cast<Graphics::SpriteType>(SpriteHandle);
-
 	const Utilities::ivec2 chunkCoords = ChunkCoords * SIZE_CHUNK_TILES;
-
 	const Utilities::ivec2 position = (LocalChunkCoords + chunkCoords) * App::Config::GRIDCELLSIZE;
 
 	RenderQuery query;
@@ -27,7 +19,7 @@ void ScenicTile::Render()
 	query.Frame    = 0;
 	query.Position = position;
 	query.Size     = Utilities::ivec2(App::Config::GRIDCELLSIZE);
-	query.Type     = type;
+	query.Type     = sprite;
 
 	g_globals.Renderer->Render(query, 0);
 
@@ -44,19 +36,11 @@ void ScenicTile::Render()
 	//
 	if (App::Config::SettingsConfiguration.bShowWalkableTiles)
 	{
-		Color color;
-		if (bIsWalkable)
-		{
-			color = Color(0, 255, 0, 70);
-		}
-		else
-		{
-			color = Color(255, 0, 0, 70);
-		}
+		const Color color = bIsWalkable ? Color(0, 255, 0, 70) 
+			                            : Color(255, 0, 0, 70);
 
 		g_globals.Renderer->DrawRect(rect, color);
 	}
-
 }
 
 void NPCTile::Render()
@@ -78,5 +62,5 @@ void NPCTile::Render()
 	query.Size = Utilities::ivec2(App::Config::GRIDCELLSIZE) * definition.size;
 	query.Type = definition.sprite;
 
-	g_globals.Renderer->Render(query, 1);
+	g_globals.Renderer->Render(query, 5);
 }

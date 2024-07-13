@@ -16,7 +16,8 @@ enum class e_ImGuiIconType
 	ICON_PICKER,
 	ICON_GRID,
 	ICON_SELECT,
-	ICON_WAND
+	ICON_WAND,
+	ICON_DRAG
 };
 
 class ImguiIcons 
@@ -28,14 +29,15 @@ public:
 	{
 		const IconMap iconMap =
 		{
-			{ e_ImGuiIconType::ICON_FILL,   "icons/fill.png"  },
-			{ e_ImGuiIconType::ICON_BRUSH,  "icons/brush.png" },
-			{ e_ImGuiIconType::ICON_PATH,   "icons/path.png"  },
-			{ e_ImGuiIconType::ICON_RESET,  "icons/reset.png" },
-			{ e_ImGuiIconType::ICON_PICKER, "icons/picker.png"},
-			{ e_ImGuiIconType::ICON_GRID,   "icons/grid.png"  },
-			{ e_ImGuiIconType::ICON_SELECT, "icons/select.png"},
-			{ e_ImGuiIconType::ICON_WAND,   "icons/wand.png"  }
+			{ e_ImGuiIconType::ICON_FILL,   "icons/fill.png"    },
+			{ e_ImGuiIconType::ICON_BRUSH,  "icons/brush.png"   },
+			{ e_ImGuiIconType::ICON_PATH,   "icons/path.png"    },
+			{ e_ImGuiIconType::ICON_RESET,  "icons/reset.png"   },
+			{ e_ImGuiIconType::ICON_PICKER, "icons/picker.png"  },
+			{ e_ImGuiIconType::ICON_GRID,   "icons/grid.png"    },
+			{ e_ImGuiIconType::ICON_SELECT, "icons/select.png"  },
+			{ e_ImGuiIconType::ICON_WAND,   "icons/wand.png"    },
+			{ e_ImGuiIconType::ICON_DRAG,   "icons/cursor.png"  },
 		};
 
 		return iconMap;

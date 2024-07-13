@@ -216,6 +216,7 @@
     <ClCompile Include="include\Core\Layers\LayerStack.cpp" />
     <ClCompile Include="include\Core\Renderer\Renderer.cpp" />
     <ClCompile Include="include\Core\Tile\Tile.cpp" />
+    <ClCompile Include="include\Core\WorldEditor\Selection\Selection.cpp" />
     <ClCompile Include="include\Core\WorldEditor\WorldEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="precomp.cpp">

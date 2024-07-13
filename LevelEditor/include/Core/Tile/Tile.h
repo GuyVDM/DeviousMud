@@ -2,42 +2,43 @@
 #include "Core/Core.hpp"
 
 #include "Shared/Utilities/vec2.hpp"
+#include "Shared/Game/SpriteTypes.hpp"
 
 enum class e_EntityType
 {
-	ENTITY_SCENIC = 0,
+	ENTITY_DEFAULT = 0,
 	ENTITY_NPC
 };
 
 struct Tile
 {
-	Utilities::ivec2 LocalChunkCoords;
-	Utilities::ivec2 ChunkCoords;
-	e_EntityType     EntityType;
-	bool             bIsWalkable;
+	Graphics::SpriteType sprite;
+	Utilities::ivec2     LocalChunkCoords;
+	Utilities::ivec2     ChunkCoords;
+	bool                 bIsWalkable;
+
+	Tile(Tile* _other) 
+	{
+		sprite           = _other->sprite;
+		LocalChunkCoords = _other->LocalChunkCoords;
+		ChunkCoords		 = _other->ChunkCoords;
+		bIsWalkable		 = _other->bIsWalkable;
+	}
 
 	Tile()
 	{
+		sprite           = Graphics::SpriteType::NONE;
+		LocalChunkCoords = Utilities::ivec2(0);
 		ChunkCoords      = Utilities::ivec2(0);
-		EntityType  = e_EntityType::ENTITY_SCENIC;
-		bIsWalkable = true;
+		bIsWalkable      = true;
 	};
 
-	virtual void Render() = 0;
-};
-
-struct ScenicTile : public Tile
-{
-	U16  SpriteHandle;
-
-	ScenicTile();
-
-	virtual void Render() override;
+	virtual void Render();
 };
 
 struct NPCTile : public Tile
 {
-	U8    NPCId;
+	U32   NPCId;
 	float RespawnTimer;
 
 	NPCTile()
