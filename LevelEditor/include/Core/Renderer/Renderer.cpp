@@ -99,8 +99,6 @@ void Renderer::DrawGrid()
 
 void Renderer::CreateRectTexture()
 {
-	constexpr SDL_Rect pixel = { 0, 0, 1, 1 };
-
 	constexpr U32 rmask = 0xff000000,
 		          gmask = 0x00ff0000, 
 		          bmask = 0x0000ff00,
@@ -108,11 +106,12 @@ void Renderer::CreateRectTexture()
 
 	SDL_Surface* surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
 
-	constexpr Color col = { 255, 255, 255, 255 };
+	SDL_PixelFormat* fmt = surface->format;
+	constexpr SDL_Rect rect  = { 0, 0, 1, 1 };
+	constexpr Color    col   = { 255, 255, 255, 255 };
+	const     U32      pixel = SDL_MapRGBA(fmt, col.R, col.G, col.B, col.A);
 
-	constexpr U32   finalColor = col.R + (col.G << 8) + (col.B << 16) + (col.A << 24);
-	
-	SDL_FillRect(surface, &pixel, finalColor);
+	SDL_FillRect(surface, &rect, pixel);
 
 	m_RectTexture = SDL_CreateTextureFromSurface(m_Renderer, surface);
 
