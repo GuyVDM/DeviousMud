@@ -99,18 +99,26 @@ void Renderer::DrawGrid()
 
 void Renderer::CreateRectTexture()
 {
-	m_RectTexture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
+	constexpr SDL_Rect pixel = { 0, 0, 1, 1 };
+
+	constexpr U32 rmask = 0xff000000,
+		          gmask = 0x00ff0000, 
+		          bmask = 0x0000ff00,
+		          amask = 0x000000ff;
+
+	SDL_Surface* surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
+
+	constexpr Color col = { 255, 255, 255, 255 };
+
+	constexpr U32   finalColor = col.R + (col.G << 8) + (col.B << 16) + (col.A << 24);
+	
+	SDL_FillRect(surface, &pixel, finalColor);
+
+	m_RectTexture = SDL_CreateTextureFromSurface(m_Renderer, surface);
+
 	SDL_SetTextureBlendMode(m_RectTexture, SDL_BLENDMODE_BLEND);
 
-	SDL_SetRenderTarget(m_Renderer, m_RectTexture);
-
-	SDL_RenderClear(m_Renderer);
-
-	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
-
-	SDL_RenderFillRect(m_Renderer, nullptr);
-
-	SDL_SetRenderTarget(m_Renderer, nullptr);
+	SDL_FreeSurface(surface);
 }
 
 const bool Renderer::IsVisible(const SDL_Rect& _rect) const
@@ -151,7 +159,7 @@ const Optional<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 
 void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder)
 {
-	const RenderQueryInstance instance =
+	RenderQueryInstance instance =
 	{
 		/* Type     */ Graphics::SpriteType::NONE,
 		/* Position */ Utilities::ivec2(_rect.x, _rect.y),
@@ -160,8 +168,9 @@ void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOr
 		/* Frame    */ 0,
 		/* Texture  */ m_RectTexture,
 		/* Flags    */ e_TextureFlags::TEXTURE_NONE,
+		               'R'
 	};
-
+	
 	m_RenderQuery[_zOrder].push_back(instance);
 }
 
@@ -220,9 +229,9 @@ void Renderer::EndFrame()
 {
 	Ref<Camera> camera = g_globals.Camera;
 
-	for (auto& [zOrder, renderList] : m_RenderQuery)
+	for (const auto& [zOrder, renderList] : m_RenderQuery)
 	{
-		for (auto& queryItem : renderList)
+		for (const auto& queryItem : renderList)
 		{
 			const SDL_Rect dstRect
 			{
@@ -246,7 +255,6 @@ void Renderer::EndFrame()
 				if (queryItem.Type == Graphics::SpriteType::NONE)
 				{
 					spriteWidth = texWidth;
-					frame = 0;
 				}
 				else
 				{
@@ -258,7 +266,7 @@ void Renderer::EndFrame()
 
 			const SDL_Rect srcRect
 			{
-				frame == 0 ? 0 : spriteWidth * frame,
+				spriteWidth * frame,
 				0,
 				spriteWidth,
 				texHeight,

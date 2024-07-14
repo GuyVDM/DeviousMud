@@ -42,6 +42,7 @@ struct RenderQueryInstance : public RenderQuery
 {
 	SDL_Texture*   Texture;
 	e_TextureFlags Flags;
+	char DebugChar = ' ';
 };
 
 struct Sprite

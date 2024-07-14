@@ -522,7 +522,7 @@ void WorldEditor::RenderChunkBorders()
 				size				
 			};
 
-			g_globals.Renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 5);
+			//g_globals.Renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 5);
 		}
 	}
 }
@@ -566,14 +566,6 @@ void WorldEditor::RemoveBrushTiles()
 		{
 			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2{ x, y };
 
-			if (m_SelectionArgs.bIsActive)
-			{
-				if (!m_SelectionArgs.IsOverlappingSelection(position)) 
-				{
-					continue;
-				}
-			}
-
 			RemoveTile(position);
 		}
 	}
@@ -581,6 +573,14 @@ void WorldEditor::RemoveBrushTiles()
 
 void WorldEditor::RemoveTilesSelection()
 {
+	//*----------------------------------
+	// If no selection is active, ignore.
+	//
+	if(!m_SelectionArgs.bIsActive) 
+	{
+		return;
+	}
+
 	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
 	{
 		RemoveTile(_pos);
@@ -591,11 +591,6 @@ void WorldEditor::RemoveTilesSelection()
 
 void WorldEditor::Fill()
 {
-	if (!m_SelectionArgs.bIsActive)
-	{
-		return;
-	}
-
 	if(!m_SelectionArgs.IsOverlapping(m_HoveredGridCell)) 
 	{
 		return;
@@ -614,7 +609,7 @@ const bool WorldEditor::IsValidChunk(const Utilities::ivec2& _chunkCoords) const
 
 void WorldEditor::RenderTiles()
 {
-	for(auto&[chunkCoords, chunk] : m_Chunks) 
+	for(const auto&[chunkCoords, chunk] : m_Chunks) 
 	{
 		for(auto& tile : chunk->m_Tiles) 
 		{
@@ -668,7 +663,6 @@ void WorldEditor::DrawBrush()
 	}
 
 	g_globals.Renderer->DrawRect(rect, rectCol, 10);
-	g_globals.Renderer->DrawRectOutline(rect, outlineCol, 2, 10);
 }
 
 void WorldEditor::DrawSelection()
@@ -681,14 +675,11 @@ void WorldEditor::DrawSelection()
 	}
 
 	//Render the dragged tiles if applicable.
-	if(m_SelectionArgs.bIsDragging) 
+	for (const DragArgs& item : m_SelectionArgs.SelectedTiles)
 	{
-		for(const DragArgs& item : m_SelectionArgs.SelectedTiles) 
-		{
-			item.Tile->Render();
-		}
+		item.Tile->Render();
 	}
-
+	
 	const Utilities::ivec2 min =
 	{
 		std::min(m_SelectionArgs.PointA.x, m_SelectionArgs.PointB.x),
@@ -711,19 +702,22 @@ void WorldEditor::DrawSelection()
 	// Draw selection field.
 	//
 	{
-		const SDL_Rect rect
+		if (!m_SelectionArgs.bIsDragging)
 		{
-			min.x  * GRIDCELLSIZE,
-			min.y  * GRIDCELLSIZE,
-			size.x * GRIDCELLSIZE,
-			size.y * GRIDCELLSIZE
-		};
+			const SDL_Rect rect
+			{
+				min.x  * GRIDCELLSIZE,
+				min.y  * GRIDCELLSIZE,
+				size.x * GRIDCELLSIZE,
+				size.y * GRIDCELLSIZE
+			};
 
-		constexpr Color outlineCol = { 0, 92, 158, 255 };
-		constexpr Color rectCol    = { 0, 92, 158, 30 };
+			constexpr Color outlineCol = { 0, 92, 158, 255 };
+			constexpr Color rectCol    = { 0, 92, 158, 30  };
 
-		g_globals.Renderer->DrawRect(rect, rectCol, 10);
-		g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
+			g_globals.Renderer->DrawRect(rect, rectCol, 10);
+			g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
+		}
 	}
 
 	//*-------------------------------
@@ -754,12 +748,10 @@ void WorldEditor::RemoveChunk()
 
 const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _gridCoords) const
 {
-	const I32 chunkSize = SIZE_CHUNK_TILES; // Size of each chunk in tiles
-
 	Utilities::ivec2 chunkCoords
 	{
-		_gridCoords.x / chunkSize,
-		_gridCoords.y / chunkSize
+		_gridCoords.x / SIZE_CHUNK_TILES,
+		_gridCoords.y / SIZE_CHUNK_TILES
 	};
 
 	if (_gridCoords.x < 0)
@@ -788,9 +780,14 @@ const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _s
 	Utilities::ivec2 worldCoords = Renderer::ScreenToWorld(_screenCoords);
 
 	if (worldCoords.x < 0)
+	{
 		worldCoords.x -= App::Config::GRIDCELLSIZE - 1;
+	}
+
 	if (worldCoords.y < 0)
+	{
 		worldCoords.y -= App::Config::GRIDCELLSIZE - 1;
+	}
 
 	return
 	{

@@ -14,9 +14,9 @@ InputLayer::InputLayer()
 const bool InputLayer::HandleEvent(const SDL_Event& _event)
 {
     static bool bHoldingMiddleMouse = false;
-    static bool bLeftMouse  = false;
-    static bool bRightMouse = false;
-    static bool bCtrlPressed = false;
+    static bool bLeftMouse          = false;
+    static bool bRightMouse         = false;
+    static bool bCtrlPressed        = false;
 
     if (bLeftMouse)
     {
@@ -53,16 +53,9 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
 
         case SDL_MOUSEBUTTONDOWN:
         {
-            if (_event.button.button == SDL_BUTTON_LEFT)
-                bLeftMouse = true;
-            
-
-            if (_event.button.button == SDL_BUTTON_RIGHT)
-                bRightMouse = true;
-            
-
-            if (_event.button.button == SDL_BUTTON_MIDDLE)
-                bHoldingMiddleMouse = true;       
+            if (_event.button.button == SDL_BUTTON_LEFT)   bLeftMouse = true;
+            if (_event.button.button == SDL_BUTTON_RIGHT)  bRightMouse = true;
+            if (_event.button.button == SDL_BUTTON_MIDDLE) bHoldingMiddleMouse = true;       
         }
         break;
 
@@ -74,13 +67,8 @@ const bool InputLayer::HandleEvent(const SDL_Event& _event)
                 bLeftMouse = false;
             }
 
-
-            if (_event.button.button == SDL_BUTTON_RIGHT)
-                bRightMouse = false;
-
-
-            if (_event.button.button == SDL_BUTTON_MIDDLE)
-                bHoldingMiddleMouse = false;
+            if (_event.button.button == SDL_BUTTON_RIGHT)  bRightMouse = false;
+            if (_event.button.button == SDL_BUTTON_MIDDLE) bHoldingMiddleMouse = false;
         }
         break;
 

@@ -35,10 +35,10 @@ const std::vector<Utilities::ivec2> SelectionArgs::GetAffectedTiles() const
 	}
 
 	const Utilities::ivec2 min = { std::min<I32>(PointA.x, PointB.x),
-								   std::min<I32>(PointA.y, PointB.y) };
+								   std::min<I32>(PointA.y, PointB.y)};
 
 	const Utilities::ivec2 max = { std::max<I32>(PointA.x, PointB.x),
-								   std::max<I32>(PointA.y, PointB.y) };
+								   std::max<I32>(PointA.y, PointB.y)};
 
 	std::vector<Utilities::ivec2> affectedTiles;
 	for (I32 x = min.x; x <= max.x; x++)
@@ -54,6 +54,11 @@ const std::vector<Utilities::ivec2> SelectionArgs::GetAffectedTiles() const
 
 const bool SelectionArgs::IsOverlapping(const Utilities::ivec2& _gridCoords) const
 {
+	if(!bIsActive) 
+	{
+		return false;
+	}
+
 	if (IsWandActive())
 	{
 		return IsOverlappingWand(_gridCoords);
@@ -64,6 +69,11 @@ const bool SelectionArgs::IsOverlapping(const Utilities::ivec2& _gridCoords) con
 
 const bool SelectionArgs::IsOverlappingWand(const Utilities::ivec2& _gridCoords) const
 {
+	if(!bIsActive) 
+	{
+		return false;
+	}
+
 	for (const Utilities::ivec2& pos : WandSelectedTiles)
 	{
 		if (_gridCoords == pos)
@@ -82,6 +92,11 @@ const bool SelectionArgs::IsWandActive() const
 
 const bool SelectionArgs::IsOverlappingSelection(const Utilities::ivec2& _gridCoords) const
 {
+	if(!bIsActive) 
+	{
+		return false;
+	}
+
 	//If magic wand is inactive, we just check the selection field if there's overlap there.
 	const Utilities::ivec2 min = { std::min(PointA.x, PointB.x), std::min(PointA.y, PointB.y) };
 	const Utilities::ivec2 max = { std::max(PointA.x, PointB.x), std::max(PointA.y, PointB.y) };

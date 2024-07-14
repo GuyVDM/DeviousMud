@@ -42,6 +42,7 @@ struct SelectionArgs
 	/// <summary>
 	/// Returns whether the coordinate is overlapping with the selection.
 	/// Or if the wand is enabled, the wand instead.
+	/// If no selection is active, will by default return false.
 	/// </summary>
 	/// <param name="_gridCoords"></param>
 	/// <returns></returns>
@@ -50,6 +51,7 @@ struct SelectionArgs
 	/// <summary>
 	/// Returns whether we're hovering over any coordinate thats affected by
 	/// the magic wand.
+	/// If no selection is active, will by default return false.
 	/// </summary>
 	/// <param name="_gridCoords"></param>
 	/// <returns></returns>
@@ -63,6 +65,7 @@ struct SelectionArgs
 
 	/// <summary>
 	/// Whether we are overlapping anywhere within the selection box.
+	/// If no selection is active, will by default return false.
 	/// </summary>
 	/// <param name="_gridCoords"></param>
 	/// <returns></returns>
