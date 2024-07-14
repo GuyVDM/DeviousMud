@@ -104,9 +104,9 @@ void Renderer::CreateRectTexture()
 		          bmask = 0x0000ff00,
 		          amask = 0x000000ff;
 
-	SDL_Surface* surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
+	SDL_Surface*       surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
+	SDL_PixelFormat*   fmt = surface->format;
 
-	SDL_PixelFormat* fmt = surface->format;
 	constexpr SDL_Rect rect  = { 0, 0, 1, 1 };
 	constexpr Color    col   = { 255, 255, 255, 255 };
 	const     U32      pixel = SDL_MapRGBA(fmt, col.R, col.G, col.B, col.A);

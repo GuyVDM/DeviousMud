@@ -184,12 +184,12 @@ void WorldEditor::PasteChunk()
 		{
 			for (U32 y = 0; y < SIZE_CHUNK_TILES; y++)
 			{
-				const U32 tileIndex = x + y * SIZE_CHUNK_TILES;
+				const U32 i = Chunk::ToTileIndex(Utilities::ivec2(x, y));
 
-				if (cbChunk->m_Tiles[tileIndex] == nullptr)
+				if (cbChunk->m_Tiles[i] == nullptr)
 					continue;
 				
-				const Ref<Tile> tileCopy = std::make_shared<Tile>(cbChunk->m_Tiles[tileIndex].get());
+				const Ref<Tile> tileCopy = std::make_shared<Tile>(cbChunk->m_Tiles[i].get());
 				tileCopy->ChunkCoords    = chunkCoords;
 				chunk->AddTile(tileCopy);
 			}
@@ -522,7 +522,8 @@ void WorldEditor::RenderChunkBorders()
 				size				
 			};
 
-			//g_globals.Renderer->DrawRectOutline(rect, { 70, 70, 70, 255 }, 1, 5);
+			constexpr Color chunkOutlineColor = Color(70, 70, 70, 255);
+			g_globals.Renderer->DrawRectOutline(rect, chunkOutlineColor, 1, 5);
 		}
 	}
 }
@@ -712,10 +713,10 @@ void WorldEditor::DrawSelection()
 				size.y * GRIDCELLSIZE
 			};
 
-			constexpr Color outlineCol = { 0, 92, 158, 255 };
 			constexpr Color rectCol    = { 0, 92, 158, 30  };
-
 			g_globals.Renderer->DrawRect(rect, rectCol, 10);
+
+			constexpr Color outlineCol = { 0, 92, 158, 255 };
 			g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
 		}
 	}
@@ -748,22 +749,11 @@ void WorldEditor::RemoveChunk()
 
 const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _gridCoords) const
 {
-	Utilities::ivec2 chunkCoords
+	return Utilities::ivec2
 	{
-		_gridCoords.x / SIZE_CHUNK_TILES,
-		_gridCoords.y / SIZE_CHUNK_TILES
+		(_gridCoords.x < 0) ? ((_gridCoords.x + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.x / SIZE_CHUNK_TILES),
+		(_gridCoords.y < 0) ? ((_gridCoords.y + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.y / SIZE_CHUNK_TILES)
 	};
-
-	if (_gridCoords.x < 0)
-	{
-		chunkCoords.x -= 1;
-	}
-	if (_gridCoords.y < 0)
-	{
-		chunkCoords.y -= 1;
-	}
-
-	return chunkCoords;
 }
 
 const Utilities::ivec2 WorldEditor::ToLocalChunkCoords(const Utilities::ivec2& _gridCoords) const

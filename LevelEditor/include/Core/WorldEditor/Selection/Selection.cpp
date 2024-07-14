@@ -2,6 +2,7 @@
 
 #include "Core/WorldEditor/Selection/Selection.h"
 #include "Core/WorldEditor/WorldEditor.h"
+#include "Core/Config/Config.h"
 
 void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 {
@@ -17,10 +18,10 @@ void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 
 	for (DragArgs& dragArgs : SelectedTiles)
 	{
-		const Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
+		Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
 
-		const Utilities::ivec2 chunkCoords      = Chunk::ToChunkCoords(newGridPos);
 		const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(newGridPos);
+		const Utilities::ivec2 chunkCoords      = Chunk::ToChunkCoords(newGridPos);
 
 		dragArgs.Tile->ChunkCoords      = chunkCoords;
 		dragArgs.Tile->LocalChunkCoords = localChunkCoords;

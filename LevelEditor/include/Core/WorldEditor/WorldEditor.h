@@ -95,24 +95,11 @@ public:
 
 	inline static const Utilities::ivec2 ToChunkCoords(const Utilities::ivec2& _gridCoords)
 	{
-		const I32 chunkSize = SIZE_CHUNK_TILES;
-
-		Utilities::ivec2 chunkCoords
+		return  Utilities::ivec2
 		{
-			_gridCoords.x / chunkSize,
-			_gridCoords.y / chunkSize
-		};
-
-		if (_gridCoords.x < 0)
-		{
-			chunkCoords.x -= 1;
-		}
-		if (_gridCoords.y < 0)
-		{
-			chunkCoords.y -= 1;
-		}
-
-		return chunkCoords;
+			(_gridCoords.x < 0) ? ((_gridCoords.x + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.x / SIZE_CHUNK_TILES),
+			(_gridCoords.y < 0) ? ((_gridCoords.y + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.y / SIZE_CHUNK_TILES)
+		};;
 	}
 
 	inline static const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _gridCoords)
