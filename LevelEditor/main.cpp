@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
 	Editor editor = Editor();
 
-	editor.CreateEditorWindow();
+	editor.CreateEditor();
 	editor.Start();
 
 	return 0;

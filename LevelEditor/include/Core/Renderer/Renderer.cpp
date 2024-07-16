@@ -3,34 +3,61 @@
 #include "Core/Renderer/Renderer.h"
 
 #include "Core/Camera/Camera.h"
+#include "Core/Renderer/FontLoader/FontLoader.h"
 #include "Core/Globals/Globals.h"
 #include "Core/Config/Config.h"
 #include "Core/Editor/Editor.h"
 
+
 #include "Shared/Game/SpriteTypes.hpp"
 
-Renderer::Renderer(SDL_Renderer* _renderer) : m_Renderer(_renderer)
+Renderer::Renderer(const Utilities::ivec2& _windowSize)
 {
+	m_Window   = nullptr;
+	m_Renderer = nullptr;
+
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER);
+	TTF_Init();
+
+	CreateSDLWindow(_windowSize.x, _windowSize.y);
+
 	for(const auto& sprite : Graphics::SpriteConfig::spriteMap()) 
 	{
 		LoadSprites(sprite);
-	}
+	}	CreateRectTexture();
 
-	CreateRectTexture();
+	m_FontLoader = std::make_shared<FontLoader>(App::Config::s_FontPath);
 }
 
 Renderer::~Renderer()
 {
-	for(const auto&[type, sprite] : m_Sprites)
+	//*-----------------
+	// Clean up textures.
+	//
 	{
-		SDL_DestroyTexture(sprite.Texture);
-		SDL_FreeSurface(sprite.Surface);
+		for (const auto& [type, sprite] : m_Sprites)
+		{
+			SDL_DestroyTexture(sprite.Texture);
+			SDL_FreeSurface(sprite.Surface);
+		}   m_Sprites.clear();
+
+		m_RenderQuery.clear();
+		SDL_DestroyTexture(m_RectTexture);
+	}
+	
+	//*-----------------
+	// Destroy ttf font.
+	//
+	{
+		m_FontLoader = nullptr;
 	}
 
-	m_Sprites.clear();
-	m_RenderQuery.clear();
-
-	SDL_DestroyTexture(m_RectTexture);
+	//*--------------------
+	// Quit SDL Subsystems.
+	//
+	SDL_DestroyWindow(m_Window);
+	SDL_DestroyRenderer(m_Renderer);
+	TTF_Quit();
 }
 
 void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
@@ -167,7 +194,6 @@ void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOr
 		/* Frame    */ 0,
 		/* Texture  */ m_RectTexture,
 		/* Flags    */ e_TextureFlags::TEXTURE_NONE,
-		               'R'
 	};
 	
 	m_RenderQuery[_zOrder].push_back(instance);
@@ -277,7 +303,7 @@ void Renderer::EndFrame()
 			SDL_RenderCopy(m_Renderer, queryItem.Texture, &srcRect, &dstRect);
 
 			SDL_SetTextureColorMod(queryItem.Texture, 255, 255, 255);
-			SDL_SetTextureAlphaMod(queryItem.Texture, queryItem.Color.A);
+			SDL_SetTextureAlphaMod(queryItem.Texture, 255);
 
 			if (queryItem.Flags & e_TextureFlags::TEXTURE_DESTROY_AFTER_USE)
 			{
@@ -287,6 +313,70 @@ void Renderer::EndFrame()
 	}
 
 	m_RenderQuery.clear();
+
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), m_Renderer);
+
+	SDL_RenderPresent(m_Renderer);
+}
+
+void Renderer::RenderText(const TextArgs& _args)
+{
+	SDL_Texture* textTexture = m_FontLoader->TextToTexture(m_Renderer, _args.Text.c_str(), _args.TextSize);
+	if(!textTexture) 
+	{
+		DEVIOUS_ERR("Could not load texture.");
+		return;
+	}
+
+	Utilities::ivec2 textureDimensions = {};
+	SDL_QueryTexture(textTexture, NULL, NULL, &textureDimensions.x, &textureDimensions.y);
+
+	RenderQueryInstance query;
+	query.Color    = _args.Color;
+	query.Flags    = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
+	query.Frame    = 0;
+	query.Position = _args.Position;
+	query.Size     = textureDimensions;
+	query.Texture  = textTexture;
+	query.Type     = Graphics::SpriteType::NONE;
+
+	m_RenderQuery[_args.ZOrder].push_back(query);
+
+}
+
+void Renderer::CreateSDLWindow(const I32& _width, const I32& _height)
+{
+	U32 flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+	if (_width == 0 && _height == 0)
+	{
+		flags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
+		m_Window = SDL_CreateWindow("DM Editor", 0, 0, 1000, 1000, flags);
+	}
+	else
+	{
+		m_Window = SDL_CreateWindow("DM Editor", 0, 0, _width, _height, flags);
+	}
+
+	if (!m_Window)
+	{
+		DEVIOUS_LOG("Window couldn't get created: " << SDL_GetError());
+	}
+
+	m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+
+	SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+}
+
+SDL_Window* Renderer::GetWindow()
+{
+	return m_Window;
+}
+
+SDL_Renderer* Renderer::GetRenderer()
+{
+	return m_Renderer;
 }
 
 void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
@@ -305,3 +395,4 @@ void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
 
 	m_RenderQuery[_zOrder].push_back(instance);
 }
+

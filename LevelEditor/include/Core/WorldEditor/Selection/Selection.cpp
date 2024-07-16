@@ -4,6 +4,24 @@
 #include "Core/WorldEditor/WorldEditor.h"
 #include "Core/Config/Config.h"
 
+void SelectionArgs::AddTileToWandSelection(const Utilities::ivec2& _gridCoords)
+{
+	if (!IsTileSelected(_gridCoords))
+	{
+		WandSelectedTiles.push_back(_gridCoords);
+	}
+}
+
+void SelectionArgs::RemoveTileFromWandSelection(const Utilities::ivec2& _gridCoords)
+{
+	auto it = std::find(WandSelectedTiles.begin(), WandSelectedTiles.end(), _gridCoords);
+
+	if(it != WandSelectedTiles.end()) 
+	{
+		WandSelectedTiles.erase(it);
+	}
+}
+
 void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 {
 	const Utilities::ivec2 offset = _gridCoords - startDragPos;
@@ -41,12 +59,19 @@ const std::vector<Utilities::ivec2> SelectionArgs::GetAffectedTiles() const
 	const Utilities::ivec2 max = { std::max<I32>(PointA.x, PointB.x),
 								   std::max<I32>(PointA.y, PointB.y)};
 
-	std::vector<Utilities::ivec2> affectedTiles;
+	const U32 width     = static_cast<U32>(abs(max.x - min.x + 1));
+	const U32 height    = static_cast<U32>(abs(max.y - min.y + 1));
+	const U32 tileCount = width * height;
+
+	std::vector<Utilities::ivec2> affectedTiles(tileCount);
+
 	for (I32 x = min.x; x <= max.x; x++)
 	{
 		for (I32 y = min.y; y <= max.y; y++)
 		{
-			affectedTiles.push_back(Utilities::ivec2(x, y));
+			const U32 i = (x - min.x) + width * (y - min.y);
+
+			affectedTiles[i] = Utilities::ivec2(x, y);
 		}
 	}
 
@@ -103,4 +128,10 @@ const bool SelectionArgs::IsOverlappingSelection(const Utilities::ivec2& _gridCo
 	const Utilities::ivec2 max = { std::max(PointA.x, PointB.x), std::max(PointA.y, PointB.y) };
 
 	return (_gridCoords.x >= min.x && _gridCoords.x <= max.x && _gridCoords.y >= min.y && _gridCoords.y <= max.y);
+}
+
+const bool SelectionArgs::IsTileSelected(const Utilities::ivec2& _tile) const
+{
+	auto it = std::find(WandSelectedTiles.begin(), WandSelectedTiles.end(), _tile);
+	return it != WandSelectedTiles.end();
 }

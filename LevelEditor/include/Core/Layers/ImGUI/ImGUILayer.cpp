@@ -21,6 +21,7 @@ ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->AddFontFromFileTTF(App::Config::s_FontPath, 16.0f);
         io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
         ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
@@ -242,9 +243,9 @@ void ImGUILayer::DrawViewPortHelperButtons()
         }
 
         if (ImGuiDrawButton("##ChunkGrid", menuPos, 205.0f, m_Icons[e_ImGuiIconType::ICON_GRID],
-            SettingsConfiguration.bRenderChunkOutlines))
+            SettingsConfiguration.bRenderChunkVisuals))
         {
-            SettingsConfiguration.bRenderChunkOutlines = !SettingsConfiguration.bRenderChunkOutlines;
+            SettingsConfiguration.bRenderChunkVisuals = !SettingsConfiguration.bRenderChunkVisuals;
         }
 
         if (ImGuiDrawButton("##Picker", menuPos, 240.0f, m_Icons[e_ImGuiIconType::ICON_PICKER],
@@ -459,11 +460,8 @@ void ImGUILayer::DrawRightClickMenu() const
                 if (ImGui::MenuItem("Paste Chunk")) g_globals.WorldEditor->PasteChunk();
             }
 
-            if (g_globals.WorldEditor->IsHoveringOverActiveChunk())
-            {
-                if (ImGui::MenuItem("Clone Chunk"))   g_globals.WorldEditor->CloneChunk();  
-                if (ImGui::MenuItem("Delete Chunk"))  g_globals.WorldEditor->RemoveChunk();
-            }
+            if (ImGui::MenuItem("Clone Chunk"))   g_globals.WorldEditor->CloneChunk();  
+            if (ImGui::MenuItem("Delete Chunk"))  g_globals.WorldEditor->RemoveChunk();
 
             if(g_globals.WorldEditor->IsSelectionActive()) 
             {

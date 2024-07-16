@@ -15,12 +15,21 @@ namespace Graphics
 struct SDL_Texture;
 struct SDL_Surface;
 struct SDL_Renderer;
+struct SDL_Window;
 struct SDL_Rect;
 struct Camera;
+
+class FontLoader;
 
 struct Color  
 {
 	U8 R, G, B, A;
+};
+
+enum e_TextureFlags : U8
+{
+	TEXTURE_NONE = 0x00,
+	TEXTURE_DESTROY_AFTER_USE = 0x01
 };
 
 struct RenderQuery 
@@ -32,17 +41,10 @@ struct RenderQuery
 	U8                   Frame    = 0;
 };
 
-enum e_TextureFlags : U8
-{
-	TEXTURE_NONE = 0x00,
-	TEXTURE_DESTROY_AFTER_USE = 0x01
-};
-
 struct RenderQueryInstance : public RenderQuery
 {
 	SDL_Texture*   Texture;
 	e_TextureFlags Flags;
-	char DebugChar = ' ';
 };
 
 struct Sprite
@@ -53,6 +55,15 @@ struct Sprite
 
 	Sprite() : Texture(nullptr), Surface(nullptr), FrameCount(0) {};
 	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount) : Texture(_texture), Surface(_surface), FrameCount(_frameCount) {};
+};
+
+struct TextArgs 
+{
+	Utilities::ivec2 Position;
+	std::string      Text;
+	U32              TextSize;
+	Color            Color;
+	U8               ZOrder;
 };
 
 class Renderer 
@@ -73,11 +84,19 @@ public:
 
 	void EndFrame();
 
+	void RenderText(const TextArgs& _args);
+
+	SDL_Window* GetWindow();
+
+	SDL_Renderer* GetRenderer();
+
 public:
-	Renderer(SDL_Renderer* _renderer);
+	Renderer(const Utilities::ivec2& _windowSize);
 	virtual ~Renderer();
 
 private:
+	void CreateSDLWindow(const I32& _width, const I32& _height);
+
 	void LoadSprites(const Graphics::SpriteArgs& _args);
 
 	void DrawGrid();
@@ -87,7 +106,11 @@ private:
 	const bool IsVisible(const SDL_Rect& _rect) const;
 
 private:
+	SDL_Window* m_Window;
+
 	SDL_Renderer* m_Renderer;
+
+	Ref<FontLoader> m_FontLoader;
 
 	std::map<U8, std::vector<RenderQueryInstance>> m_RenderQuery;
 

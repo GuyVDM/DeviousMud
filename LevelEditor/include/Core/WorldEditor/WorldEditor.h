@@ -133,8 +133,6 @@ public:
 
 	void Release();
 
-	void Update();
-
 	void CloneChunk();
 
 	void PasteChunk();
@@ -151,7 +149,7 @@ public:
 
 public:
 	WorldEditor();
-	virtual ~WorldEditor();
+	virtual ~WorldEditor() = default;
 
 private:
 	Optional<Ref<Tile>> TryGetTile(const Utilities::ivec2& _gridCoords);
@@ -165,6 +163,8 @@ private:
  
 	Optional<Ref<Chunk>> TryGetChunk(const Utilities::ivec2& _gridCoords);
 
+	void Update();
+
 	void PlaceTile(const Utilities::ivec2& _gridCoords);
 
 	void RemoveTile(const Utilities::ivec2& _gridCoords);
@@ -177,11 +177,11 @@ private:
 
 	void CreateWandSelection();
 
-	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, std::vector<Utilities::ivec2>& _visitedTiles, const Utilities::ivec2& _gridCoords);
+	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, std::vector<Utilities::ivec2>& _visitedTiles, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries = false);
 
 	void PickTile();
 
-	void RenderChunkBorders();
+	void RenderChunkVisuals();
 
 	void PlaceBrushTiles();
 
@@ -208,11 +208,13 @@ private:
 	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
 
 private:
+	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
+
 	SelectionArgs m_SelectionArgs;
 
 	Ref<Camera> m_Camera;
 
-	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
-
 	std::map<Utilities::ivec2, Ref<Chunk>> m_Chunks;
+
+	friend class EditorLayer;
 };

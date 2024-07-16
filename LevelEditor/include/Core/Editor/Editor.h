@@ -7,6 +7,7 @@ struct SDL_Window;
 class LayerStack;
 
 class Renderer;
+class InputHandler;
 
 class Editor 
 {
@@ -21,23 +22,25 @@ public:
 	/// </summary>
 	/// <param name="_width"></param>
 	/// <param name="_height"></param>
-	bool CreateEditorWindow(const I32& _width = 0, const I32& _height = 0);
+	bool CreateEditor(const I32& _width = 0, const I32& _height = 0);
 
 	void Start();
 
 public:
 	Editor() = default;
-	virtual ~Editor();
+	virtual ~Editor() = default;
 
 private:
 	void GenerateLayers();
 
-private:
-	SDL_Window*   m_Window;
+	void HandleEvents();
 
-	SDL_Renderer* m_SDLRenderer;
+private:
+	bool m_bIsRunning = true;
 
 	Ref<LayerStack> m_LayerStack;
 
-	Ref<Renderer> m_Renderer;
+	Ref<Renderer>     m_Renderer;
+
+	Ref<InputHandler> m_InputHandler;
 };

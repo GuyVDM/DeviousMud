@@ -30,8 +30,9 @@ namespace App
 {
 	namespace Config 
 	{
-		constexpr I32 GRIDCELLSIZE = 32;
+		constexpr I32      GRIDCELLSIZE = 32;
 
+		const static char* s_FontPath = "data/font/Roboto-Regular.ttf";
 
 		struct TileConfig 
 		{
@@ -48,7 +49,7 @@ namespace App
 		{
 			Utilities::ivec2 BrushSize = 1;
 			bool bShowWalkableTiles    = false;
-			bool bRenderChunkOutlines  = true;
+			bool bRenderChunkVisuals  = true;
 		};
 
 

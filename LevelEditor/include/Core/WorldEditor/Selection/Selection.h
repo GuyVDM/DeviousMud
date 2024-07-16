@@ -14,7 +14,7 @@ struct DragArgs
 struct SelectionArgs 
 {
 	bool                          bIsActive    = false;
-	bool                          bLeftClicked = false;
+	bool                          bIsInteracting = false;
 	Utilities::ivec2              PointA  = { 0 };
 	Utilities::ivec2              PointB  = { 0 };
 	std::vector<Utilities::ivec2> WandSelectedTiles;
@@ -25,6 +25,18 @@ struct SelectionArgs
 	Utilities::ivec2              startDragPos   = { 0 };
 	std::vector<DragArgs>         SelectedTiles;
 	std::vector<Utilities::ivec2> StartWandSelectedTiles;
+
+	/// <summary>
+	/// Adds the tile to wand selection field.
+	/// </summary>
+	/// <param name="_gridPos"></param>
+	void AddTileToWandSelection(const Utilities::ivec2& _gridCoords);
+
+	/// <summary>
+	/// Removes the tile from the wand selection field.
+	/// </summary>
+	/// <param name="_gridPos"></param>
+	void RemoveTileFromWandSelection(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
 	/// Moves the entirety of the selection with the start dragging position relative
@@ -70,4 +82,10 @@ struct SelectionArgs
 	/// <param name="_gridCoords"></param>
 	/// <returns></returns>
 	const bool IsOverlappingSelection(const Utilities::ivec2& _gridCoords) const;
+
+	/// <summary>
+	/// Whether this tile is selected.
+	/// </summary>
+	/// <returns></returns>
+	const bool IsTileSelected(const Utilities::ivec2& _tile) const;
 };
