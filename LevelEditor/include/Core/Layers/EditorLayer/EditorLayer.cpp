@@ -25,17 +25,12 @@ const bool EditorLayer::HandleEvent(const SDL_Event& _event)
 
         if (g_Input->GetMouse(e_MouseButton::BUTTON_RIGHT))
         {
-            static bool bCtrlPressed = g_Input->GetKey(SDLK_LCTRL) || g_Input->GetKey(SDLK_RCTRL);
+            const bool bCtrlPressed = g_Input->GetKey(SDLK_LCTRL) || g_Input->GetKey(SDLK_RCTRL);
 
             if (!bCtrlPressed)
             {
                 g_globals.WorldEditor->Remove();
             }
-        }
-
-        if (g_Input->GetMouseUp(e_MouseButton::BUTTON_LEFT))
-        {
-            g_globals.WorldEditor->Release();
         }
     }
 

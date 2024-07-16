@@ -20,6 +20,7 @@ WorldEditor::WorldEditor()
 
 void WorldEditor::Update()
 {
+	HandleShortCuts();
 	RenderChunkVisuals();
 	DrawBrush();
 	RenderTiles();
@@ -40,7 +41,7 @@ void WorldEditor::MoveTileTo(Ref<Tile> _tile, Utilities::ivec2 _gridCoords)
 	}
 
 	//*---------------------------------------------
-	// Move the tile over to it's new chunk
+	// Move the tile over to its new chunk
 	// If the chunk doesn't exist yet, we create it.
 	{
 		const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
@@ -99,7 +100,7 @@ void WorldEditor::Place()
 			//Just doing it once per input is fine.
 			if(g_Input->GetMouseDown(e_MouseButton::BUTTON_LEFT)) 
 			{
-				CreateWandSelection();
+				HandleWandSelection();
 			}
 		}
 		break;
@@ -142,7 +143,7 @@ void WorldEditor::Release()
 	{
 		case e_InteractionMode::MODE_SELECTION:
 		{
-			m_SelectionArgs.bIsInteracting = false;
+			CollapseSelection();
 		}
 		break;
 
@@ -271,6 +272,86 @@ Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoord
 	return std::nullopt;
 }
 
+void WorldEditor::HandleShortCuts()
+{
+	const bool bCtrlPressed = (g_Input->GetKey(SDLK_RCTRL) || g_Input->GetKey(SDLK_LCTRL));
+	const bool bAltPressed = (g_Input->GetKey(SDLK_RALT) || g_Input->GetKey(SDLK_LALT));
+
+	//*-----------------------------------
+	// Delete all tiles that are selected.
+	//
+	{
+		const bool bDelete = g_Input->GetKeyDown(SDLK_DELETE);
+
+		if (bDelete)
+		{
+			RemoveTilesSelection();
+		}
+	}
+
+	//*-------------------
+	// Set selection mode.
+	//
+	{
+		e_SelectionMode mode = e_SelectionMode::DEFAULT;
+
+		if (bCtrlPressed)
+		{
+			mode = e_SelectionMode::ADDITION;
+		}
+		else
+		if (bAltPressed)
+		{
+			mode = e_SelectionMode::SUBTRACTION;
+		}
+
+		m_SelectionArgs.SelectionMode = mode;
+	}
+
+	//*-------------------------
+	// Shortcut to editor tools
+	//
+	{
+		if(bCtrlPressed) 
+		{
+			if(g_Input->GetKey(SDLK_f)) 
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_FILL;
+			}
+
+			if (g_Input->GetKey(SDLK_p))
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_PICKER;
+			}
+
+			if (g_Input->GetKey(SDLK_s))
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_SELECTION;
+			}
+
+			if (g_Input->GetKey(SDLK_d))
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_DRAG;
+			}
+
+			if (g_Input->GetKey(SDLK_b))
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_BRUSH;
+			}
+
+			if (g_Input->GetKey(SDLK_w))
+			{
+				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_WAND;
+			}
+
+			if (g_Input->GetKey(SDLK_r))
+			{
+				g_globals.Camera->Reset();
+			}
+		}
+	}
+}
+
 void WorldEditor::PlaceTile(const Utilities::ivec2& _gridCoords)
 {
 	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
@@ -319,21 +400,19 @@ void WorldEditor::RemoveTile(const Utilities::ivec2& _gridCoords)
 
 void WorldEditor::DragSelectedTiles()
 {
-	if (!m_SelectionArgs.bIsActive)
+	if (m_SelectionArgs.IsEmpty())
 	{
 		return;
 	}
 
 	if (!m_SelectionArgs.bIsDragging)
 	{
-		m_SelectionArgs.bIsDragging  = true;
-		m_SelectionArgs.startDragPos = m_HoveredGridCell;
-		m_SelectionArgs.startPointA  = m_SelectionArgs.PointA;
-		m_SelectionArgs.startPointB  = m_SelectionArgs.PointB;
-		m_SelectionArgs.StartWandSelectedTiles = m_SelectionArgs.WandSelectedTiles;
+		m_SelectionArgs.bIsDragging        = true;
+		m_SelectionArgs.StartDragPos       = m_HoveredGridCell;
+		m_SelectionArgs.SelectedTilesStart = m_SelectionArgs.SelectedTiles;
 		
 		//Collect tiles from wand
-		for (const Utilities::ivec2& selectionPos : m_SelectionArgs.GetAffectedTiles())
+		for (const Utilities::ivec2& selectionPos : m_SelectionArgs.GetSelectedGridSpaces())
 		{
 			Optional<Ref<Tile>> optTile = TryDetachTile(selectionPos);
 
@@ -345,7 +424,7 @@ void WorldEditor::DragSelectedTiles()
 			DragArgs args;
 			args.Tile  = optTile.value();
 			args.StartGridPos = (args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + args.Tile->LocalChunkCoords;
-			m_SelectionArgs.SelectedTiles.push_back(args);
+			m_SelectionArgs.SelectedDraggingTiles.push_back(args);
 		}
 	}
 
@@ -354,50 +433,67 @@ void WorldEditor::DragSelectedTiles()
 
 void WorldEditor::TryPlaceSelectedTiles()
 {
-	for(const DragArgs& _args : m_SelectionArgs.SelectedTiles) 
+	for(const DragArgs& _args : m_SelectionArgs.SelectedDraggingTiles) 
 	{
 		const Utilities::ivec2 gridPos = (_args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + _args.Tile->LocalChunkCoords;
 		MoveTileTo(_args.Tile, gridPos);
 	}
 
-	m_SelectionArgs.SelectedTiles.clear();
+	m_SelectionArgs.SelectedDraggingTiles.clear();
 	m_SelectionArgs.bIsDragging = false;
 }
 
 void WorldEditor::CreateSelection()
 {
-	//Enable Grid Selection.
-	m_SelectionArgs.bIsActive = true;
+	SelectionField& field = m_SelectionArgs.Field;
 
-	if (!m_SelectionArgs.bIsInteracting)
+	if (m_SelectionArgs.SelectionMode == e_SelectionMode::DEFAULT)
 	{
-		//Clear previous selection
-		ClearSelection();
-
-		m_SelectionArgs.bIsInteracting = true;
-		m_SelectionArgs.PointA = m_HoveredGridCell;
+		m_SelectionArgs.SelectedTiles.clear();
 	}
 
-	m_SelectionArgs.PointB = m_HoveredGridCell;
+	//Enable Grid Selection.
+	if(!field.Begin(m_HoveredGridCell)) 
+	{
+		field.DrawRectTo(m_HoveredGridCell);
+	}
+}
+
+void WorldEditor::CollapseSelection()
+{
+	for(const Utilities::ivec2& _pos : m_SelectionArgs.Field.GetTilesAndCollapse()) 
+	{
+		switch(m_SelectionArgs.SelectionMode) 
+		{
+			case e_SelectionMode::SUBTRACTION:
+			{
+				m_SelectionArgs.RemoveTileFromSelection(_pos);
+			}
+			break;
+
+			case e_SelectionMode::DEFAULT:
+			case e_SelectionMode::ADDITION:
+			{
+				m_SelectionArgs.AddTileToSelection(_pos);
+			}
+			break;
+		}
+	}
 }
 
 void WorldEditor::ClearSelection()
 {
 	TryPlaceSelectedTiles();
 
+	m_SelectionArgs.SelectedDraggingTiles.clear();
 	m_SelectionArgs.SelectedTiles.clear();
-	m_SelectionArgs.WandSelectedTiles.clear();
-	m_SelectionArgs.startDragPos = { 0 };
-	m_SelectionArgs.startPointA  = { 0 };
-	m_SelectionArgs.startPointB  = { 0 };
-	m_SelectionArgs.bIsActive	 = false;
-	m_SelectionArgs.bIsInteracting = false;
+	m_SelectionArgs.StartDragPos = { 0 };
 	m_SelectionArgs.bIsDragging  = false;
 }
 
 const bool WorldEditor::IsSelectionActive() const
 {
-	return m_SelectionArgs.bIsActive;
+	return !m_SelectionArgs.IsEmpty();
 }
 
 const bool WorldEditor::IsHoveringOverActiveChunk() const
@@ -405,32 +501,31 @@ const bool WorldEditor::IsHoveringOverActiveChunk() const
 	return IsValidChunk(ToChunkCoords(m_HoveredGridCell));
 }
 
-void WorldEditor::CreateWandSelection()
+const bool WorldEditor::IsTileVisible(const Utilities::ivec2 _gridCoords) const
 {
-	//Clear the previous wand selection.
+	const Utilities::ivec2 pointA = ScreenToGridSpace(Utilities::ivec2(0, 0));
+	const Utilities::ivec2 pointB = ScreenToGridSpace(Utilities::ivec2(Editor::s_WindowWidth, Editor::s_WindowHeight));
 
-	const bool bCtrlPressed = g_Input->GetKey(SDLK_RCTRL) || g_Input->GetKey(SDLK_LCTRL);
-	const bool bAltPressed  = g_Input->GetKey(SDLK_RALT) || g_Input->GetKey(SDLK_LALT);
+	const Utilities::ivec2 min = { std::min<I32>(pointA.x, pointB.x), std::min<I32>(pointA.y, pointB.y) };
+	const Utilities::ivec2 max = { std::max<I32>(pointA.x, pointB.x), std::max<I32>(pointA.y, pointB.y) };
 
+	return (_gridCoords.x >= min.x && _gridCoords.x <= max.x && _gridCoords.y >= min.y && _gridCoords.y <= max.y);
+}
 
-	const bool bNoReset = bCtrlPressed || bAltPressed;
+void WorldEditor::HandleWandSelection()
+{
+	const bool bAltPressed  = g_Input->GetKey(SDLK_RALT)  || g_Input->GetKey(SDLK_LALT);
+
+	const bool bNoReset = m_SelectionArgs.SelectionMode != e_SelectionMode::DEFAULT;
 	if (!bNoReset)
 	{
-		m_SelectionArgs.WandSelectedTiles.clear();
-	}
-
-	//*-------------------------
-	// We need a selection field to be active
-	// Since the magic wand only works within 
-	// The selection field.
-	if (!m_SelectionArgs.bIsActive)
-	{
-		return;
+		//Clear the previous selection.
+		m_SelectionArgs.SelectedTiles.clear();
 	}
 
 	Graphics::SpriteType type = Graphics::SpriteType::NONE;
 
-	if(IsValidChunk(ToChunkCoords(m_HoveredGridCell)))
+	if(IsHoveringOverActiveChunk())
 	{
 		Optional<Ref<Tile>> tile = TryGetTile(m_HoveredGridCell);
 
@@ -442,45 +537,48 @@ void WorldEditor::CreateWandSelection()
 
 	//Recursively draw the wand selection.
 	{
-		std::vector<Utilities::ivec2> visitedTiles;
-		RecursivelyGenWandSelection(type, visitedTiles, m_HoveredGridCell, bAltPressed);
+		RecursivelyGenWandSelection(type, m_HoveredGridCell, bAltPressed);
+		m_VisitedTiles.clear();
 	}
 }
 
-void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toCompare, std::vector<Utilities::ivec2>& _visitedTiles, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries)
+void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toCompare, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries)
 {
 	//*-------------------------------------------
 	// If we already visited this tile, ignore it.
 	//
-	if (std::find(_visitedTiles.begin(), _visitedTiles.end(), _gridCoords) != _visitedTiles.end())
-		return;
+	for(U32 i = 0; i < m_VisitedTiles.size(); i++) 
+	{
+		if(m_VisitedTiles[i] == _gridCoords) 
+		{
+			return;
+		}
+	}
 
 	//Mark this as visited.
-	_visitedTiles.push_back(_gridCoords);
+	m_VisitedTiles.push_back(_gridCoords);
 
-	//*-------------------------------------------------------------
-	// Only deal with it if the point is within the selection field.
-	//
-	if (!m_SelectionArgs.IsOverlappingSelection(_gridCoords))
+	if(_toCompare == Graphics::SpriteType::NONE) 
+	{
+		if(!IsTileVisible(_gridCoords)) 
+		{
+			return;
+		}
+	}
+
+	Optional<Ref<Tile>> tile = TryGetTile(_gridCoords);
+
+	if(!tile.has_value())
+	{
+		if(_toCompare != Graphics::SpriteType::NONE) 
+		{
+			return;
+		}
+	}
+	else
+	if (tile.value()->sprite != _toCompare)
 	{
 		return;
-	}
-
-	Optional<Ref<Tile>> optTile = TryGetTile(_gridCoords);
-	if(optTile.has_value())
-	{
-		if (_toCompare == Graphics::SpriteType::NONE)
-			return;
-
-		const Graphics::SpriteType tileSprite = optTile.value()->sprite;
-
-		if (tileSprite != _toCompare)
-			return;
-	}
-	else 
-	{
-		if (_toCompare != Graphics::SpriteType::NONE)
-			return;
 	}
 
 	const std::array<Utilities::ivec2, 4> neighbours =
@@ -493,16 +591,16 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 
 	for (const Utilities::ivec2& neighbour : neighbours)
 	{
-		RecursivelyGenWandSelection(_toCompare, _visitedTiles, neighbour, _bRemoveEntries);
+		RecursivelyGenWandSelection(_toCompare, neighbour, _bRemoveEntries);
 	}
 
 	if(_bRemoveEntries)
 	{
-		m_SelectionArgs.RemoveTileFromWandSelection(_gridCoords);
+		m_SelectionArgs.RemoveTileFromSelection(_gridCoords);
 	}
 	else 
 	{
-		m_SelectionArgs.AddTileToWandSelection(_gridCoords);
+		m_SelectionArgs.AddTileToSelection(_gridCoords);
 	}
 }
 
@@ -512,8 +610,10 @@ void WorldEditor::PickTile()
 
 	Optional<Ref<Tile>> optTile = TryGetTile(m_HoveredGridCell);
 
-	if (!optTile.has_value())
+	if (!optTile.has_value()) 
+	{
 		return;
+	}
 
 	const Ref<Tile> tile = optTile.value();
 	TileConfiguration.SpriteType  = tile->sprite;
@@ -549,25 +649,34 @@ void WorldEditor::RenderChunkVisuals()
 				size				
 			};
 
-			constexpr Color chunkOutlineColor = Color(70, 70, 70, 255);
-			g_globals.Renderer->DrawRectOutline(rect, chunkOutlineColor, 1, 5);
+			//*----------------------
+			// Render chunk outlines.
+			//
+			{
+				constexpr Color chunkOutlineColor = Color(70, 70, 70, 255);
+				g_globals.Renderer->DrawRectOutline(rect, chunkOutlineColor, 1, 5);
+			}
 
-			std::string coordinateString = "[";
-			coordinateString.append(std::to_string(chunkX));
-			coordinateString.append(" , ");
-			coordinateString.append(std::to_string(chunkY));
-			coordinateString.append("]");
+			//*------------------------------------------------------
+			// Render chunk coordinates in the top left of each chunk
+			// in text format.
+			//
+			{
+				std::ostringstream coordinateStream;
+				coordinateStream << "[" << chunkX << " , " << chunkY << "]";
 
-			const Utilities::ivec2 textRenderPos = Utilities::ivec2(rect.x, rect.y) + Utilities::ivec2(20);
+				const Utilities::ivec2 offset(20, 20);
+				const Utilities::ivec2 textRenderPos = Utilities::ivec2(rect.x, rect.y) + offset;
 
-			TextArgs textArgs;
-			textArgs.Color    = { 150, 150, 100, 150 };
-			textArgs.Position = textRenderPos;
-			textArgs.Text     = coordinateString;
-			textArgs.TextSize = 20;
-			textArgs.ZOrder   = 10;
+				TextArgs textArgs;
+				textArgs.Color = { 150, 150, 100, 150 };
+				textArgs.Position = textRenderPos;
+				textArgs.Text = coordinateStream.str();
+				textArgs.TextSize = 20;
+				textArgs.ZOrder = 10;
 
-			g_globals.Renderer->RenderText(textArgs);
+				g_globals.Renderer->RenderText(textArgs);
+			}
 		}
 	}
 }
@@ -582,20 +691,14 @@ void WorldEditor::PlaceBrushTiles()
 		{
 			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2(x, y);
 
-			if (m_SelectionArgs.bIsActive)
+			if (!m_SelectionArgs.IsEmpty())
 			{
-				if(m_SelectionArgs.IsWandActive()) 
+				if (!m_SelectionArgs.IsOverlapping(position))
 				{
-					if (!m_SelectionArgs.IsOverlappingWand(position))
-						continue;
-				}
-				else
-				{
-					if (!m_SelectionArgs.IsOverlappingSelection(position))
-						continue;
+					continue;
 				}
 			}
-			
+
 			PlaceTile(position);
 		}
 	}
@@ -621,17 +724,17 @@ void WorldEditor::RemoveTilesSelection()
 	//*----------------------------------
 	// If no selection is active, ignore.
 	//
-	if(!m_SelectionArgs.bIsActive) 
+	if(m_SelectionArgs.IsEmpty()) 
 	{
 		return;
 	}
 
-	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
+	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetSelectedGridSpaces())
 	{
 		RemoveTile(_pos);
 	}
 
-	m_SelectionArgs.SelectedTiles.clear();
+	m_SelectionArgs.SelectedDraggingTiles.clear();
 }
 
 void WorldEditor::Fill()
@@ -641,7 +744,7 @@ void WorldEditor::Fill()
 		return;
 	}
 
-	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetAffectedTiles())
+	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetSelectedGridSpaces())
 	{
 		PlaceTile(_pos);
 	}
@@ -714,55 +817,54 @@ void WorldEditor::DrawSelection()
 {
 	using namespace App::Config;
 
-	if (!m_SelectionArgs.bIsActive)
-	{
-		return;
-	}
-
-	//Render the dragged tiles if applicable.
-	for (const DragArgs& item : m_SelectionArgs.SelectedTiles)
-	{
-		item.Tile->Render();
-	}
-	
-	const Utilities::ivec2 min =
-	{
-		std::min(m_SelectionArgs.PointA.x, m_SelectionArgs.PointB.x),
-		std::min(m_SelectionArgs.PointA.y, m_SelectionArgs.PointB.y)
-	};
-
-	const Utilities::ivec2 max =
-	{
-		std::max(m_SelectionArgs.PointA.x, m_SelectionArgs.PointB.x),
-		std::max(m_SelectionArgs.PointA.y, m_SelectionArgs.PointB.y)
-	};
-
-	const Utilities::ivec2 size =
-	{
-		static_cast<I32>(abs(min.x - max.x)) + 1,
-		static_cast<I32>(abs(min.y - max.y)) + 1
-	};
-
 	//*----------------------
 	// Draw selection field.
 	//
+	SelectionField field = m_SelectionArgs.Field;
+	if (field.IsActive())
 	{
-		if (!m_SelectionArgs.bIsDragging)
+		Utilities::ivec2 from, to;
+		field.GetFromTo(from, to);
+
+		const Utilities::ivec2 min =
 		{
-			const SDL_Rect rect
-			{
-				min.x  * GRIDCELLSIZE,
-				min.y  * GRIDCELLSIZE,
-				size.x * GRIDCELLSIZE,
-				size.y * GRIDCELLSIZE
-			};
+			std::min(from.x, to.x),
+			std::min(from.y, to.y)
+		};
 
-			constexpr Color rectCol    = { 0, 92, 158, 30  };
-			g_globals.Renderer->DrawRect(rect, rectCol, 10);
+		const Utilities::ivec2 max =
+		{
+			std::max(from.x, to.x),
+			std::max(from.y, to.y)
+		};
 
-			constexpr Color outlineCol = { 0, 92, 158, 255 };
-			g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
-		}
+		const Utilities::ivec2 size =
+		{
+			static_cast<I32>(abs(min.x - max.x)) + 1,
+			static_cast<I32>(abs(min.y - max.y)) + 1
+		};
+
+		const SDL_Rect rect
+		{
+			min.x * GRIDCELLSIZE,
+			min.y * GRIDCELLSIZE,
+			size.x * GRIDCELLSIZE,
+			size.y * GRIDCELLSIZE
+		};
+
+		constexpr Color rectCol = { 0, 92, 158, 30 };
+		g_globals.Renderer->DrawRect(rect, rectCol, 10);
+
+		constexpr Color outlineCol = { 0, 92, 158, 255 };
+		g_globals.Renderer->DrawRectOutline(rect, outlineCol, 1, 10);
+	}
+
+	//*------------------------------
+	// Render dragged selected tiles.
+	//
+	for (const DragArgs& item : m_SelectionArgs.SelectedDraggingTiles)
+	{
+		item.Tile->Render();
 	}
 
 	//*-------------------------------
@@ -771,7 +873,7 @@ void WorldEditor::DrawSelection()
 	{
 		const Color rectCol = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 50.0f, 4.0f, Time::GetElapsedTime())};
 
-		for (const Utilities::ivec2& _tile : m_SelectionArgs.WandSelectedTiles)
+		for (const Utilities::ivec2& _tile : m_SelectionArgs.SelectedTiles)
 		{
 			const SDL_Rect rect
 			{

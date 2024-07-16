@@ -3,7 +3,6 @@
 #include "Core/Core.hpp"
 
 #include <unordered_map>
-#include <vendor/SDL2/SDL_keycode.h>
 
 enum class e_MouseButton 
 {
@@ -93,8 +92,8 @@ public:
 	const bool GetKeyUp(const SDL_KeyCode& _keyCode) const;
 
 public:
-	Input() = default;
-	~Input();
+	Input()  = default;
+    ~Input() = default;
 
 private:
 	Input(const Input& _input) = delete;

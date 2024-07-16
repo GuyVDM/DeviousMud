@@ -147,6 +147,8 @@ public:
 
 	const bool IsHoveringOverActiveChunk() const;
 
+	const bool IsTileVisible(const Utilities::ivec2 _gridCoords) const;
+
 public:
 	WorldEditor();
 	virtual ~WorldEditor() = default;
@@ -163,6 +165,8 @@ private:
  
 	Optional<Ref<Chunk>> TryGetChunk(const Utilities::ivec2& _gridCoords);
 
+	void HandleShortCuts();
+
 	void Update();
 
 	void PlaceTile(const Utilities::ivec2& _gridCoords);
@@ -175,9 +179,11 @@ private:
 
 	void CreateSelection();
 
-	void CreateWandSelection();
+	void CollapseSelection();
 
-	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, std::vector<Utilities::ivec2>& _visitedTiles, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries = false);
+	void HandleWandSelection();
+
+	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries = false);
 
 	void PickTile();
 
@@ -208,6 +214,8 @@ private:
 	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
 
 private:
+	std::vector<Utilities::ivec2> m_VisitedTiles;
+
 	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
 
 	SelectionArgs m_SelectionArgs;

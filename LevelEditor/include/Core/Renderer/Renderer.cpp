@@ -166,6 +166,11 @@ const Utilities::ivec2 Renderer::ScreenToWorld(const Utilities::ivec2& _screenCo
 {
 	Ref<Camera> camera = g_globals.Camera;
 
+	if (camera->Zoom == 0)
+	{
+		return Utilities::ivec2(0, 0);
+	}
+
 	return Utilities::ivec2
 	(
 		static_cast<U32>((_screenCoords.x / camera->Zoom) + camera->Position.x),
@@ -252,12 +257,20 @@ void Renderer::StartFrame()
 
 void Renderer::EndFrame() 
 {
+
 	Ref<Camera> camera = g_globals.Camera;
+
+	std::vector<SDL_Texture*> toDestroy;
 
 	for (const auto& [zOrder, renderList] : m_RenderQuery)
 	{
 		for (const auto& queryItem : renderList)
 		{
+			if (queryItem.Flags & e_TextureFlags::TEXTURE_DESTROY_AFTER_USE)
+			{
+				toDestroy.push_back(queryItem.Texture);
+			}
+
 			const SDL_Rect dstRect
 			{
 				(queryItem.Position.x - camera->Position.x) * camera->Zoom,
@@ -304,12 +317,12 @@ void Renderer::EndFrame()
 
 			SDL_SetTextureColorMod(queryItem.Texture, 255, 255, 255);
 			SDL_SetTextureAlphaMod(queryItem.Texture, 255);
-
-			if (queryItem.Flags & e_TextureFlags::TEXTURE_DESTROY_AFTER_USE)
-			{
-				SDL_DestroyTexture(queryItem.Texture);
-			}
 		}
+	}
+
+	for(SDL_Texture* tex : toDestroy) 
+	{
+		SDL_DestroyTexture(tex);
 	}
 
 	m_RenderQuery.clear();
@@ -346,7 +359,7 @@ void Renderer::RenderText(const TextArgs& _args)
 
 void Renderer::CreateSDLWindow(const I32& _width, const I32& _height)
 {
-	U32 flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+	U32 flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 	if (_width == 0 && _height == 0)
 	{

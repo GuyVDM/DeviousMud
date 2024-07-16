@@ -4,37 +4,39 @@
 #include "Core/WorldEditor/WorldEditor.h"
 #include "Core/Config/Config.h"
 
-void SelectionArgs::AddTileToWandSelection(const Utilities::ivec2& _gridCoords)
+const bool SelectionArgs::IsEmpty() const
 {
-	if (!IsTileSelected(_gridCoords))
+	return SelectedTiles.size() == 0;
+}
+
+void SelectionArgs::AddTileToSelection(const Utilities::ivec2& _gridCoords)
+{
+	if (!IsOverlapping(_gridCoords))
 	{
-		WandSelectedTiles.push_back(_gridCoords);
+		SelectedTiles.push_back(_gridCoords);
 	}
 }
 
-void SelectionArgs::RemoveTileFromWandSelection(const Utilities::ivec2& _gridCoords)
+void SelectionArgs::RemoveTileFromSelection(const Utilities::ivec2& _gridCoords)
 {
-	auto it = std::find(WandSelectedTiles.begin(), WandSelectedTiles.end(), _gridCoords);
+	auto it = std::find(SelectedTiles.begin(), SelectedTiles.end(), _gridCoords);
 
-	if(it != WandSelectedTiles.end()) 
+	if(it != SelectedTiles.end()) 
 	{
-		WandSelectedTiles.erase(it);
+		SelectedTiles.erase(it);
 	}
 }
 
 void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 {
-	const Utilities::ivec2 offset = _gridCoords - startDragPos;
+	const Utilities::ivec2 offset = _gridCoords - StartDragPos;
 
-	PointA = startPointA + offset;
-	PointB = startPointB + offset;
-
-	for (U32 i = 0; i < WandSelectedTiles.size(); i++)
+	for(U32 i = 0; i < SelectedTiles.size(); i++) 
 	{
-		WandSelectedTiles[i] = StartWandSelectedTiles[i] + offset;
+		SelectedTiles[i] = SelectedTilesStart[i] + offset;
 	}
 
-	for (DragArgs& dragArgs : SelectedTiles)
+	for (DragArgs& dragArgs : SelectedDraggingTiles)
 	{
 		Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
 
@@ -46,92 +48,75 @@ void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 	}
 }
 
-const std::vector<Utilities::ivec2> SelectionArgs::GetAffectedTiles() const
+const std::vector<Utilities::ivec2> SelectionArgs::GetSelectedGridSpaces() const
 {
-	if (IsWandActive())
-	{
-		return WandSelectedTiles;
-	}
-
-	const Utilities::ivec2 min = { std::min<I32>(PointA.x, PointB.x),
-								   std::min<I32>(PointA.y, PointB.y)};
-
-	const Utilities::ivec2 max = { std::max<I32>(PointA.x, PointB.x),
-								   std::max<I32>(PointA.y, PointB.y)};
-
-	const U32 width     = static_cast<U32>(abs(max.x - min.x + 1));
-	const U32 height    = static_cast<U32>(abs(max.y - min.y + 1));
-	const U32 tileCount = width * height;
-
-	std::vector<Utilities::ivec2> affectedTiles(tileCount);
-
-	for (I32 x = min.x; x <= max.x; x++)
-	{
-		for (I32 y = min.y; y <= max.y; y++)
-		{
-			const U32 i = (x - min.x) + width * (y - min.y);
-
-			affectedTiles[i] = Utilities::ivec2(x, y);
-		}
-	}
-
-	return affectedTiles;
+	return SelectedTiles;
 }
 
 const bool SelectionArgs::IsOverlapping(const Utilities::ivec2& _gridCoords) const
 {
-	if(!bIsActive) 
-	{
-		return false;
-	}
-
-	if (IsWandActive())
-	{
-		return IsOverlappingWand(_gridCoords);
-	}
-
-	return IsOverlappingSelection(_gridCoords);
+	auto it = std::find(SelectedTiles.begin(), SelectedTiles.end(), _gridCoords);
+	return it != SelectedTiles.end();
 }
 
-const bool SelectionArgs::IsOverlappingWand(const Utilities::ivec2& _gridCoords) const
+const bool SelectionField::IsActive() const
 {
-	if(!bIsActive) 
-	{
-		return false;
-	}
+	return bIsActive;
+}
 
-	for (const Utilities::ivec2& pos : WandSelectedTiles)
+void SelectionField::GetFromTo(Utilities::ivec2& _from, Utilities::ivec2& _to) const
+{
+	_from = PointA;
+	_to   = PointB;
+}
+
+bool SelectionField::Begin(const Utilities::ivec2& _a)
+{
+	if (!bIsActive)
 	{
-		if (_gridCoords == pos)
-		{
-			return true;
-		}
+		PointA = _a;
+		bIsActive = true;
+		return true;
 	}
 
 	return false;
 }
 
-const bool SelectionArgs::IsWandActive() const
+void SelectionField::DrawRectTo(const Utilities::ivec2& _b)
 {
-	return WandSelectedTiles.size() > 0;
+	if(bIsActive) 
+	{
+		PointB = _b;
+	}
 }
 
-const bool SelectionArgs::IsOverlappingSelection(const Utilities::ivec2& _gridCoords) const
+std::vector<Utilities::ivec2> SelectionField::GetTilesAndCollapse()
 {
-	if(!bIsActive) 
+	const Utilities::ivec2 min = { std::min<I32>(PointA.x, PointB.x),
+							       std::min<I32>(PointA.y, PointB.y)};
+
+	const Utilities::ivec2 max = { std::max<I32>(PointA.x, PointB.x),
+								   std::max<I32>(PointA.y, PointB.y)};
+
+	const U32 width  = static_cast<U32>(abs(max.x - min.x + 1));
+	const U32 height = static_cast<U32>(abs(max.y - min.y + 1));
+	const U32 tileCount = width * height;
+
+	std::vector<Utilities::ivec2> Tiles(tileCount);
+
+	for (I32 x = min.x; x <= max.x; x++)
 	{
-		return false;
+		for (I32 y = min.y; y <= max.y; y++)
+		{
+			const I32 i = (x - min.x) + width * (y - min.y);
+
+			Tiles[i] = Utilities::ivec2(x, y);
+		}
 	}
 
-	//If magic wand is inactive, we just check the selection field if there's overlap there.
-	const Utilities::ivec2 min = { std::min(PointA.x, PointB.x), std::min(PointA.y, PointB.y) };
-	const Utilities::ivec2 max = { std::max(PointA.x, PointB.x), std::max(PointA.y, PointB.y) };
+	PointA    = { 0, 0 };
+	PointB    = { 0, 0 };
+	bIsActive  = false;
 
-	return (_gridCoords.x >= min.x && _gridCoords.x <= max.x && _gridCoords.y >= min.y && _gridCoords.y <= max.y);
-}
-
-const bool SelectionArgs::IsTileSelected(const Utilities::ivec2& _tile) const
-{
-	auto it = std::find(WandSelectedTiles.begin(), WandSelectedTiles.end(), _tile);
-	return it != WandSelectedTiles.end();
+	return Tiles;
 }

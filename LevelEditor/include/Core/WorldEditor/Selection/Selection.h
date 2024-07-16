@@ -5,38 +5,90 @@
 
 #include "Shared/Utilities/vec2.hpp"
 
-struct DragArgs 
+class SelectionField 
+{
+public:
+	/// <summary>
+	/// Whether this selection field is currently active.
+	/// </summary>
+	/// <returns></returns>
+	const bool IsActive() const;
+
+	/// <summary>
+	/// Get the selection field points.
+	/// </summary>
+	/// <param name="_from"></param>
+	/// <param name="_to"></param>
+	void GetFromTo(Utilities::ivec2& _from, Utilities::ivec2& _to) const;
+
+	/// <summary>
+	/// Start tracking the selection field.
+	/// </summary>
+	/// <param name="_a"></param>
+	/// <param name="_b"></param>
+	bool Begin(const Utilities::ivec2& _a);
+
+	/// <summary>
+	/// Draws a selection field from the position set at Begin()
+	/// to the position specified within _b.
+	/// </summary>
+	/// <param name="_b"></param>
+	void DrawRectTo(const Utilities::ivec2& _b);
+
+	/// <summary>
+	/// Collapse the selection field and get every tile that was selected within.
+	/// </summary>
+	/// <returns></returns>
+	std::vector<Utilities::ivec2> GetTilesAndCollapse();
+
+private:
+	bool                          bIsActive  = false;
+	Utilities::ivec2              PointA = { 0 };
+	Utilities::ivec2              PointB = { 0 };
+};
+
+struct DragArgs
 {
 	Ref<Tile>        Tile;
 	Utilities::ivec2 StartGridPos;
 };
 
+enum class e_SelectionMode
+{
+	DEFAULT = 0x00,
+	SUBTRACTION,
+	ADDITION
+};
+
 struct SelectionArgs 
 {
-	bool                          bIsActive    = false;
-	bool                          bIsInteracting = false;
-	Utilities::ivec2              PointA  = { 0 };
-	Utilities::ivec2              PointB  = { 0 };
-	std::vector<Utilities::ivec2> WandSelectedTiles;
+	e_SelectionMode               SelectionMode = e_SelectionMode::DEFAULT;
+
+	SelectionField                Field;
+	std::vector<Utilities::ivec2> SelectedTiles;
 
 	bool                          bIsDragging    = false;
-	Utilities::ivec2              startPointA    = { 0 };
-	Utilities::ivec2              startPointB    = { 0 };
-	Utilities::ivec2              startDragPos   = { 0 };
-	std::vector<DragArgs>         SelectedTiles;
-	std::vector<Utilities::ivec2> StartWandSelectedTiles;
+	std::vector<Utilities::ivec2> SelectedTilesStart;
+	Utilities::ivec2              StartDragPos   = Utilities::ivec2(0, 0);
+	std::vector<DragArgs>         SelectedDraggingTiles;
+
+	/// <summary>
+	/// Returns true is there's no tiles selected.
+	/// </summary>
+	/// <returns></returns>
+	const bool IsEmpty() const;
 
 	/// <summary>
 	/// Adds the tile to wand selection field.
 	/// </summary>
 	/// <param name="_gridPos"></param>
-	void AddTileToWandSelection(const Utilities::ivec2& _gridCoords);
+	void AddTileToSelection(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
 	/// Removes the tile from the wand selection field.
 	/// </summary>
 	/// <param name="_gridPos"></param>
-	void RemoveTileFromWandSelection(const Utilities::ivec2& _gridCoords);
+	void RemoveTileFromSelection(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
 	/// Moves the entirety of the selection with the start dragging position relative
@@ -46,46 +98,16 @@ struct SelectionArgs
 	void MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
-	/// Returns all selection or wand affected grid coordinates.
+	/// Returns a vector of all currently selected gridspaces.
 	/// </summary>
 	/// <returns></returns>
-	const std::vector<Utilities::ivec2> GetAffectedTiles() const;
+	const std::vector<Utilities::ivec2> GetSelectedGridSpaces() const;
 
 	/// <summary>
-	/// Returns whether the coordinate is overlapping with the selection.
-	/// Or if the wand is enabled, the wand instead.
-	/// If no selection is active, will by default return false.
+	/// Returns whether the coordinate is overlapping with any 
+	/// of the selected gridspaces.
 	/// </summary>
 	/// <param name="_gridCoords"></param>
 	/// <returns></returns>
 	const bool IsOverlapping(const Utilities::ivec2& _gridCoords) const;
-
-	/// <summary>
-	/// Returns whether we're hovering over any coordinate thats affected by
-	/// the magic wand.
-	/// If no selection is active, will by default return false.
-	/// </summary>
-	/// <param name="_gridCoords"></param>
-	/// <returns></returns>
-	const bool IsOverlappingWand(const Utilities::ivec2& _gridCoords) const;
-
-	/// <summary>
-	/// Whether there's a wand selection active.
-	/// </summary>
-	/// <returns></returns>
-	const bool IsWandActive() const;
-
-	/// <summary>
-	/// Whether we are overlapping anywhere within the selection box.
-	/// If no selection is active, will by default return false.
-	/// </summary>
-	/// <param name="_gridCoords"></param>
-	/// <returns></returns>
-	const bool IsOverlappingSelection(const Utilities::ivec2& _gridCoords) const;
-
-	/// <summary>
-	/// Whether this tile is selected.
-	/// </summary>
-	/// <returns></returns>
-	const bool IsTileSelected(const Utilities::ivec2& _tile) const;
 };

@@ -6,12 +6,6 @@
 
 Ref<Input> g_Input = std::make_shared<Input>();
 
-Input::~Input()
-{
-	m_KeyCodes.clear();
-	m_MouseInput.clear();
-}
-
 const bool Input::GetMouseDown(const e_MouseButton& _button) const
 {
 	if(m_MouseInput.find(_button) == m_MouseInput.end()) 

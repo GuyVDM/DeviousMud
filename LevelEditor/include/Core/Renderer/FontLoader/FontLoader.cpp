@@ -4,31 +4,32 @@
 
 SDL_Texture* FontLoader::TextToTexture(SDL_Renderer* _renderer, const char* _contents, const U32& _textSize)
 {
-	if (_textSize != m_FontSize)
-	{
-		m_FontSize = _textSize; 
-		LoadFont();
-	}
+    if (_textSize != m_FontSize)
+    {
+        m_FontSize = _textSize;
+        LoadFont();
+    }
 
-	constexpr SDL_Color color = { 255, 255, 255, 255 };
-	SDL_Surface* surface = TTF_RenderText_Solid(m_FontPtr, _contents, color);
-	if (!surface)
-	{
-		DEVIOUS_ERR("Unable to create surface: " << TTF_GetError());
-		return nullptr;
-	}
+    constexpr SDL_Color color = { 255, 255, 255, 255 };
+    SDL_Surface* surface = TTF_RenderText_Solid(m_FontPtr, _contents, color);
+    if (!surface)
+    {
+        DEVIOUS_ERR("Unable to create surface: " << TTF_GetError());
+        return nullptr;
+    }
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
-	if (!texture)
-	{
-		DEVIOUS_ERR("Unable to create texture: " << TTF_GetError());
-		return nullptr;
-	}
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+    SDL_FreeSurface(surface);
 
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	SDL_FreeSurface(surface);
+    if (!texture)
+    {
+        DEVIOUS_ERR("Unable to create texture: " << TTF_GetError());
+        return nullptr;
+    }
 
-	return texture;
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    return texture;
 }
 
 void FontLoader::LoadFont()
