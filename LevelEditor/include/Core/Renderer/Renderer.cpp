@@ -85,7 +85,7 @@ void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 	const U32 frameCount = _args.Rows * _args.Columns;
-	m_Sprites[_args.Type] = Sprite(texture, surface, frameCount);
+	m_Sprites[_args.Type] = Sprite(texture, surface, frameCount, _args.Rows, _args.Columns);
 }
 
 void Renderer::DrawGrid()
@@ -133,8 +133,8 @@ void Renderer::CreateRectTexture()
 		          bmask = 0x0000ff00,
 		          amask = 0x000000ff;
 
-	SDL_Surface*       surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
-	SDL_PixelFormat*   fmt = surface->format;
+	SDL_Surface*             surface = SDL_CreateRGBSurface(0, 1, 1, 32, rmask, gmask, bmask, amask);
+	const SDL_PixelFormat*   fmt = surface->format;
 
 	constexpr SDL_Rect rect  = { 0, 0, 1, 1 };
 	constexpr Color    col   = { 255, 255, 255, 255 };
@@ -288,27 +288,29 @@ void Renderer::EndFrame()
 			I32 texWidth, texHeight;
 			SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &texWidth, &texHeight);
 
-			I32 frame = 0;
-			I32 spriteWidth = 0;
+			Utilities::ivec2 spriteUV(0), spriteSize(texWidth, texHeight);
 			{
-				if (queryItem.Type == Graphics::SpriteType::NONE)
-				{
-					spriteWidth = texWidth;
-				}
-				else
+				if (queryItem.Type != Graphics::SpriteType::NONE)
 				{
 					Sprite& sprite = m_Sprites[queryItem.Type];
-					spriteWidth = sprite.FrameCount == 0 ? texWidth : texWidth / sprite.FrameCount;
-					frame = std::clamp<U32>(queryItem.Frame, 0, sprite.FrameCount);
+					bool bCalcCoords = (sprite.Rows != 0 && sprite.Columns != 0);
+
+					if (bCalcCoords)
+					{
+						spriteSize.x = texWidth  / sprite.Columns;
+						spriteSize.y = texHeight / sprite.Rows;
+						spriteUV.x   = (queryItem.Frame % sprite.Columns) * spriteSize.x;
+						spriteUV.y   = (queryItem.Frame % sprite.Rows)    * spriteSize.y;
+					}
 				}
 			}
 
 			const SDL_Rect srcRect
 			{
-				spriteWidth * frame,
-				0,
-				spriteWidth,
-				texHeight,
+				spriteUV.x,
+				spriteUV.y,
+				spriteSize.x,
+				spriteSize.y
 			};
 
 			SDL_SetTextureColorMod(queryItem.Texture, queryItem.Color.R, queryItem.Color.G, queryItem.Color.B);
@@ -396,7 +398,9 @@ SDL_Renderer* Renderer::GetRenderer()
 void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
 {
 	if (_query.Type == Graphics::SpriteType::NONE)
+	{
 		return;
+	}
 
 	RenderQueryInstance instance;
 	instance.Color    = _query.Color;

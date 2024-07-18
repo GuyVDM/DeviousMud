@@ -52,9 +52,12 @@ struct Sprite
 	SDL_Texture* Texture;
 	SDL_Surface* Surface;
 	U32          FrameCount;
+	U32          Rows;
+	U32          Columns;
 
 	Sprite() : Texture(nullptr), Surface(nullptr), FrameCount(0) {};
-	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount) : Texture(_texture), Surface(_surface), FrameCount(_frameCount) {};
+	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount, const U32& _rows, const U32& _columns) 
+		: Texture(_texture), Surface(_surface), FrameCount(_frameCount), Rows(_rows), Columns(_columns) {};
 };
 
 struct TextArgs 
