@@ -183,7 +183,7 @@ private:
 
 	void HandleWandSelection();
 
-	void RecursivelyGenWandSelection(const Graphics::SpriteType _type, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries = false);
+	void RecursivelyGenWandSelection(const SubSprite& _sprite, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries = false);
 
 	void PickTile();
 

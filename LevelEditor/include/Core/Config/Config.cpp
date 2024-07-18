@@ -5,12 +5,10 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Tile/Tile.h"
 
-#include "Shared/Game/SpriteTypes.hpp"
-
 App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 (
 	/* CurrentTileType */ e_EntityType::ENTITY_DEFAULT,
-	/* SpriteType      */ static_cast<Graphics::SpriteType>(1),
+	/* Sprite          */ SubSprite(Graphics::SpriteType::TILE_MAP, 0),
 	/* isWalkable      */ true,
 	/* NPCDefinition   */ get_npc_definition(0),
 	/* InteractionMode */ e_InteractionMode::MODE_BRUSH

@@ -7,9 +7,7 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Config/Config.h"
 #include "Core/Editor/Editor.h"
-
-
-#include "Shared/Game/SpriteTypes.hpp"
+#include "Core/Renderer/SubSprite/SubSprite.hpp"
 
 Renderer::Renderer(const Utilities::ivec2& _windowSize)
 {
@@ -180,7 +178,7 @@ const Utilities::ivec2 Renderer::ScreenToWorld(const Utilities::ivec2& _screenCo
 	);
 }
 
-const Optional<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
+Optional<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 {
 	if(m_Sprites.find(_type) != m_Sprites.end()) 
 	{
@@ -188,6 +186,40 @@ const Optional<Sprite> Renderer::GetSprite(const Graphics::SpriteType& _type)
 	}
 	
 	return std::nullopt;
+}
+
+Optional<SpriteFrameArgs> Renderer::GetSpriteFrameInfo(const SubSprite& _subsprite)
+{
+	Optional<Sprite> optSprite = GetSprite(_subsprite.SpriteType);
+
+	if (!optSprite.has_value())
+	{
+		return std::nullopt;
+	}
+
+	Sprite& sprite = optSprite.value();
+
+	I32 texWidth, texHeight;
+	SDL_QueryTexture(sprite.Texture, nullptr, nullptr, &texWidth, &texHeight);
+
+	Utilities::ivec2 spriteUV(0), spriteSize(texWidth, texHeight);
+	{
+		Sprite& sprite = m_Sprites[_subsprite.SpriteType];
+		bool bIsSpriteSheet = (sprite.Rows != 0 && sprite.Columns != 0);
+
+		if (bIsSpriteSheet)
+		{
+			const U32 targetColumn = _subsprite.Frame % sprite.Columns;
+			const U32 targetRow    = _subsprite.Frame / sprite.Columns;
+
+			spriteSize.x = texWidth     / sprite.Columns;
+			spriteSize.y = texHeight    / sprite.Rows;
+			spriteUV.x   = targetColumn * spriteSize.x; 
+			spriteUV.y   = targetRow    * spriteSize.y; 
+		}
+	}
+
+	return SpriteFrameArgs(spriteUV, spriteSize, sprite.FrameCount);
 }
 
 void Renderer::DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder)
@@ -285,24 +317,20 @@ void Renderer::EndFrame()
 				continue;
 			}
 
-			I32 texWidth, texHeight;
-			SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &texWidth, &texHeight);
-
 			//Calculate spritesheet UV's and individual sprite size.
-			Utilities::ivec2 spriteUV(0), spriteSize(texWidth, texHeight);
+			Utilities::ivec2 spriteUV(0), spriteSize(0, 0);
 			{
-				if (queryItem.Type != Graphics::SpriteType::NONE)
-				{
-					Sprite& sprite = m_Sprites[queryItem.Type];
-					bool bIsSpriteSheet = (sprite.Rows != 0 && sprite.Columns != 0);
+				Optional<SpriteFrameArgs> optSpriteInfo = GetSpriteFrameInfo(SubSprite(queryItem.Type, queryItem.Frame));
 
-					if (bIsSpriteSheet)
-					{
-						spriteSize.x = texWidth  / sprite.Columns;
-						spriteSize.y = texHeight / sprite.Rows;
-						spriteUV.x   = (queryItem.Frame % sprite.Columns) * spriteSize.x;
-						spriteUV.y   = (queryItem.Frame % sprite.Rows)    * spriteSize.y;
-					}
+				if(optSpriteInfo.has_value()) 
+				{
+					SpriteFrameArgs& spriteInfo = optSpriteInfo.value();
+					spriteUV   = spriteInfo.UV;
+					spriteSize = spriteInfo.IndividualSpriteSize;
+				}
+				else 
+				{
+					SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &spriteSize.x, &spriteSize.y);
 				}
 			}
 

@@ -354,6 +354,8 @@ void WorldEditor::HandleShortCuts()
 
 void WorldEditor::PlaceTile(const Utilities::ivec2& _gridCoords)
 {
+	using namespace App::Config;
+
 	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
 
 	if (!IsValidChunk(chunkCoords)) 
@@ -369,10 +371,13 @@ void WorldEditor::PlaceTile(const Utilities::ivec2& _gridCoords)
 			tile = std::make_shared<Tile>();
 		}
 		break;
+
+		default:
+		return;
 	}
 
-	tile->sprite           = App::Config::TileConfiguration.SpriteType;
-	tile->bIsWalkable      = App::Config::TileConfiguration.bIsWalkable;
+	tile->Sprite		   = TileConfiguration.Sprite;
+	tile->bIsWalkable      = TileConfiguration.bIsWalkable;
 	tile->LocalChunkCoords = ToLocalChunkCoords(_gridCoords);
 	tile->ChunkCoords      = ToChunkCoords(_gridCoords);
 
@@ -523,7 +528,7 @@ void WorldEditor::HandleWandSelection()
 		m_SelectionArgs.SelectedTiles.clear();
 	}
 
-	Graphics::SpriteType type = Graphics::SpriteType::NONE;
+	SubSprite subsprite = SubSprite(Graphics::SpriteType::NONE, 0);
 
 	if(IsHoveringOverActiveChunk())
 	{
@@ -531,18 +536,18 @@ void WorldEditor::HandleWandSelection()
 
 		if (tile.has_value())
 		{
-			type = tile.value()->sprite;
+			subsprite = tile.value()->Sprite;
 		}
 	}
 
 	//Recursively draw the wand selection.
 	{
-		RecursivelyGenWandSelection(type, m_HoveredGridCell, bAltPressed);
+		RecursivelyGenWandSelection(subsprite, m_HoveredGridCell, bAltPressed);
 		m_VisitedTiles.clear();
 	}
 }
 
-void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toCompare, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries)
+void WorldEditor::RecursivelyGenWandSelection(const SubSprite& _sprite, const Utilities::ivec2& _gridCoords, const bool& _bRemoveEntries)
 {
 	//*-------------------------------------------
 	// If we already visited this tile, ignore it.
@@ -558,7 +563,7 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 	//Mark this as visited.
 	m_VisitedTiles.push_back(_gridCoords);
 
-	if(_toCompare == Graphics::SpriteType::NONE) 
+	if(_sprite.SpriteType == Graphics::SpriteType::NONE)
 	{
 		if(!IsTileVisible(_gridCoords)) 
 		{
@@ -570,13 +575,13 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 
 	if(!tile.has_value())
 	{
-		if(_toCompare != Graphics::SpriteType::NONE) 
+		if(_sprite.SpriteType != Graphics::SpriteType::NONE)
 		{
 			return;
 		}
 	}
 	else
-	if (tile.value()->sprite != _toCompare)
+	if (tile.value()->Sprite != _sprite)
 	{
 		return;
 	}
@@ -591,7 +596,7 @@ void WorldEditor::RecursivelyGenWandSelection(const Graphics::SpriteType _toComp
 
 	for (const Utilities::ivec2& neighbour : neighbours)
 	{
-		RecursivelyGenWandSelection(_toCompare, neighbour, _bRemoveEntries);
+		RecursivelyGenWandSelection(_sprite, neighbour, _bRemoveEntries);
 	}
 
 	if(_bRemoveEntries)
@@ -616,8 +621,7 @@ void WorldEditor::PickTile()
 	}
 
 	const Ref<Tile> tile = optTile.value();
-	TileConfiguration.SpriteType  = tile->sprite;
-	TileConfiguration.bIsWalkable = tile->bIsWalkable;
+	TileConfiguration.Sprite  = tile->Sprite;
 }
 
 void WorldEditor::RenderChunkVisuals()
@@ -970,7 +974,8 @@ void Chunk::Serialize()
 				{
 					{"X", x },
 					{"Y", y },
-					{"SpriteId",   static_cast<U16>(tile->sprite)},
+					{"SpriteId", static_cast<U16>(tile->Sprite.SpriteType)},
+					{"Frame", tile->Sprite.Frame },
 					{"IsWalkable", tile->bIsWalkable             }
 				}
 			);

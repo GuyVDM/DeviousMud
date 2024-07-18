@@ -1,6 +1,8 @@
 #pragma once
 #include "Core/Core.hpp"
 
+#include "Core/Renderer/SubSprite/SubSprite.hpp"
+
 #include "Shared/Utilities/vec2.hpp"
 
 #include <unordered_map>
@@ -55,9 +57,16 @@ struct Sprite
 	U32          Rows;
 	U32          Columns;
 
-	Sprite() : Texture(nullptr), Surface(nullptr), FrameCount(0) {};
-	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount, const U32& _rows, const U32& _columns) 
+	Sprite() noexcept : Texture(nullptr), Surface(nullptr), FrameCount(0), Rows(0), Columns(0) {};
+	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount, const U32& _rows, const U32& _columns) noexcept
 		: Texture(_texture), Surface(_surface), FrameCount(_frameCount), Rows(_rows), Columns(_columns) {};
+};
+
+struct SpriteFrameArgs 
+{
+	Utilities::ivec2 UV;
+	Utilities::ivec2 IndividualSpriteSize;
+	U32              FrameCount;
 };
 
 struct TextArgs 
@@ -75,7 +84,9 @@ public:
 	static const Utilities::ivec2 ScreenToWorld(const Utilities::ivec2& _screenCoords);
 
 public:
-	const Optional<Sprite> GetSprite(const Graphics::SpriteType& _type);
+	Optional<Sprite> GetSprite(const Graphics::SpriteType& _type);
+
+	Optional<SpriteFrameArgs> GetSpriteFrameInfo(const SubSprite& _subsprite);
 
 	void DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder = 0);
 

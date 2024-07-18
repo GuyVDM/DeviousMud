@@ -1,8 +1,9 @@
 #pragma once
 #include "Core/Core.hpp"
 
+#include "Core/Renderer/SubSprite/SubSprite.hpp"
+
 #include "Shared/Utilities/vec2.hpp"
-#include "Shared/Game/SpriteTypes.hpp"
 
 enum class e_EntityType
 {
@@ -12,14 +13,14 @@ enum class e_EntityType
 
 struct Tile
 {
-	Graphics::SpriteType sprite;
+	SubSprite            Sprite;
 	Utilities::ivec2     LocalChunkCoords;
 	Utilities::ivec2     ChunkCoords;
 	bool                 bIsWalkable;
 
 	Tile(Tile* _other) 
 	{
-		sprite           = _other->sprite;
+		Sprite			 = _other->Sprite;
 		LocalChunkCoords = _other->LocalChunkCoords;
 		ChunkCoords		 = _other->ChunkCoords;
 		bIsWalkable		 = _other->bIsWalkable;
@@ -27,7 +28,7 @@ struct Tile
 
 	Tile()
 	{
-		sprite           = Graphics::SpriteType::NONE;
+		Sprite	         = SubSprite(Graphics::SpriteType::NONE, 0);
 		LocalChunkCoords = Utilities::ivec2(0);
 		ChunkCoords      = Utilities::ivec2(0);
 		bIsWalkable      = true;

@@ -371,14 +371,17 @@ void Graphics::Renderer::end_frame()
 			// Generate rect based on what part of the png we want our sprite to be 
 			Utilities::ivec2 spriteUV(0), spriteSize(imageWidth, imageHeight);
 			{
-				bool bCalcCoords = (data.rows != 0 && data.columns != 0);
+				bool bIsSpriteSheet = (data.rows != 0 && data.columns != 0);
 
-				if (bCalcCoords)
+				if (bIsSpriteSheet)
 				{
-					spriteSize.x = imageWidth / data.columns;
-					spriteSize.y = imageHeight / data.rows;
-					spriteUV.x   = (data.frame % data.columns) * spriteSize.x;
-					spriteUV.y   = (data.frame % data.rows)    * spriteSize.y;
+					const uint32_t targetColumn = data.frame % data.columns;
+					const uint32_t targetRow    = data.frame / data.columns;
+
+					spriteSize.x = imageWidth   / data.columns;
+					spriteSize.y = imageHeight  / data.rows;
+					spriteUV.x   = targetColumn * spriteSize.x;
+					spriteUV.y   = targetRow    * spriteSize.y;
 				}
 			}
 

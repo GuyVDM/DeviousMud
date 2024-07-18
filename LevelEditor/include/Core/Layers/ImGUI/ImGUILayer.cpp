@@ -7,8 +7,41 @@
 #include "Core/Layers/ImGUI/ImGUILayer.h"
 #include "Core/Renderer/Renderer.h"
 #include "Core/WorldEditor/WorldEditor.h"
+#include "Core/Editor/Editor.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
+
+static void ImGuiGetSpriteUVCoords(const Graphics::SpriteType _type, const U32& _frame, ImVec2& _uv0, ImVec2& _uv1) 
+{
+    Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(_type);
+
+    if(!optSprite.has_value())
+    {
+        _uv0 = { 0.0f, 0.0f };
+        _uv1 = { 0.0f, 0.0f };
+        return;
+    }
+
+    Sprite s = optSprite.value();
+    
+    const float frameWidth  = 1.0f / static_cast<float>(s.Columns);
+    const float frameHeight = 1.0f / static_cast<float>(s.Rows);
+    
+    const U32 targetColumn = _frame % s.Columns;
+    const U32 targetRow    = _frame / s.Columns;
+
+    _uv0 =
+    {
+        targetColumn * frameWidth,
+        targetRow    * frameHeight
+    };
+
+    _uv1 =
+    {
+        _uv0.x + frameWidth,
+        _uv0.y + frameHeight
+    };
+}
 
 ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
 {
@@ -313,31 +346,40 @@ void ImGUILayer::DrawContentBrowser()
     using namespace App::Config;
 
     if (TileConfiguration.CurrentTileType != e_EntityType::ENTITY_DEFAULT)
-        return;
-
-    if (ImGui::Begin("Content Browser", 0, ImGuiWindowFlags_NoCollapse))
     {
-        ImGui::SeparatorText("Select Tile Texture:");
-        ImGui::Spacing();
+        return;
+    }
 
-        for(U16 i = 0; i < Graphics::SPRITE_COUNT; i++) 
+    if (ImGui::Begin("Choose Texture", 0, ImGuiWindowFlags_NoCollapse))
+    {
+        const Graphics::SpriteType spriteType = TileConfiguration.Sprite.SpriteType;
+
+        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(spriteType).value();
+
+        if (optSprite.has_value())
         {
-            Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(static_cast<Graphics::SpriteType>(i));
+            const Sprite& sprite = optSprite.value();
 
-            if(optSprite.has_value())
+            constexpr ImVec2 buttonSize = { 84.0f, 84.0f };
+
+            U32 maxItemsOnLine = static_cast<U32>(floor(ImGui::GetWindowWidth() / buttonSize.x) - 1);
+            
+            maxItemsOnLine = std::clamp<U32>(maxItemsOnLine, 1, UINT32_MAX);
+
+            for (U16 i = 0; i < sprite.FrameCount; i++)
             {
-                Sprite& sprite = optSprite.value();
-
-                ImGui::SameLine();
-
-                constexpr ImVec2 uv0 = ImVec2(0.0f, 0.0f);
-                const     ImVec2 uv1 = ImVec2(1.0f / static_cast<float>(sprite.FrameCount), 1.0f);
-
-                const ImVec2 buttonSize = { 42.0f, 42.0f };
-
-                if (ImGui::ImageButton(sprite.Texture, buttonSize, uv0, uv1))
+                if(i % maxItemsOnLine != 0)
                 {
-                    TileConfiguration.SpriteType = static_cast<Graphics::SpriteType>(i);
+                    ImGui::SameLine(0.0f, 0.0f);
+                }
+
+                ImVec2 uv0, uv1;
+                ImGuiGetSpriteUVCoords(spriteType, i, uv0, uv1);
+
+                const std::string buttonID = "##SelectTile" + std::to_string(i);
+                if (ImGui::ImageButton(buttonID.c_str(), sprite.Texture, buttonSize, uv0, uv1))
+                {
+                    TileConfiguration.Sprite = SubSprite(spriteType, i);
                 }
             }
         }
@@ -479,17 +521,16 @@ void ImGUILayer::DrawScenicSettings()
     const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
-    Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SpriteType);
+    Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.Sprite.SpriteType);
 
     if (!optSprite.has_value())
     {
         return;
     }
 
-    Sprite& sprite = optSprite.value();
+    ImVec2 uv0, uv1;
+    ImGuiGetSpriteUVCoords(TileConfiguration.Sprite.SpriteType, TileConfiguration.Sprite.Frame, uv0, uv1);
 
-    constexpr ImVec2 uv0 = ImVec2(0.0f, 0.0f);
-    const     ImVec2 uv1 = ImVec2(1.0f / static_cast<float>(sprite.FrameCount), 1.0f);
     ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
 }
 
@@ -551,17 +592,14 @@ void ImGUILayer::DrawNPCSettings()
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
         Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.NPCDefinition.sprite);
-
         if (!optSprite.has_value())
         {
             return;
         }
 
-        Sprite& sprite = optSprite.value();
+        ImVec2 uv0, uv1 = ImVec2(0.0f, 0.0f); 
+        ImGuiGetSpriteUVCoords(TileConfiguration.NPCDefinition.sprite, TileConfiguration.Sprite.Frame, uv0, uv1);
 
-        constexpr ImVec2 uv0 = ImVec2(0.0f, 0.0f); 
-        const     ImVec2 uv1 = ImVec2(1.0f / static_cast<float>(sprite.FrameCount), 1.0f);
         ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
-
     }
 }

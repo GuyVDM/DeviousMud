@@ -16,10 +16,10 @@ void Tile::Render()
 
 	RenderQuery query;
 	query.Color    = { 255,255,255,255 };
-	query.Frame    = 0;
+	query.Frame    = Sprite.Frame;
 	query.Position = position;
 	query.Size     = Utilities::ivec2(App::Config::GRIDCELLSIZE);
-	query.Type     = sprite;
+	query.Type     = Sprite.SpriteType;
 
 	g_globals.Renderer->Render(query, 0);
 

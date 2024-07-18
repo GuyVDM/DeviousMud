@@ -198,6 +198,7 @@
     <ClInclude Include="include\Core\Math\DMath.hpp" />
     <ClInclude Include="include\Core\Renderer\FontLoader\FontLoader.h" />
     <ClInclude Include="include\Core\Renderer\Renderer.h" />
+    <ClInclude Include="include\Core\Renderer\SubSprite\SubSprite.hpp" />
     <ClInclude Include="include\Core\Serialization\CerealSerializable.h" />
     <ClInclude Include="include\Core\Serialization\JsonSerializable.h" />
     <ClInclude Include="include\Core\Tile\Tile.h" />

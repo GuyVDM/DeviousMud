@@ -108,7 +108,7 @@ namespace Graphics
 				    //Load in all entities
 				    { "entity/0.png",                       SpriteType::NPC_GOBLIN,            1, 50 },
 				    { "entity/1.png",                       SpriteType::NPC_INU,               1, 18 },
-					{ "world//tile/Tilemap.png",            SpriteType::TILE_MAP,              1, 18 }
+					{ "world//tile/Tilemap.png",            SpriteType::TILE_MAP,              3, 5 }
 
 			};
 
