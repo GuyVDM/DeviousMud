@@ -288,14 +288,15 @@ void Renderer::EndFrame()
 			I32 texWidth, texHeight;
 			SDL_QueryTexture(queryItem.Texture, nullptr, nullptr, &texWidth, &texHeight);
 
+			//Calculate spritesheet UV's and individual sprite size.
 			Utilities::ivec2 spriteUV(0), spriteSize(texWidth, texHeight);
 			{
 				if (queryItem.Type != Graphics::SpriteType::NONE)
 				{
 					Sprite& sprite = m_Sprites[queryItem.Type];
-					bool bCalcCoords = (sprite.Rows != 0 && sprite.Columns != 0);
+					bool bIsSpriteSheet = (sprite.Rows != 0 && sprite.Columns != 0);
 
-					if (bCalcCoords)
+					if (bIsSpriteSheet)
 					{
 						spriteSize.x = texWidth  / sprite.Columns;
 						spriteSize.y = texHeight / sprite.Rows;
