@@ -72,7 +72,7 @@ public:
 	/// <summary>
 	/// Make the NPC aggressive to the following target.
 	/// </summary>
-	virtual void try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated = false);
+	virtual void set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated = false);
 
 	/// <summary>
 	/// Disengages combat with current target.
@@ -230,7 +230,7 @@ public:
 	/// <summary>
 	/// Make the NPC aggressive to the following target.
 	/// </summary>
-	virtual void try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated) override;
+	virtual void set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated) override;
 	
 	/// <summary>
 	/// Sets target to null and resets combat behaviour.

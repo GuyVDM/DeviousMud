@@ -30,11 +30,11 @@ ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Border]              = { 0.24f, 0.24f, 0.24f, 1.0f };
-    style.Colors[ImGuiCol_WindowBg]            = { 0.10f, 0.10f, 0.10f, 1.0f };
-    style.Colors[ImGuiCol_TitleBg]             = { 0.14f, 0.14f, 0.14f, 1.0f };
+    style.Colors[ImGuiCol_WindowBg]            = { 0.14f, 0.14f, 0.14f, 1.0f };
+    style.Colors[ImGuiCol_TitleBg]             = { 0.24f, 0.24f, 0.24f, 1.0f };
     style.Colors[ImGuiCol_TitleBgActive]       = { 0.14f, 0.14f, 0.14f, 1.0f };
-    style.Colors[ImGuiCol_TitleBgCollapsed]    = { 0.14f, 0.14f, 0.14f, 1.0f };
-    style.Colors[ImGuiCol_FrameBg]             = { 0.14f, 0.14f, 0.14f, 1.0f };
+    style.Colors[ImGuiCol_TitleBgCollapsed]    = { 0.34f, 0.34f, 0.34f, 1.0f };
+    style.Colors[ImGuiCol_FrameBg]             = { 0.24f, 0.24f, 0.24f, 1.0f };
     style.Colors[ImGuiCol_FrameBgHovered]      = { 0.14f, 0.14f, 0.14f, 1.0f };
     style.Colors[ImGuiCol_FrameBgActive]       = { 0.14f, 0.14f, 0.14f, 1.0f };
     style.Colors[ImGuiCol_TabHovered]          = { 0.29f, 0.29f, 0.29f, 1.0f };
@@ -104,7 +104,6 @@ void ImGUILayer::Update()
     DrawImGUI();
 
     ImGui::EndFrame();
-
     ImGui::Render();
 }
 
@@ -161,7 +160,7 @@ void ImGUILayer::DrawViewPortHelperButtons()
 {
     using namespace App::Config;
 
-    auto ImGuiDrawButton = [](const char* _label, const ImVec2& _parentPos, const float _yOffset, SDL_Texture* _tex, const bool bIsSelected = false)
+    const auto ImGuiDrawButton = [](const char* _label, const ImVec2& _parentPos, const float _yOffset, SDL_Texture* _tex, const bool bIsSelected = false)
     {
         constexpr ImVec2 buttonSize = { 50.0f, 30.0f };
         constexpr ImVec2 buttonSizeHalfExtends = { buttonSize.x / 2.0f, buttonSize.y / 2.0f };
@@ -296,33 +295,17 @@ void ImGUILayer::DrawMenuBar()
 
             ImGui::EndMenu();
         }
-
-        //if (ImGui::BeginPopupModal("Chunk", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        //{
-        //    static U32 chunkId[2] = { 0, 0 };
-        //    ImGui::Text("Fill in the target chunk coordinates.");
-
-        //    ImGui::Separator();
-
-        //    ImGui::InputInt2("Chunkcoords:", chunkId);
-        //    if (ImGui::Button("Go to:", ImVec2(42.0f, 42.0f)))
-        //    {
-        //        g_globals.Camera->Position =
-        //        {
-        //            chunkId[0] * App::Config::GRIDSIZE,
-        //            chunkId[1] * App::Config::GRIDSIZE
-        //        };
-        //    }
-
-        //    if (ImGui::Button("Close"))
-        //    {
-        //        ImGui::CloseCurrentPopup();
-        //    }
-
-        //    ImGui::EndPopup();
-        //}
     }
     ImGui::EndMainMenuBar();
+
+    if(ImGui::BeginSecondMenuBar()) 
+    {
+        ImGui::Text("Brushsize:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputInt2("##Brush", &App::Config::SettingsConfiguration.BrushSize.x, 0);
+    }
+    ImGui::EndSecondMenuBar();
 }
 
 void ImGUILayer::DrawContentBrowser()
@@ -351,6 +334,7 @@ void ImGUILayer::DrawContentBrowser()
                 const     ImVec2 uv1 = ImVec2(1.0f / static_cast<float>(sprite.FrameCount), 1.0f);
 
                 const ImVec2 buttonSize = { 42.0f, 42.0f };
+
                 if (ImGui::ImageButton(sprite.Texture, buttonSize, uv0, uv1))
                 {
                     TileConfiguration.SpriteType = static_cast<Graphics::SpriteType>(i);
@@ -398,25 +382,6 @@ void ImGUILayer::DrawTileWindow()
                 DrawNPCSettings();
             }
             break;
-        }
-    }
-    ImGui::End();
-
-    if (ImGui::Begin("Editor Settings:", 0, ImGuiWindowFlags_NoCollapse))
-    {
-        ImGui::Spacing();
-        ImGui::Spacing();
-        ImGui::SeparatorText("Transformation:");
-
-        if (TileConfiguration.InteractionMode == e_InteractionMode::MODE_BRUSH)
-        {
-            ImGui::Spacing();
-            ImGui::SetNextItemWidth(100);
-            ImGui::SliderInt2("Brush Size:", &SettingsConfiguration.BrushSize.x, 1, 16);
-        }
-        else 
-        {
-            ImGui::Text("Uncheck fill chunks for customization.");
         }
     }
 

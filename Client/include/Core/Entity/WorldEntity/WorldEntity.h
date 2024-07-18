@@ -126,11 +126,13 @@ public:
 	/// <returns></returns>
 	const SimPosition& get_simulated_data() const;
 
+
 	/// <summary>
 	/// Returns the matching server position.
 	/// </summary>
 	/// <returns></returns>
 	const Utilities::vec2 get_position() const;
+
 
 	/// <summary>
 	/// Whether this entity should get rendered.
@@ -138,10 +140,12 @@ public:
 	/// <returns></returns>
 	const bool is_visible() const;
 
+
 	/// <summary>
 	/// Whether this entity should get hidden.
 	/// </summary>
 	void set_visibility(bool _bShouldHide);
+
 
 	/// <summary>
 	/// Updates a specified skill for visual purposes, usually to represent server side variables..
@@ -151,10 +155,12 @@ public:
 	/// <param name="_levelBoosted"></param>
 	void update_skill(uint8_t _skillType, int32_t _level, int32_t _levelBoosted);
 
+
 	/// <summary>
 	/// Called every frame.
 	/// </summary>
 	virtual void update();
+
 
 	/// <summary>
 	/// Set the name of the entity.
@@ -162,11 +168,13 @@ public:
 	/// <param name="_name"></param>
 	void set_name(const std::string& _name);
 
+
 	/// <summary>
 	/// Get the name of the entity.
 	/// </summary>
 	/// <returns></returns>
 	const std::string& get_name() const;
+
 
 	/// <summary>
 	/// Returns the map of skills of the specified entity.
@@ -213,7 +221,7 @@ private:
 
 	std::shared_ptr<Canvas> m_canvas;
 
-	RefState<WorldEntity>  m_currentState;
+	RefState<WorldEntity>   m_currentState;
 
 	std::map<e_EntityState, RefState<WorldEntity>> m_states;
 };  

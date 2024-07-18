@@ -734,7 +734,7 @@ void WorldEditor::RemoveTilesSelection()
 		RemoveTile(_pos);
 	}
 
-	m_SelectionArgs.SelectedDraggingTiles.clear();
+	ClearSelection();
 }
 
 void WorldEditor::Fill()

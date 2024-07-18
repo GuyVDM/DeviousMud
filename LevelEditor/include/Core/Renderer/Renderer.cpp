@@ -27,6 +27,7 @@ Renderer::Renderer(const Utilities::ivec2& _windowSize)
 	}	CreateRectTexture();
 
 	m_FontLoader = std::make_shared<FontLoader>(App::Config::s_FontPath);
+
 }
 
 Renderer::~Renderer()
@@ -62,28 +63,29 @@ Renderer::~Renderer()
 
 void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
 {
-	std::string path = "assets";
-	path.append("/sprites/");
+	std::string path = "assets/sprites/";
 	path.append(_args.Path);
 
-	const char* asset_path = path.c_str();
-
 	DEVIOUS_ASSERT(m_Sprites.find(_args.Type) == m_Sprites.end());
-	SDL_Surface* surface = IMG_Load(asset_path);
+	SDL_Surface* surface = IMG_Load(path.c_str());
 
 	if (surface == nullptr)
 	{
-		fprintf(stderr, "Error loading image: %s\n", IMG_GetError());
+		DEVIOUS_ERR("Error loading image: " << IMG_GetError());
 		DEVIOUS_ASSERT(surface == nullptr);
 	}
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
-
-	SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
+	if (texture == nullptr)
+	{
+		DEVIOUS_ERR("Error loading texture: " << IMG_GetError());
+		DEVIOUS_ASSERT(texture == nullptr);
+	} 
 
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-	m_Sprites[_args.Type] = Sprite(texture, surface, _args.FrameCount);
+	const U32 frameCount = _args.Rows * _args.Columns;
+	m_Sprites[_args.Type] = Sprite(texture, surface, frameCount);
 }
 
 void Renderer::DrawGrid()
@@ -257,7 +259,6 @@ void Renderer::StartFrame()
 
 void Renderer::EndFrame() 
 {
-
 	Ref<Camera> camera = g_globals.Camera;
 
 	std::vector<SDL_Texture*> toDestroy;

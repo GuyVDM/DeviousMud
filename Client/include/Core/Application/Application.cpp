@@ -56,8 +56,7 @@ void Application::load_sprites()
 	
 	for(auto& sprite : Graphics::SpriteConfig::spriteMap()) 
 	{
-		Graphics::SpriteArgs args = sprite;
-		renderer->load_and_bind_surface(args.Path, args.Type, args.FrameCount);
+		renderer->load_and_bind_surface(sprite.Path, sprite.Type, sprite.Rows, sprite.Columns);
 	}
 }
 

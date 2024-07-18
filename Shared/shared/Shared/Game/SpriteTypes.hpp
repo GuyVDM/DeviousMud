@@ -17,6 +17,8 @@ namespace Graphics
 		//*
 		PLAYER_ICON_COUNT,
 
+		TILE_MAP,
+
 		TILE_DEFAULT,
 		CROSS,
 		PLAYER,
@@ -59,11 +61,13 @@ namespace Graphics
 
 	struct SpriteArgs
 	{
-		std::string Path;
-		SpriteType  Type;
-		int32_t     FrameCount;
+		std::string  Path;
+		SpriteType   Type;
+		uint32_t     Rows;
+		uint32_t     Columns;
 
-		SpriteArgs(std::string _path, Graphics::SpriteType _type, int32_t _frameCount = 1) : Path(_path), Type(_type), FrameCount(_frameCount)
+		SpriteArgs(std::string _path, Graphics::SpriteType _type, uint32_t _rows = 1, uint32_t _columns = 1)
+			: Path(_path), Type(_type), Rows(_rows), Columns(_columns)
 		{
 		}
 	};
@@ -78,32 +82,33 @@ namespace Graphics
 
 			static const SpriteMap map =
 			{
-					{ "player/Player_Sheet.png",            SpriteType::PLAYER,                28 },
-					{ "player/rank_owner.png",              SpriteType::PLAYER_RANK_OWNER         },
-					{ "Tile.png",                           SpriteType::TILE_DEFAULT              },
-					{ "Cross.png",                          SpriteType::CROSS,                 14 },
+					{ "player/Player_Sheet.png",            SpriteType::PLAYER,                1, 28 },
+					{ "player/rank_owner.png",              SpriteType::PLAYER_RANK_OWNER            },
+					{ "Tile.png",                           SpriteType::TILE_DEFAULT                 },
+					{ "Cross.png",                          SpriteType::CROSS,                 1, 14 },
 
 					//Load in all HUD elements.
-					{ "hud/backdrop.png",                   SpriteType::HUD_BACKDROP              },
-					{ "hud/tabs/tab.png",                   SpriteType::HUD_TAB                   },
-					{ "hud/frame.png",                      SpriteType::HUD_FRAME                 },
-					{ "hud/box.png",                        SpriteType::HUD_OPTIONS_BOX           },
-					{ "hud/chatbox.png",                    SpriteType::HUD_CHATBOX               },
+					{ "hud/backdrop.png",                   SpriteType::HUD_BACKDROP                 },
+					{ "hud/tabs/tab.png",                   SpriteType::HUD_TAB                      },
+					{ "hud/frame.png",                      SpriteType::HUD_FRAME                    },
+					{ "hud/box.png",                        SpriteType::HUD_OPTIONS_BOX              },
+					{ "hud/chatbox.png",                    SpriteType::HUD_CHATBOX                  },
 
-					{ "hud/skill/skillcontainer.png",       SpriteType::SKILL_BACKGROUND          },
+					{ "hud/skill/skillcontainer.png",       SpriteType::SKILL_BACKGROUND             },
 
 					// Load in misc.
-				    { "hitsplat.png",                       SpriteType::HITSPLAT                  },
+				    { "hitsplat.png",                       SpriteType::HITSPLAT                     },
 
 				    //Load in all icons.
-				    { "hud/tabs/icons/default.png",         SpriteType::HUD_ICON_PLACEHOLDER      },
-				    { "hud/tabs/icons/skills.png",          SpriteType::HUD_ICON_SKILLS           },
-				    { "hud/tabs/icons/combat.png",          SpriteType::HUD_ICON_COMBAT           },
-				    { "hud/tabs/icons/inventory.png",       SpriteType::HUD_ICON_INVENTORY        },
+				    { "hud/tabs/icons/default.png",         SpriteType::HUD_ICON_PLACEHOLDER         },
+				    { "hud/tabs/icons/skills.png",          SpriteType::HUD_ICON_SKILLS              },
+				    { "hud/tabs/icons/combat.png",          SpriteType::HUD_ICON_COMBAT              },
+				    { "hud/tabs/icons/inventory.png",       SpriteType::HUD_ICON_INVENTORY           },
 
 				    //Load in all entities
-				    { "entity/0.png",                       SpriteType::NPC_GOBLIN,            50 },
-				    { "entity/1.png",                       SpriteType::NPC_INU,               18 }
+				    { "entity/0.png",                       SpriteType::NPC_GOBLIN,            1, 50 },
+				    { "entity/1.png",                       SpriteType::NPC_INU,               1, 18 },
+					{ "world//tile/Tilemap.png",            SpriteType::TILE_MAP,              1, 18 }
 
 			};
 

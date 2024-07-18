@@ -20,14 +20,16 @@ namespace Graphics
 			RENDER_DESTROY_TEXTURE_AFTER_USE = 1 << 2
 		};
 
-		Utilities::vec2 position    = { 0, 0 };
-		Utilities::vec2 size        = { 0, 0 };
+		Utilities::vec2      position    = { 0, 0 };
+		Utilities::vec2      size        = { 0, 0 };
 
-		SDL_Texture*    texture     = nullptr;
-		uint8_t         frameCount  = 0;
-		SDL_Color       color       = { 255, 255, 255, 255 };
-		uint8_t         frame       = 0;
-		uint8_t         renderFlags = 0;
+		SDL_Texture*		 texture     = nullptr;
+		uint8_t				 frame       = 0;
+		uint8_t              frameCount	 = 0;
+		uint32_t             rows        = 0;
+		uint32_t             columns     = 0;
+		SDL_Color            color       = { 255, 255, 255, 255 };
+		uint8_t              renderFlags = 0;
 
 		SpriteRenderData() = default;
 
@@ -60,8 +62,10 @@ namespace Graphics
 		EventListener<uint64_t> on_destroyed;
 
 		SDL_Color color = {255, 255, 255, 255};
+
 		uint8_t   frame = 0;
 
+	public:
 		const SpriteType get_sprite_type() const;
 
 		const uint8_t    get_framecount() const;
@@ -74,11 +78,9 @@ namespace Graphics
 
 		const Utilities::vec2& get_dimensions() const;
 
-		_Sprite(const _Sprite& _other);
+		const uint32_t get_rows() const;
 
-		_Sprite();
-
-		~_Sprite();
+		const uint32_t get_columns() const;
 
 		bool bIsScreenspace = false;
 
@@ -86,10 +88,17 @@ namespace Graphics
 
 		uint8_t zRenderPriority = 0;
 
+	public:
+		_Sprite(const _Sprite& _other);
+		_Sprite();
+	   ~_Sprite();
+
 	private:
 		DM::Utils::UUID m_uuid;
 		SpriteType		m_eSpriteType = SpriteType::NONE;
 		uint8_t		    m_frameCount = 0;
+		uint32_t        m_rows    = 0;
+		uint32_t        m_columns = 0;
 		Utilities::vec2 m_dimension;
 
 		friend class Renderer;

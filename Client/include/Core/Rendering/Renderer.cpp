@@ -76,7 +76,7 @@ void Graphics::Renderer::free()
 /// <param name="_file"></param>
 /// <param name="_spritetype"></param>
 /// <param name="_maxframecount"></param>
-void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _maxframecount)
+void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _rows, const uint32_t& _columns)
 {
 	std::string m_path = m_assetsPath;
 	m_path.append("/sprites/");
@@ -99,32 +99,7 @@ void Graphics::Renderer::load_and_bind_surface(const std::string& _file, const G
 
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-	m_sprites[_spritetype] = new SDL_SpriteDetails(surface, texture, _maxframecount);
-}
-
-SDL_Texture* Graphics::Renderer::load_texture_of_sprite(const Graphics::SpriteType& _spritetype)
-{
-	int32_t width, height, access;
-	Uint32 format;
-
-	SDL_Texture* spriteTex = m_sprites[_spritetype]->get_texture();
-
-	SDL_QueryTexture(spriteTex, &format, &access, &width, &height);
-
-	SDL_Texture* newTexture = SDL_CreateTexture(m_renderer, format, SDL_TEXTUREACCESS_TARGET, width, height);
-	if (!newTexture)
-	{
-		DEVIOUS_ERR("SDL_CreateTexture Error: " << SDL_GetError());
-		return NULL;
-	}
-
-	SDL_SetRenderTarget(m_renderer, newTexture);
-
-	SDL_RenderCopy(m_renderer, spriteTex, NULL, NULL);
-
-	SDL_SetRenderTarget(m_renderer, NULL);
-
-	return newTexture;
+	m_sprites[_spritetype] = new SDL_SpriteDetails(surface, texture, _rows, _columns);
 }
 
 void Graphics::Renderer::start_frame()
@@ -167,20 +142,20 @@ void Graphics::Renderer::draw_rect(const Utilities::vec2 _pos, const Utilities::
 	}
 
 	//Render flags
-	uint8_t flags = 0;
+	uint8_t flags = SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
+	if (!_bScreenspace)
 	{
-		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
 	}
 
-	if (!_bScreenspace)
-		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
-
 	SpriteRenderData data;
-	data.position = _pos;
-	data.size = _size;
-	data.texture = texture;
-	data.frameCount = 0;
-	data.frame = 0;
+	data.position    = _pos;
+	data.size        = _size;
+	data.texture     = texture;
+	data.frame       = 0;
+	data.frameCount  = 0;
+	data.rows        = 0;
+	data.columns     = 0;
 	data.renderFlags = flags;
 
 	m_renderQueue[_zOrder].push_back(std::move(data));
@@ -188,61 +163,81 @@ void Graphics::Renderer::draw_rect(const Utilities::vec2 _pos, const Utilities::
 
 void Graphics::Renderer::draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color, uint8_t _zOrder, bool _bScreenspace)
 {
-	Utilities::ivec2 iSize = Utilities::to_ivec2(_size);
+	const Utilities::ivec2 size = Utilities::to_ivec2(_size);
 
-	// Create a texture with the desired size and format
-	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, iSize.x + (2 * _borderWidth), iSize.y + (2 * _borderWidth));
+	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+	SDL_RenderClear(m_renderer);
+
+	//Create a texture with the desired size and format
+	SDL_Texture* texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, size.x + (2 * _borderWidth), size.y + (2 * _borderWidth));
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderTarget(m_renderer, texture);
+
+	//Set rect color
+	SDL_SetRenderDrawColor(m_renderer, _color.r, _color.g, _color.b, _color.a);
+
+	const SDL_Rect top =
 	{
-		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderTarget(m_renderer, texture);
-		SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+		0,
+		0,
+		size.x + 2 * _borderWidth,
+		_borderWidth
+	};
+	SDL_RenderFillRect(m_renderer, &top);
 
-		SDL_RenderClear(m_renderer);
+	const SDL_Rect bottom =
+	{
+		0,
+		size.y + _borderWidth,
+		size.x + 2 * _borderWidth,
+		_borderWidth
+	};
+	SDL_RenderFillRect(m_renderer, &bottom);
 
-		SDL_SetRenderDrawColor(m_renderer, _color.r, _color.g, _color.b, _color.a);
+	const SDL_Rect left =
+	{
+		0,
+		_borderWidth,
+		_borderWidth,
+		size.y
+	};
+	SDL_RenderFillRect(m_renderer, &left);
 
-		SDL_Rect topRect    = { 0, 0, iSize.x + 2 * _borderWidth, _borderWidth };
-		SDL_Rect bottomRect = { 0, iSize.y + _borderWidth, iSize.x + 2 * _borderWidth, _borderWidth };
-		SDL_Rect leftRect   = { 0, _borderWidth, _borderWidth, iSize.y };
-		SDL_Rect rightRect  = { iSize.x + _borderWidth, _borderWidth, _borderWidth, iSize.y };
+	const SDL_Rect right =
+	{
+		size.x + _borderWidth,
+		_borderWidth,
+		_borderWidth,
+		size.y
+	};
+	SDL_RenderFillRect(m_renderer, &right);
 
-		SDL_RenderFillRect(m_renderer, &topRect);
-		SDL_RenderFillRect(m_renderer, &bottomRect);
-		SDL_RenderFillRect(m_renderer, &leftRect);
-		SDL_RenderFillRect(m_renderer, &rightRect);
-
-		SDL_SetRenderTarget(m_renderer, NULL);
-	}
+	SDL_SetRenderTarget(m_renderer, NULL);
 
 	//Set flags
-	uint8_t flags = 0;
+	uint8_t flags = SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
+	if (!_bScreenspace)
 	{
-		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE;
-
-		if (!_bScreenspace)
-			flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
+		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
 	}
 
 	// Reset the rendering target to the default
-	SDL_SetRenderTarget(m_renderer, NULL);
-
 	SpriteRenderData data;
-	data.position = _pos;
-	data.size = _size;
-	data.texture = texture;
-	data.frameCount = 0;
-	data.frame = 0;
+	data.position    = _pos;
+	data.size        = _size;
+	data.texture	 = texture;
+	data.frameCount  = 0;
+	data.frame		 = 0;
+	data.rows		 = 0;
+	data.columns     = 0;
 	data.renderFlags = flags;
 
 	m_renderQueue[_zOrder].push_back(std::move(data));
 }
 
-void Graphics::Renderer::plot_texture(SpriteRenderData& _data, int32_t _zOrder)
+void Graphics::Renderer::plot_texture(SpriteRenderData& _data, uint8_t _zOrder)
 {
-	m_renderQueue[_zOrder].push_back
-	(
-		std::move(_data)
-	);
+	m_renderQueue[_zOrder].push_back(std::move(_data));
 }
 
 /// <summary>
@@ -254,12 +249,12 @@ void Graphics::Renderer::plot_texture(SpriteRenderData& _data, int32_t _zOrder)
 /// <param name="(scale)"></param>
 void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size)
 {
-	if (_s.get_sprite_type() == SpriteType::NONE)
+	if (_s.get_sprite_type() == SpriteType::NONE) 
+	{
 		return;
+	}
 
-	uint8_t flags = 0;
-	flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
-
+	uint8_t flags = SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE;
 	if (_s.bIsFlipped)
 	{
 		flags |= SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE;
@@ -270,43 +265,45 @@ void Graphics::Renderer::plot_frame(const Sprite& _s, const Utilities::vec2& _po
 		_pos,
 		_size,
 		m_sprites[_s.get_sprite_type()]->get_texture(),
-		_s.get_framecount(),
-		_s.color,
 		_s.frame,
+		_s.get_framecount(),
+		_s.m_rows,
+		_s.m_columns,
+		_s.color,
 		flags
 	};
 
-	m_renderQueue[_s.zRenderPriority].push_back
-	(
-		renderData
-	);
+	m_renderQueue[_s.zRenderPriority].push_back(std::move(renderData));
 }
 
 void Graphics::Renderer::plot_raw_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size)
 {
 	if (_s.get_sprite_type() == SpriteType::NONE)
+	{
 		return;
+	}
 	
 	uint8_t flags = 0;
 
 	if (_s.bIsFlipped)
+	{
 		flags = SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE;
+	}
 
 	SpriteRenderData renderData =
 	{
 		_pos,
 		_size,
 		m_sprites[_s.get_sprite_type()]->get_texture(),
-		_s.get_framecount(),
-		_s.color,
 		_s.frame,
+		_s.get_framecount(),
+		_s.m_rows,
+		_s.m_columns,
+		_s.color,
 		flags
 	};
 
-	m_renderQueue[_s.zRenderPriority].push_back
-	(
-		std::move(renderData)
-	);
+	m_renderQueue[_s.zRenderPriority].push_back(std::move(renderData));
 }
 
 void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
@@ -319,86 +316,102 @@ void Graphics::Renderer::get_viewport_size(int32_t* _w, int32_t* _h)
 /// </summary>
 void Graphics::Renderer::end_frame()
 {
-	if (m_camera)
+	if (!m_camera)
 	{
-		for (auto& [zRenderOrder, queue] : m_renderQueue)
+		return;
+	}
+
+	for (auto& [zRenderOrder, queue] : m_renderQueue)
+	{
+		for (const SpriteRenderData& data : queue)
 		{
-			for (const SpriteRenderData& data : queue)
+			SDL_Rect destRect{};
+
+			///	Check if we need to render in screen or worldspace.
+			/// Worldspace  == Relative to the camera, and exists within gridspace, defined by GRID_CELL_PX_SIZE.
+			/// Screenspace == just uses direct screen coordinates.
+			if (data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE)
 			{
-				SDL_Rect destRect{};
-
-				///	Check if we need to render in screen or worldspace.
-				/// Worldspace  == Relative to the camera, and exists within gridspace, defined by GRID_CELL_PX_SIZE.
-				/// Screenspace == just uses direct screen coordinates.
-				if (data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_WORLDSPACE)
+				// Get the viewport size.
+				int32_t windowSize_w, windowSize_h;
 				{
-					// Get the viewport size.
-					int32_t windowSize_w, windowSize_h;
-					{
-						get_viewport_size(&windowSize_w, &windowSize_h);
-					}
-
-					const float vpWidthHalfExtends  = (float)windowSize_w / 2.0f;
-					const float vpHeightHalfExtends = (float)windowSize_h / 2.0f;
-					const Utilities::vec2 camPos = m_camera->get_position();
-
-					// Create a new rect with the given size and transformed position.
-					destRect =
-					{
-						(int32_t)ceil((data.position.x * (float)GRID_CELL_PX_SIZE) - camPos.x + vpWidthHalfExtends),
-						(int32_t)ceil((data.position.y * (float)GRID_CELL_PX_SIZE) - camPos.y + vpHeightHalfExtends),
-						(int32_t)ceil(data.size.x),
-						(int32_t)ceil(data.size.y)
-					};
-				}
-				else 
-				{
-					const Utilities::ivec2 spritePos  = Utilities::to_ivec2(data.position);
-					const Utilities::ivec2 spriteSize = Utilities::to_ivec2(data.size);
-					destRect = { spritePos.x, spritePos.y, spriteSize.x, spriteSize.y };
+					get_viewport_size(&windowSize_w, &windowSize_h);
 				}
 
-				// Get texture width and height.
-				int32_t imageWidth, imageHeight;
-				{
-					SDL_QueryTexture(data.texture, NULL, NULL, &imageWidth, &imageHeight);
-				}
+				const float vpWidthHalfExtends  = static_cast<float>(windowSize_w / 2.0f);
+				const float vpHeightHalfExtends = static_cast<float>(windowSize_h / 2.0f);
+				const Utilities::vec2 camPos    = m_camera->get_position();
 
-				// Generate rect based on what part of the png we want our sprite to be 
-				const int32_t spriteWidth = data.frameCount == 0 ? imageWidth : imageWidth / data.frameCount;
-				const int32_t frame = CLAMP(data.frame, 0, data.frameCount);
-
-				const SDL_Rect srcRect
+				// Create a new rect with the given size and transformed position.
+				destRect =
 				{
-					frame == 0 ? 0 : spriteWidth * frame,
-					0,
-					spriteWidth,
-					imageHeight,
+					static_cast<int32_t>(ceil((data.position.x * (float)GRID_CELL_PX_SIZE) - camPos.x + vpWidthHalfExtends)),
+					static_cast<int32_t>(ceil((data.position.y * (float)GRID_CELL_PX_SIZE) - camPos.y + vpHeightHalfExtends)),
+					static_cast<int32_t>(ceil(data.size.x)),
+					static_cast<int32_t>(ceil(data.size.y))
 				};
-
-				///---------------------
-				/// Building of the frame
-				///
+			}
+			else
+			{
+				const Utilities::ivec2 spritePos  = Utilities::to_ivec2(data.position);
+				const Utilities::ivec2 spriteSize = Utilities::to_ivec2(data.size);
+				destRect =
 				{
-					SDL_SetTextureColorMod(data.texture, data.color.r, data.color.g, data.color.b);
-					SDL_SetTextureAlphaMod(data.texture, data.color.a);
+					spritePos.x,
+					spritePos.y, 
+					spriteSize.x,
+					spriteSize.y 
+				};
+			}
 
-					const SDL_RendererFlip flipFlags = data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE ? SDL_RendererFlip::SDL_FLIP_HORIZONTAL:
-																																	  SDL_RendererFlip::SDL_FLIP_NONE;
-					SDL_RenderCopyEx(m_renderer, data.texture, &srcRect, &destRect, 0, NULL, flipFlags);
+			// Get texture width and height.
+			int32_t imageWidth, imageHeight;
+			SDL_QueryTexture(data.texture, NULL, NULL, &imageWidth, &imageHeight);
 
-					//Reset to default colors after copying it over to the surface.
-					SDL_SetTextureColorMod(data.texture, 255, 255, 255);
-				}
+			// Generate rect based on what part of the png we want our sprite to be 
+			Utilities::ivec2 spriteUV(0), spriteSize(imageWidth, imageHeight);
+			{
+				bool bCalcCoords = (data.rows != 0 && data.columns != 0);
 
-				if(data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE)
+				if (bCalcCoords)
 				{
-					SDL_DestroyTexture(data.texture);
+					spriteSize.x = imageWidth / data.columns;
+					spriteSize.y = imageHeight / data.rows;
+					spriteUV.x   = (data.frame % data.columns) * spriteSize.x;
+					spriteUV.y   = (data.frame % data.rows)    * spriteSize.y;
 				}
 			}
 
-			queue.clear();
+			const SDL_Rect srcRect
+			{
+				spriteUV.x,
+				spriteUV.y,
+				spriteSize.x,
+				spriteSize.y,
+			};
+
+			///----------------------
+			/// Building of the frame
+			///
+			{
+				SDL_SetTextureColorMod(data.texture, data.color.r, data.color.g, data.color.b);
+				SDL_SetTextureAlphaMod(data.texture, data.color.a);
+
+				const SDL_RendererFlip flipFlags = (data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_FLIP_SPRITE) ? SDL_RendererFlip::SDL_FLIP_HORIZONTAL :
+																														            SDL_RendererFlip::SDL_FLIP_NONE;
+				SDL_RenderCopyEx(m_renderer, data.texture, &srcRect, &destRect, 0, NULL, flipFlags);
+
+				//Reset to default colors after copying it over to the surface.
+				SDL_SetTextureColorMod(data.texture, 255, 255, 255);
+			}
+
+			if (data.renderFlags & SpriteRenderData::e_SpriteRenderFlags::RENDER_DESTROY_TEXTURE_AFTER_USE)
+			{
+				SDL_DestroyTexture(data.texture);
+			}
 		}
+
+		queue.clear();
 	}
 
 	//Present the final frame.
@@ -415,10 +428,12 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 		sprite.m_frameCount = 0;
 		sprite.m_eSpriteType = _spriteType;
 		sprite.m_dimension = Utilities::vec2(0.0f, 0.0f);
+		sprite.m_columns = 0;
+		sprite.m_rows = 0;
 		return sprite;
 	}
 
-	auto it = m_sprites.find(_spriteType);
+	const auto it = m_sprites.find(_spriteType);
 	DEVIOUS_ASSERT(it != m_sprites.end())
 
 	//Default sprite color.
@@ -428,19 +443,22 @@ Graphics::Sprite Graphics::Renderer::get_sprite(const SpriteType& _spriteType)
 	const SDL_SpriteDetails* details = m_sprites[_spriteType];
 
 	Sprite sprite;
-	sprite.color      = SDL_Color{ 255, 255, 255, 255 };
-	sprite.frame      = 0;
-	sprite.m_frameCount = details->get_framecount();
+	sprite.color         = SDL_Color{ 255, 255, 255, 255 };
+	sprite.frame         = 0;
+	sprite.m_frameCount  = details->get_framecount();
 	sprite.m_eSpriteType = _spriteType;
-	sprite.m_dimension  = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
-	sprite.bIsFlipped = false;
+	sprite.m_dimension   = Utilities::vec2((float)details->get_surface()->w, (float)details->get_surface()->h);
+	sprite.bIsFlipped    = false;
+	sprite.m_rows        = details->get_rows();
+	sprite.m_columns     = details->get_columns();
 
 	return sprite;
 }
 
-Graphics::Renderer::SDL_SpriteDetails::SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _framecount)
-	: m_surface(_surface), m_framecount(_framecount), m_texture(_texture)
+Graphics::Renderer::SDL_SpriteDetails::SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _rows, const uint32_t& _columns)
+	: m_surface(_surface), m_texture(_texture), m_Rows(_rows), m_Columns(_columns)
 {
+	m_framecount = m_Rows * m_Columns;
 }
 
 Graphics::Renderer::SDL_SpriteDetails::~SDL_SpriteDetails()
@@ -449,7 +467,7 @@ Graphics::Renderer::SDL_SpriteDetails::~SDL_SpriteDetails()
 	SDL_FreeSurface(m_surface);
 }
 
-const uint8_t& Graphics::Renderer::SDL_SpriteDetails::get_framecount() const
+const uint32_t& Graphics::Renderer::SDL_SpriteDetails::get_framecount() const
 {
 	return m_framecount;
 }

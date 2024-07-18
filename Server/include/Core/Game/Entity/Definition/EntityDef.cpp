@@ -160,7 +160,7 @@ void Entity::disengage()
 
 }
 
-void Entity::try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated)
+void Entity::set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated)
 {
 
 }
@@ -372,7 +372,7 @@ int32_t NPC::get_respawn_timer()
 	return m_respawnTimer;
 }
 
-void NPC::try_set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated)
+void NPC::set_target(std::shared_ptr<Entity> _entity, bool _bWasInstigated)
 {
 	if(m_target.expired()) 
 	{

@@ -135,7 +135,7 @@ void CombatHandler::hit(std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b)
 	_b->hit(_a, maxHit);
 
 	//Try make other entity retaliate.
-	_b->try_set_target(_a, true);
+	_b->set_target(_a, true);
 
 	//*------------------
 	// Disengage if dead.

@@ -39,19 +39,31 @@ namespace Graphics
 		class SDL_SpriteDetails final
 		{
 		public:
-			SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _maxframecount);
+			SDL_SpriteDetails(SDL_Surface* _surface, SDL_Texture* _texture, const uint32_t& _rows, const uint32_t& _columns);
 			virtual ~SDL_SpriteDetails();
 
-			const uint8_t& get_framecount() const;
+			const uint32_t& get_framecount() const;
 
 			SDL_Surface* get_surface() const;
 
 			SDL_Texture* get_texture();
 
+			inline const uint32_t& get_rows() const 
+			{
+				return m_Rows;
+			};
+
+			inline const uint32_t& get_columns() const 
+			{
+				return m_Columns;
+			};
+
 		private:
-			uint8_t          m_framecount;
+			uint32_t         m_framecount;
 			SDL_Surface*     m_surface;
 			SDL_Texture*     m_texture;
+			uint32_t         m_Rows;
+			uint32_t         m_Columns;
 		};
 
 	public:
@@ -73,9 +85,7 @@ namespace Graphics
 
 		std::shared_ptr<Camera>& get_camera();
 
-		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _framecount = 1);
-
-		SDL_Texture* load_texture_of_sprite(const Graphics::SpriteType& _spritetype);
+		void load_and_bind_surface(const std::string& _file, const Graphics::SpriteType& _spritetype, const uint32_t& _rows, const uint32_t& _columns);
 
 		void start_frame();
 
@@ -85,7 +95,7 @@ namespace Graphics
 
 		void draw_outline(const Utilities::vec2& _pos, const Utilities::vec2& _size, int _borderWidth, SDL_Color _color = { 255, 255, 255, 255 }, uint8_t _zOrder = 0, bool _bScreenspace = true);
 
-		void plot_texture(SpriteRenderData& _data, int32_t _zOrder);
+		void plot_texture(SpriteRenderData& _data, uint8_t _zOrder);
 
 		void plot_frame(const Sprite& _s, const Utilities::vec2& _pos, const Utilities::vec2& _size);
 

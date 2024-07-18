@@ -51,7 +51,7 @@ struct Sprite
 {
 	SDL_Texture* Texture;
 	SDL_Surface* Surface;
-	U8           FrameCount;
+	U32          FrameCount;
 
 	Sprite() : Texture(nullptr), Surface(nullptr), FrameCount(0) {};
 	Sprite(SDL_Texture* _texture, SDL_Surface* _surface, const U8& _frameCount) : Texture(_texture), Surface(_surface), FrameCount(_frameCount) {};
