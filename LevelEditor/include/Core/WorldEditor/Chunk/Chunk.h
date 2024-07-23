@@ -41,6 +41,12 @@ public:
 	bool AddTile(Ref<Tile> _tile);
 
 	/// <summary>
+	/// Whether part of this chunk is visible within the bounds of the screen.
+	/// </summary>
+	/// <returns></returns>
+	const bool IsVisible() const;
+
+	/// <summary>
 	/// Removes the tile entity from the specified tile if the specified local chunk coords are appropriate.
 	/// local chunk coords, on each axis, goes from 0 to SIZE_CHUNK_TILES - 1.
 	/// If the local chunk coords are below 0 or => SIZE_CHUNK_TILES, then the local coordinates are considered invalid.

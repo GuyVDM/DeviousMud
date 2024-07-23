@@ -789,6 +789,11 @@ void WorldEditor::RenderTiles()
 {
 	for(const auto&[chunkCoords, chunk] : m_Chunks) 
 	{
+		if(!chunk->IsVisible()) 
+		{
+			continue;
+		}
+
 		for(auto& tile : chunk->m_Tiles) 
 		{
 			if (tile != nullptr)

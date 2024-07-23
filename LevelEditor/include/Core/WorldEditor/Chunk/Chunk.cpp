@@ -1,6 +1,10 @@
 #include "precomp.h"
 #include "Core/WorldEditor/Chunk/Chunk.h"
+
 #include "Core/Config/Config.h"
+#include "Core/Globals/Globals.h"
+#include "Core/Camera/Camera.h"
+#include "Core/Renderer/Renderer.h"
 
 #include "Core/Tile/Tile.h"
 
@@ -59,6 +63,24 @@ bool Chunk::AddTile(Ref<Tile> _tile)
 
 	m_Tiles[index] = _tile;
 	return true;
+}
+
+const bool Chunk::IsVisible() const
+{
+	const Utilities::ivec2 chunkPositionScreenspace = m_ChunkCoords * SIZE_CHUNK_TILES * App::Config::GRIDCELLSIZE;
+	const Utilities::ivec2 chunkSizeScreenspace     =  SIZE_CHUNK_TILES * App::Config::GRIDCELLSIZE;
+
+	Ref<Camera>& camera = g_globals.Camera;
+
+	const SDL_Rect dstRect
+	{
+		(chunkPositionScreenspace.x  - camera->Position.x) * camera->Zoom,
+		(chunkPositionScreenspace.y  - camera->Position.y) * camera->Zoom,
+		 chunkSizeScreenspace.x * camera->Zoom,
+		 chunkSizeScreenspace.y * camera->Zoom
+	};
+
+	return g_globals.Renderer->IsVisible(dstRect);
 }
 
 bool Chunk::RemoveFromTile(const Utilities::ivec2& _localChunkCoords, const e_SelectedLayer& _layer)

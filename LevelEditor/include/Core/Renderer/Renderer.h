@@ -81,28 +81,86 @@ struct TextArgs
 class Renderer 
 {
 public:
+	/// <summary>
+	/// Transforms 2D screen coordinates into 2D worldspace coordinates.
+	/// </summary>
+	/// <param name="_screenCoords"></param>
+	/// <returns></returns>
 	static const Utilities::ivec2 ScreenToWorld(const Utilities::ivec2& _screenCoords);
 
 public:
+	/// <summary>
+	/// Try find and return the sprite of a specified type.
+	/// </summary>
+	/// <param name="_type"></param>
+	/// <returns></returns>
 	Optional<Sprite> GetSprite(const Graphics::SpriteType& _type);
 
+	/// <summary>
+	/// Returns info about the sprite, such as how many rows and columns the sprite has.
+	/// </summary>
+	/// <param name="_subsprite"></param>
+	/// <returns></returns>
 	Optional<SpriteFrameArgs> GetSpriteFrameInfo(const SubSprite& _subsprite);
 
+	/// <summary>
+	/// Draws a filled rectangle in gridspace.
+	/// </summary>
+	/// <param name="_rect"></param>
+	/// <param name="_col"></param>
+	/// <param name="_zOrder"></param>
 	void DrawRect(const SDL_Rect& _rect, const Color& _col, const U8& _zOrder = 0);
 
+	/// <summary>
+	/// Draws a rectangular outline in gridspace.
+	/// </summary>
+	/// <param name="_rect"></param>
+	/// <param name="_col"></param>
+	/// <param name="_outlWidth"></param>
+	/// <param name="_zOrder"></param>
 	void DrawRectOutline(const SDL_Rect& _rect, const Color& _col = {255,255,255,255}, const I32& _outlWidth = 1, const U8& _zOrder = 0);
 
+	/// <summary>
+	/// Refreshes & starts a new frame.
+	/// </summary>
 	void StartFrame();
 
+	/// <summary>
+	/// Plot visuals to the screen, be sure StartFrame() has been called first.
+	/// </summary>
+	/// <param name="_query"></param>
+	/// <param name="_zOrder"></param>
 	void Render(const RenderQuery& _query, const U8& _zOrder = 0);
 
+	/// <summary>
+	/// Render to screen.
+	/// </summary>
 	void EndFrame();
 
+	/// <summary>
+	/// Renders text to the screen.
+	/// </summary>
+	/// <param name="_args"></param>
 	void RenderText(const TextArgs& _args);
 
+	/// <summary>
+	/// Returns the SDL_Getwindow instance.
+	/// </summary>
+	/// <returns></returns>
 	SDL_Window* GetWindow();
 
+	/// <summary>
+	/// Returns the SDL_Renderer instance.
+	/// </summary>
+	/// <returns></returns>
 	SDL_Renderer* GetRenderer();
+
+	/// <summary>
+	/// Returns true or false based on if the rect is visible on the screen.
+	/// </summary>
+	/// <param name="_rect"></param>
+	/// <returns></returns>
+	const bool IsVisible(const SDL_Rect& _rect) const;
 
 public:
 	Renderer(const Utilities::ivec2& _windowSize);
@@ -116,8 +174,6 @@ private:
 	void DrawGrid();
 
 	void CreateRectTexture();
-
-	const bool IsVisible(const SDL_Rect& _rect) const;
 
 private:
 	SDL_Window* m_Window;
