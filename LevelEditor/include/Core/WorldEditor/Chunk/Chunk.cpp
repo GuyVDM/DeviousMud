@@ -23,7 +23,7 @@ bool Chunk::AddToTile(const Utilities::ivec2& _localChunkCoords, Ref<TileEntity>
 	if(!tilePtr)
 	{
 		Tile tile = {};
-		tile.bIsWalkable      = App::Config::TileConfiguration.bIsWalkable;
+		tile.bIsWalkable      = true;
 		tile.ChunkCoords      = m_ChunkCoords;
 		tile.LocalChunkCoords = _localChunkCoords;
 

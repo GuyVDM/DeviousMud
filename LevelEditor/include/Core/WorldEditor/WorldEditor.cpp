@@ -925,6 +925,31 @@ void WorldEditor::DrawSelection()
 	}
 }
 
+void WorldEditor::SetSelectionNavigatable(const bool& _bCanNavigate)
+{
+	for(const Utilities::ivec2& gridCoord : m_SelectionArgs.SelectedTiles) 
+	{
+		const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(gridCoord);
+
+		if(!IsValidChunk(chunkCoords)) 
+		{
+			continue;
+		}
+
+		const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(gridCoord);
+
+		Ref<Chunk>& chunk = m_Chunks[chunkCoords];
+
+		const U32 tileIndex = Chunk::ToTileIndex(localChunkCoords);
+		if(!chunk->IsValidIndex(tileIndex)) 
+		{
+			continue;
+		}
+
+		chunk->m_Tiles[tileIndex]->bIsWalkable = _bCanNavigate;
+	}
+}
+
 void WorldEditor::RemoveChunk()
 {
 	m_Chunks.erase(Chunk::ToChunkCoords(m_HoveredGridCell));

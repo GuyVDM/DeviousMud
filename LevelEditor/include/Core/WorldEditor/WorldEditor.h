@@ -42,6 +42,8 @@ public:
 
 	void ClearSelection();
 
+	void SetSelectionNavigatable(const bool& _bCanNavigate);
+
 	const bool IsSelectionActive() const;
 
 	const bool IsHoveringOverActiveChunk() const;

@@ -470,6 +470,8 @@ void ImGUILayer::DrawRightClickMenu() const
                 ImGui::Separator();
                 ImGui::MenuItem("(selection)", NULL, false, false);
                 if (ImGui::MenuItem("Clear Selection")) g_globals.WorldEditor->ClearSelection();
+                if (ImGui::MenuItem("Make Walkable")) g_globals.WorldEditor->SetSelectionNavigatable(true);
+                if (ImGui::MenuItem("Make Obstacle")) g_globals.WorldEditor->SetSelectionNavigatable(false);
             }
 
             //*------------------------------------------------------------
@@ -498,12 +500,6 @@ void ImGUILayer::DrawRightClickMenu() const
 void ImGUILayer::DrawScenicSettings()
 {
     using namespace App::Config;
-
-    ImGui::SeparatorText("Tile Settings:");
-
-    ImGui::Text("Is Walkable:");
-    ImGui::Checkbox("##IsWalkable:", &TileConfiguration.bIsWalkable);
-    ImGui::Spacing();
 
     ImGui::SeparatorText("Preview Window:");
 

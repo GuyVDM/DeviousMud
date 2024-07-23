@@ -14,7 +14,6 @@ App::Config::TileConfig App::Config::TileConfiguration = TileConfig
 	/* NPCDefinition   */ get_npc_definition(0),
 	/* NpcRespawnTime  */ 1.0f,
 	/* NpcId           */ 0,
-	/* isWalkable      */ true,
 	/* InteractionMode */ e_InteractionMode::MODE_BRUSH
 	/* ChunkClipboard  */ 
 );

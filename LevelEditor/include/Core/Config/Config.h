@@ -36,7 +36,6 @@ namespace App
 			NPCDef               SelectedNPC;
 			float                NPCRespawnTime;
 			I32                  NPCid;
-			bool                 bIsWalkable;
 			e_InteractionMode    InteractionMode;
 			WeakRef<Chunk>       ChunkClipboard;
 		};
