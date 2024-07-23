@@ -23,12 +23,17 @@ bool Chunk::AddToTile(const Utilities::ivec2& _localChunkCoords, Ref<TileEntity>
 	if(!tilePtr)
 	{
 		Tile tile = {};
-		tile.bIsWalkable      = true;
+		tile.bIsWalkable      = false;
 		tile.ChunkCoords      = m_ChunkCoords;
 		tile.LocalChunkCoords = _localChunkCoords;
 
 		tilePtr = std::make_shared<Tile>(&tile);
 		m_TileCount++;
+	}
+
+	if(_layer == e_SelectedLayer::LAYER_BACKGROUND) 
+	{
+		tilePtr->bIsWalkable = true;
 	}
 
 	const I32 spriteIndex = static_cast<I32>(_tileEntity->SpriteType);

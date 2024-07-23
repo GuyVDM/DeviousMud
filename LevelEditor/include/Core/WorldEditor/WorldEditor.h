@@ -114,7 +114,7 @@ private:
 
 private:
 	std::vector<Utilities::ivec2> m_VisitedTiles;
-
+	
 	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };
 
 	SelectionArgs m_SelectionArgs;
