@@ -304,9 +304,9 @@ void WorldEditor::HandleShortCuts()
 	// Delete all tiles that are selected.
 	//
 	{
-		const bool bDelete = g_Input->GetKeyDown(SDLK_DELETE);
+		const bool bDeleteKeyPressed = g_Input->GetKeyDown(SDLK_DELETE);
 
-		if (bDelete)
+		if (bDeleteKeyPressed)
 		{
 			RemoveTilesSelection();
 		}
@@ -399,9 +399,7 @@ void WorldEditor::PlaceTileEntity(const Utilities::ivec2& _gridCoords)
 			Ref<NPCEntity> npcEntity = std::make_shared<NPCEntity>();
 			npcEntity->SpriteType = TileConfiguration.SelectedNPC.sprite;
 			npcEntity->Frame = 0;
-
-			//TODO: have to make these public somewhere.
-			npcEntity->NpcId       = TileConfiguration.NPCid;
+			npcEntity->NpcId = TileConfiguration.NPCid;
 			npcEntity->RespawnTime = TileConfiguration.NPCRespawnTime;
 			tileEntity = npcEntity;
 		}
@@ -990,10 +988,10 @@ void WorldEditor::DrawSelection()
 	}
 
 	//*-------------------------------
-	// Draw magic wand selection field.
+	// Draw all selected tiles.
 	//
 	{
-		const Color rectCol = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 50.0f, 4.0f, Time::GetElapsedTime())};
+		const Color rectCol = { 0, 92, 158, DMath::Occilate<U8>(140.0f, 180.0f, 5.0f, Time::GetElapsedTime())};
 
 		for (const Utilities::ivec2& _tile : m_SelectionArgs.SelectedTiles)
 		{
