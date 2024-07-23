@@ -1,15 +1,16 @@
 #include "precomp.h"
 
+#include "Core/Config/Config.h"
 #include "Core/WorldEditor/Selection/Selection.h"
 #include "Core/WorldEditor/WorldEditor.h"
-#include "Core/Config/Config.h"
+#include "Core/WorldEditor/Chunk/Chunk.h"
 
 const bool SelectionArgs::IsEmpty() const
 {
 	return SelectedTiles.size() == 0;
 }
 
-void SelectionArgs::AddTileToSelection(const Utilities::ivec2& _gridCoords)
+void SelectionArgs::AddTileCoordToSelection(const Utilities::ivec2& _gridCoords)
 {
 	if (!IsOverlapping(_gridCoords))
 	{
@@ -17,7 +18,7 @@ void SelectionArgs::AddTileToSelection(const Utilities::ivec2& _gridCoords)
 	}
 }
 
-void SelectionArgs::RemoveTileFromSelection(const Utilities::ivec2& _gridCoords)
+void SelectionArgs::RemoveTileCoordFromSelection(const Utilities::ivec2& _gridCoords)
 {
 	auto it = std::find(SelectedTiles.begin(), SelectedTiles.end(), _gridCoords);
 
@@ -38,13 +39,8 @@ void SelectionArgs::MoveSelectionRelativeTo(const Utilities::ivec2& _gridCoords)
 
 	for (DragArgs& dragArgs : SelectedDraggingTiles)
 	{
-		Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
-
-		const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(newGridPos);
-		const Utilities::ivec2 chunkCoords      = Chunk::ToChunkCoords(newGridPos);
-
-		dragArgs.Tile->ChunkCoords      = chunkCoords;
-		dragArgs.Tile->LocalChunkCoords = localChunkCoords;
+		const Utilities::ivec2 newGridPos = dragArgs.StartGridPos + offset;
+		dragArgs.CurrentGridPos = dragArgs.StartGridPos + offset;
 	}
 }
 

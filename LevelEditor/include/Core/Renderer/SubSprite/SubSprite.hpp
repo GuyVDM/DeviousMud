@@ -4,6 +4,9 @@
 
 #include "Core/Core.hpp"
 
+/// <summary>
+/// Container in order to specify what part of the spritesheet you want to target.
+/// </summary>
 struct SubSprite
 {
 	Graphics::SpriteType SpriteType;

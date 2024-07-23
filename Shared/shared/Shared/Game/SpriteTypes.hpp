@@ -18,6 +18,7 @@ namespace Graphics
 		PLAYER_ICON_COUNT,
 
 		TILE_MAP,
+		STRUCTURES_MAP,
 
 		TILE_DEFAULT,
 		CROSS,
@@ -108,8 +109,8 @@ namespace Graphics
 				    //Load in all entities
 				    { "entity/0.png",                       SpriteType::NPC_GOBLIN,            1, 50 },
 				    { "entity/1.png",                       SpriteType::NPC_INU,               1, 18 },
-					{ "world//tile/Tilemap.png",            SpriteType::TILE_MAP,              3, 5 }
-
+					{ "world/tile/Tilemap.png",             SpriteType::TILE_MAP,              3, 5  },
+					{ "world/structure/StructureMap.png",   SpriteType::STRUCTURES_MAP,        3, 3  }
 			};
 
 			return map;

@@ -2,6 +2,7 @@
 #include "Core/Core.hpp"
 
 #include "Core/Tile/Tile.h"
+#include "Core/WorldEditor/TileLayer/TileLayer.h"
 
 #include "Shared/Utilities/vec2.hpp"
 
@@ -49,8 +50,10 @@ private:
 
 struct DragArgs
 {
-	Ref<Tile>        Tile;
+	Ref<TileEntity>  TileEntity;
 	Utilities::ivec2 StartGridPos;
+	Utilities::ivec2 CurrentGridPos;
+	e_SelectedLayer  FromLayer;
 };
 
 enum class e_SelectionMode
@@ -82,13 +85,13 @@ struct SelectionArgs
 	/// Adds the tile to wand selection field.
 	/// </summary>
 	/// <param name="_gridPos"></param>
-	void AddTileToSelection(const Utilities::ivec2& _gridCoords);
+	void AddTileCoordToSelection(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
 	/// Removes the tile from the wand selection field.
 	/// </summary>
 	/// <param name="_gridPos"></param>
-	void RemoveTileFromSelection(const Utilities::ivec2& _gridCoords);
+	void RemoveTileCoordFromSelection(const Utilities::ivec2& _gridCoords);
 
 	/// <summary>
 	/// Moves the entirety of the selection with the start dragging position relative

@@ -35,3 +35,15 @@ using WeakRef = std::weak_ptr<T>;
 
 template<typename T>
 using Scope = std::unique_ptr<T>;
+
+inline bool U32IsBitSet(const U32& _value, const U32 _bitPosition)
+{
+    const U32 mask = 1U << _bitPosition;
+    return (_value & mask) != 0;
+}
+
+inline void U32FlipBit(U32& _value, const U32 _bitPosition) 
+{
+    const U32 mask = 1U << _bitPosition;
+    _value ^= mask;
+}

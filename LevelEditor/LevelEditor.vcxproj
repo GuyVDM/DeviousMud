@@ -202,7 +202,9 @@
     <ClInclude Include="include\Core\Serialization\CerealSerializable.h" />
     <ClInclude Include="include\Core\Serialization\JsonSerializable.h" />
     <ClInclude Include="include\Core\Tile\Tile.h" />
+    <ClInclude Include="include\Core\WorldEditor\Chunk\Chunk.h" />
     <ClInclude Include="include\Core\WorldEditor\Selection\Selection.h" />
+    <ClInclude Include="include\Core\WorldEditor\TileLayer\TileLayer.h" />
     <ClInclude Include="include\Core\WorldEditor\WorldEditor.h" />
     <ClInclude Include="precomp.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
@@ -228,6 +230,7 @@
     <ClCompile Include="include\Core\Renderer\FontLoader\FontLoader.cpp" />
     <ClCompile Include="include\Core\Renderer\Renderer.cpp" />
     <ClCompile Include="include\Core\Tile\Tile.cpp" />
+    <ClCompile Include="include\Core\WorldEditor\Chunk\Chunk.cpp" />
     <ClCompile Include="include\Core\WorldEditor\Selection\Selection.cpp" />
     <ClCompile Include="include\Core\WorldEditor\WorldEditor.cpp" />
     <ClCompile Include="main.cpp" />

@@ -36,11 +36,11 @@ enum e_TextureFlags : U8
 
 struct RenderQuery 
 {
-	Graphics::SpriteType Type;
-	Utilities::ivec2     Position = {1, 1};
-	Utilities::ivec2     Size     = {1, 1};
-	Color                Color    = {255,255,255,255};
-	U8                   Frame    = 0;
+	Graphics::SpriteType SpriteType = Graphics::SpriteType::NONE;
+	Utilities::ivec2     Position   = {1, 1};
+	Utilities::ivec2     Size       = {1, 1};
+	Color                Color      = {255,255,255,255};
+	U8                   Frame      = 0;
 };
 
 struct RenderQueryInstance : public RenderQuery

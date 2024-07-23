@@ -1,7 +1,9 @@
 #include "precomp.h"
 
+//Official first include.
 #include "Core/WorldEditor/WorldEditor.h"
 
+#include "Core/WorldEditor/Chunk/Chunk.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Config/Config.h"
 #include "Core/Config/Time/Time.hpp"
@@ -9,9 +11,9 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Input/Input.h"
 #include "Core/Renderer/Renderer.h"
+#include "Core/WorldEditor/TileLayer/TileLayer.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
-
 
 WorldEditor::WorldEditor()
 {
@@ -27,40 +29,23 @@ void WorldEditor::Update()
 	DrawSelection();
 }
 
-void WorldEditor::MoveTileTo(Ref<Tile> _tile, Utilities::ivec2 _gridCoords)
+void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
 {
-	//*---------------------------------------------
-	//Remove tile from previous chunk if applicable.
-	//
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
+
+	if (!IsValidChunk(chunkCoords))
 	{
-		const Utilities::ivec2 chunkCoords = _tile->ChunkCoords;
-		if (IsValidChunk(chunkCoords))
-		{
-			m_Chunks[chunkCoords]->RemoveTile(ToLocalChunkCoords(_gridCoords));
-		}
+		m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
 	}
+	Ref<Chunk>& chunk = m_Chunks[chunkCoords];
 
-	//*---------------------------------------------
-	// Move the tile over to its new chunk
-	// If the chunk doesn't exist yet, we create it.
-	{
-		const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
-
-		Ref<Chunk> chunk;
-		if(!IsValidChunk(chunkCoords)) 
-		{
-			chunk = m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
-		}
-		else 
-		{
-			chunk = m_Chunks[chunkCoords];
-		}
-
-		_tile->ChunkCoords      = chunkCoords;
-		_tile->LocalChunkCoords = ToLocalChunkCoords(_gridCoords);
-		
-		chunk->AddTile(_tile);
-	}
+	//Move over the TileEntity to it's new parent tile.
+	chunk->AddToTile
+	(
+		Chunk::ToLocalChunkCoords(_gridCoords),
+		_tile,
+		_layer
+	);
 }
 
 void WorldEditor::Place()
@@ -113,7 +98,7 @@ void WorldEditor::Place()
 	}
 }
 
-void WorldEditor::Remove() 
+void WorldEditor::RemoveLayerEntity() 
 {
 	switch(App::Config::TileConfiguration.InteractionMode) 
 	{
@@ -157,7 +142,7 @@ void WorldEditor::Release()
 
 void WorldEditor::CloneChunk()
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(m_HoveredGridCell);
 
 	if (!IsValidChunk(chunkCoords))
 	{
@@ -176,12 +161,16 @@ void WorldEditor::PasteChunk()
 		return;
 	}
 
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(m_HoveredGridCell);
 
 	Ref<Chunk> cbChunk = TileConfiguration.ChunkClipboard.lock();
 
+	//If the chunk were trying to paste in is the same as the one in the clipboard,
+	//We want to skip.
 	if (m_Chunks[chunkCoords] == cbChunk)
+	{
 		return;
+	}
 
 	m_Chunks.erase(chunkCoords);
 	Ref<Chunk> chunk = m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
@@ -189,27 +178,26 @@ void WorldEditor::PasteChunk()
 	//*-------------------
 	// Duplicate the chunk.
 	//
+	for (U32 x = 0; x < SIZE_CHUNK_TILES; x++)
 	{
-		for(U32 x = 0; x < SIZE_CHUNK_TILES; x++) 
+		for (U32 y = 0; y < SIZE_CHUNK_TILES; y++)
 		{
-			for (U32 y = 0; y < SIZE_CHUNK_TILES; y++)
-			{
-				const U32 i = Chunk::ToTileIndex(Utilities::ivec2(x, y));
+			const U32 i = Chunk::ToTileIndex(Utilities::ivec2(x, y));
 
-				if (cbChunk->m_Tiles[i] == nullptr)
-					continue;
-				
-				const Ref<Tile> tileCopy = std::make_shared<Tile>(cbChunk->m_Tiles[i].get());
-				tileCopy->ChunkCoords    = chunkCoords;
-				chunk->AddTile(tileCopy);
+			if (cbChunk->m_Tiles[i] == nullptr)
+			{
+				continue;
 			}
+
+			Ref<Tile> tileCopy = std::make_shared<Tile>(cbChunk->m_Tiles[i].get());
+			chunk->AddTile(tileCopy);
 		}
 	}
 }
 
 void WorldEditor::SerializeHoveredChunk()
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(m_HoveredGridCell);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(m_HoveredGridCell);
 
 	if (m_Chunks.find(chunkCoords) == m_Chunks.end())
 		return;
@@ -217,52 +205,38 @@ void WorldEditor::SerializeHoveredChunk()
 	m_Chunks[chunkCoords]->Serialize();
 }
 
-Optional<Ref<Tile>> WorldEditor::TryGetTile(const Utilities::ivec2& _gridCoords)
+const Optional<Ref<TileEntity>> WorldEditor::TryGetTileEntity(const Utilities::ivec2& _gridCoords)
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+	const Utilities::ivec2 chunkCoords      = Chunk::ToChunkCoords(_gridCoords);
+	const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(_gridCoords);
 	
 	if (!IsValidChunk(chunkCoords)) 
 	{
 		return std::nullopt;
 	}
 
-	const U32 tileIndex = Chunk::ToTileIndex(ToLocalChunkCoords(_gridCoords));
-	
-	if (!m_Chunks[chunkCoords]->IsValidIndex(tileIndex))
-	{
-		return std::nullopt;
-	}
-
-	return m_Chunks[chunkCoords]->m_Tiles[tileIndex];
+	const e_SelectedLayer layer = App::Config::TileConfiguration.CurrentLayer;
+	return m_Chunks[chunkCoords]->TryGetTileEntity(localChunkCoords, layer);
 }
 
-Optional<Ref<Tile>> WorldEditor::TryDetachTile(const Utilities::ivec2& _gridCoords)
+Optional<Ref<TileEntity>> WorldEditor::TryDetachTileEntity(const Utilities::ivec2& _gridCoords)
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
 
 	if (!IsValidChunk(chunkCoords))
 	{
 		return std::nullopt;
 	}
 
-	const Utilities::ivec2 localChunkCoords = ToLocalChunkCoords(_gridCoords);
-	const U32 tileIndex = Chunk::ToTileIndex(localChunkCoords);
+	const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(_gridCoords);
+	const e_SelectedLayer  layer            = App::Config::TileConfiguration.CurrentLayer;
 
-	Ref<Chunk> chunk = m_Chunks[chunkCoords];
-	if (!chunk->IsValidIndex(tileIndex))
-	{
-		return std::nullopt;
-	}
-
-	Ref<Tile> tile = chunk->m_Tiles[tileIndex];
-	chunk->RemoveTile(localChunkCoords);
-
-	return tile;
+	return m_Chunks[chunkCoords]->DetachFromTile(localChunkCoords, layer);
 }
 
 Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoords)
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
 
 	if(IsValidChunk(chunkCoords)) 
 	{
@@ -275,7 +249,7 @@ Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoord
 void WorldEditor::HandleShortCuts()
 {
 	const bool bCtrlPressed = (g_Input->GetKey(SDLK_RCTRL) || g_Input->GetKey(SDLK_LCTRL));
-	const bool bAltPressed = (g_Input->GetKey(SDLK_RALT) || g_Input->GetKey(SDLK_LALT));
+	const bool bAltPressed  = (g_Input->GetKey(SDLK_RALT)  || g_Input->GetKey(SDLK_LALT));
 
 	//*-----------------------------------
 	// Delete all tiles that are selected.
@@ -352,48 +326,63 @@ void WorldEditor::HandleShortCuts()
 	}
 }
 
-void WorldEditor::PlaceTile(const Utilities::ivec2& _gridCoords)
+void WorldEditor::PlaceTileEntity(const Utilities::ivec2& _gridCoords)
 {
 	using namespace App::Config;
 
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
-
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
 	if (!IsValidChunk(chunkCoords)) 
 	{
 		m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
 	}
 
-	Ref<Tile> tile;
-	switch(App::Config::TileConfiguration.CurrentTileType) 
+	const e_SelectedLayer layer = TileConfiguration.CurrentLayer;
+
+	Ref<TileEntity> tileEntity;
+
+	//*--------------------------------------------------------------------
+	// Create the tile entity based on the layer we have currently selected,
+	// and place it on top of the hovered tile afterwards.
+	switch(layer)
 	{
-		case e_EntityType::ENTITY_DEFAULT:
+		case e_SelectedLayer::LAYER_NPC:
 		{
-			tile = std::make_shared<Tile>();
+			Ref<NPCEntity> npcEntity = std::make_shared<NPCEntity>();
+			npcEntity->SpriteType = TileConfiguration.SelectedNPC.sprite;
+			npcEntity->Frame = 0;
+
+			//TODO: have to make these public somewhere.
+			npcEntity->NpcId       = TileConfiguration.NPCid;
+			npcEntity->RespawnTime = TileConfiguration.NPCRespawnTime;
+			tileEntity = npcEntity;
 		}
 		break;
 
 		default:
-		return;
+		{
+			tileEntity = std::make_shared<TileEntity>();
+			tileEntity->SpriteType = TileConfiguration.Sprite.SpriteType;
+			tileEntity->Frame      = TileConfiguration.Sprite.Frame;
+		}
+		break;
 	}
 
-	tile->Sprite		   = TileConfiguration.Sprite;
-	tile->bIsWalkable      = TileConfiguration.bIsWalkable;
-	tile->LocalChunkCoords = ToLocalChunkCoords(_gridCoords);
-	tile->ChunkCoords      = ToChunkCoords(_gridCoords);
-
-	m_Chunks[chunkCoords]->AddTile(tile);
+	const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(_gridCoords);
+	m_Chunks[chunkCoords]->AddToTile(localChunkCoords, tileEntity, layer);
 }
 
-void WorldEditor::RemoveTile(const Utilities::ivec2& _gridCoords)
+void WorldEditor::RemoveFromTile(const Utilities::ivec2& _gridCoords)
 {
-	const Utilities::ivec2 chunkCoords = ToChunkCoords(_gridCoords);
+	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
 
 	Optional<Ref<Chunk>> optChunk = TryGetChunk(_gridCoords);
 
 	if(optChunk.has_value()) 
 	{
 		Ref<Chunk> chunk = optChunk.value();
-		chunk->RemoveTile(ToLocalChunkCoords(_gridCoords));
+
+		const e_SelectedLayer layer = App::Config::TileConfiguration.CurrentLayer;
+		chunk->RemoveFromTile(Chunk::ToLocalChunkCoords(_gridCoords), layer);
 		
 		//Destroy the chunk if there's no tiles left.
 		if(chunk->IsEmpty()) 
@@ -419,16 +408,18 @@ void WorldEditor::DragSelectedTiles()
 		//Collect tiles from wand
 		for (const Utilities::ivec2& selectionPos : m_SelectionArgs.GetSelectedGridSpaces())
 		{
-			Optional<Ref<Tile>> optTile = TryDetachTile(selectionPos);
+			Optional<Ref<TileEntity>> optTileEntity = TryDetachTileEntity(selectionPos);
 
-			if (!optTile.has_value())
+			if (!optTileEntity.has_value())
 			{
 				continue;
 			}
 
 			DragArgs args;
-			args.Tile  = optTile.value();
-			args.StartGridPos = (args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + args.Tile->LocalChunkCoords;
+			args.TileEntity = optTileEntity.value();
+			args.StartGridPos = selectionPos;
+			args.FromLayer = App::Config::TileConfiguration.CurrentLayer;
+
 			m_SelectionArgs.SelectedDraggingTiles.push_back(args);
 		}
 	}
@@ -440,8 +431,8 @@ void WorldEditor::TryPlaceSelectedTiles()
 {
 	for(const DragArgs& _args : m_SelectionArgs.SelectedDraggingTiles) 
 	{
-		const Utilities::ivec2 gridPos = (_args.Tile->ChunkCoords * SIZE_CHUNK_TILES) + _args.Tile->LocalChunkCoords;
-		MoveTileTo(_args.Tile, gridPos);
+		const Utilities::ivec2 gridPos = _args.CurrentGridPos;
+		AddTileEntityTo(_args.TileEntity, gridPos, _args.FromLayer);
 	}
 
 	m_SelectionArgs.SelectedDraggingTiles.clear();
@@ -472,14 +463,14 @@ void WorldEditor::CollapseSelection()
 		{
 			case e_SelectionMode::SUBTRACTION:
 			{
-				m_SelectionArgs.RemoveTileFromSelection(_pos);
+				m_SelectionArgs.RemoveTileCoordFromSelection(_pos);
 			}
 			break;
 
 			case e_SelectionMode::DEFAULT:
 			case e_SelectionMode::ADDITION:
 			{
-				m_SelectionArgs.AddTileToSelection(_pos);
+				m_SelectionArgs.AddTileCoordToSelection(_pos);
 			}
 			break;
 		}
@@ -503,10 +494,10 @@ const bool WorldEditor::IsSelectionActive() const
 
 const bool WorldEditor::IsHoveringOverActiveChunk() const
 {
-	return IsValidChunk(ToChunkCoords(m_HoveredGridCell));
+	return IsValidChunk(Chunk::ToChunkCoords(m_HoveredGridCell));
 }
 
-const bool WorldEditor::IsTileVisible(const Utilities::ivec2 _gridCoords) const
+const bool WorldEditor::IsTileVisible(const Utilities::ivec2 _gridCoords)
 {
 	const Utilities::ivec2 pointA = ScreenToGridSpace(Utilities::ivec2(0, 0));
 	const Utilities::ivec2 pointB = ScreenToGridSpace(Utilities::ivec2(Editor::s_WindowWidth, Editor::s_WindowHeight));
@@ -532,11 +523,16 @@ void WorldEditor::HandleWandSelection()
 
 	if(IsHoveringOverActiveChunk())
 	{
-		Optional<Ref<Tile>> tile = TryGetTile(m_HoveredGridCell);
+		Optional<Ref<TileEntity>> optTileEntt = TryGetTileEntity(m_HoveredGridCell);
 
-		if (tile.has_value())
+		if (optTileEntt.has_value())
 		{
-			subsprite = tile.value()->Sprite;
+			Ref<TileEntity> tileEntity = optTileEntt.value();
+			subsprite = SubSprite
+			(
+				tileEntity->SpriteType,
+				tileEntity->Frame
+			);
 		}
 	}
 
@@ -563,27 +559,31 @@ void WorldEditor::RecursivelyGenWandSelection(const SubSprite& _sprite, const Ut
 	//Mark this as visited.
 	m_VisitedTiles.push_back(_gridCoords);
 
-	if(_sprite.SpriteType == Graphics::SpriteType::NONE)
-	{
-		if(!IsTileVisible(_gridCoords)) 
-		{
-			return;
-		}
-	}
-
-	Optional<Ref<Tile>> tile = TryGetTile(_gridCoords);
-
-	if(!tile.has_value())
-	{
-		if(_sprite.SpriteType != Graphics::SpriteType::NONE)
-		{
-			return;
-		}
-	}
-	else
-	if (tile.value()->Sprite != _sprite)
+	if (!IsTileVisible(_gridCoords))
 	{
 		return;
+	}
+	 
+	Optional<Ref<TileEntity>> optTileEntt = TryGetTileEntity(_gridCoords);
+	{
+		if (!optTileEntt.has_value())
+		{
+			if (_sprite.SpriteType != Graphics::SpriteType::NONE)
+			{
+				return;
+			}
+		}
+		else
+		{
+			Ref<TileEntity> tileEntity = optTileEntt.value();
+
+			//Check if the compared two sprites have matching visuals, if not, we stop.
+			const SubSprite toCompare = SubSprite(tileEntity->SpriteType, tileEntity->Frame);
+			if (toCompare != _sprite)
+			{
+				return;
+			}
+		}
 	}
 
 	const std::array<Utilities::ivec2, 4> neighbours =
@@ -601,11 +601,11 @@ void WorldEditor::RecursivelyGenWandSelection(const SubSprite& _sprite, const Ut
 
 	if(_bRemoveEntries)
 	{
-		m_SelectionArgs.RemoveTileFromSelection(_gridCoords);
+		m_SelectionArgs.RemoveTileCoordFromSelection(_gridCoords);
 	}
 	else 
 	{
-		m_SelectionArgs.AddTileToSelection(_gridCoords);
+		m_SelectionArgs.AddTileCoordToSelection(_gridCoords);
 	}
 }
 
@@ -613,15 +613,28 @@ void WorldEditor::PickTile()
 {
 	using namespace App::Config;
 
-	Optional<Ref<Tile>> optTile = TryGetTile(m_HoveredGridCell);
-
-	if (!optTile.has_value()) 
+	//*--------------------------
+	// Try and get tile entity from tile.
+	//
+	Ref<TileEntity> tileEntity;
 	{
-		return;
+		const e_SelectedLayer layer = TileConfiguration.CurrentLayer;
+		Optional<Ref<TileEntity>> optTileEntt = TryGetTileEntity(m_HoveredGridCell);
+
+		if (!optTileEntt.has_value())
+		{
+			return;
+		}
+
+		//Extract the tile entity.
+		tileEntity = optTileEntt.value();
 	}
 
-	const Ref<Tile> tile = optTile.value();
-	TileConfiguration.Sprite  = tile->Sprite;
+	TileConfiguration.Sprite = SubSprite
+	(
+		tileEntity->SpriteType,
+		tileEntity->Frame
+	);
 }
 
 void WorldEditor::RenderChunkVisuals()
@@ -636,8 +649,8 @@ void WorldEditor::RenderChunkVisuals()
 	const Utilities::ivec2 startTile  = ScreenToGridSpace(Utilities::ivec2(0, 0));
 	const Utilities::ivec2 endTile    = ScreenToGridSpace(Utilities::ivec2{ Editor::s_WindowWidth, Editor::s_WindowHeight });
 
-	const Utilities::ivec2 chunkStart = ToChunkCoords(startTile);
-	const Utilities::ivec2 chunkEnd   = ToChunkCoords(endTile);
+	const Utilities::ivec2 chunkStart = Chunk::ToChunkCoords(startTile);
+	const Utilities::ivec2 chunkEnd   = Chunk::ToChunkCoords(endTile);
 
 	constexpr I32 size = GRIDCELLSIZE * SIZE_CHUNK_TILES;
 
@@ -703,7 +716,7 @@ void WorldEditor::PlaceBrushTiles()
 				}
 			}
 
-			PlaceTile(position);
+			PlaceTileEntity(position);
 		}
 	}
 }
@@ -718,7 +731,7 @@ void WorldEditor::RemoveBrushTiles()
 		{
 			const Utilities::ivec2 position = m_HoveredGridCell + Utilities::ivec2{ x, y };
 
-			RemoveTile(position);
+			RemoveFromTile(position);
 		}
 	}
 }
@@ -735,7 +748,7 @@ void WorldEditor::RemoveTilesSelection()
 
 	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetSelectedGridSpaces())
 	{
-		RemoveTile(_pos);
+		RemoveFromTile(_pos);
 	}
 
 	ClearSelection();
@@ -750,7 +763,7 @@ void WorldEditor::Fill()
 
 	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetSelectedGridSpaces())
 	{
-		PlaceTile(_pos);
+		PlaceTileEntity(_pos);
 	}
 }
 
@@ -868,7 +881,14 @@ void WorldEditor::DrawSelection()
 	//
 	for (const DragArgs& item : m_SelectionArgs.SelectedDraggingTiles)
 	{
-		item.Tile->Render();
+		RenderQuery query;
+		query.Color      = { 255, 255, 255, 125 };
+		query.SpriteType = item.TileEntity->SpriteType;
+		query.Frame      = item.TileEntity->Frame;
+		query.Position   = item.CurrentGridPos * GRIDCELLSIZE;
+		query.Size       = GRIDCELLSIZE;
+
+		g_globals.Renderer->Render(query, 100);
 	}
 
 	//*-------------------------------
@@ -894,28 +914,10 @@ void WorldEditor::DrawSelection()
 
 void WorldEditor::RemoveChunk()
 {
-	m_Chunks.erase(ToChunkCoords(m_HoveredGridCell));
+	m_Chunks.erase(Chunk::ToChunkCoords(m_HoveredGridCell));
 }
 
-const Utilities::ivec2 WorldEditor::ToChunkCoords(const Utilities::ivec2& _gridCoords) const
-{
-	return Utilities::ivec2
-	{
-		(_gridCoords.x < 0) ? ((_gridCoords.x + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.x / SIZE_CHUNK_TILES),
-		(_gridCoords.y < 0) ? ((_gridCoords.y + 1) / SIZE_CHUNK_TILES) - 1 : (_gridCoords.y / SIZE_CHUNK_TILES)
-	};
-}
-
-const Utilities::ivec2 WorldEditor::ToLocalChunkCoords(const Utilities::ivec2& _gridCoords) const
-{
-	return Utilities::ivec2
-	{
-		(_gridCoords.x % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES,
-		(_gridCoords.y % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES
-	};
-}
-
-const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _screenCoords) const
+const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _screenCoords)
 {
 	Utilities::ivec2 worldCoords = Renderer::ScreenToWorld(_screenCoords);
 
@@ -936,66 +938,3 @@ const Utilities::ivec2 WorldEditor::ScreenToGridSpace(const Utilities::ivec2& _s
 	};
 }
 
-void Chunk::Deserialize(nlohmann::json& _json) 
-{
-
-}
-
-void Chunk::Serialize() 
-{
-	using namespace nlohmann;
-
-	json data;
-
-	//*------------------------
-	// Dump the chunk finger print.
-	//
-	data["Chunk"].push_back
-	(
-		{
-			{ "X", m_ChunkCoords.x },
-			{ "Y", m_ChunkCoords.y }
-		}
-	);
-
-	for(U32 x = 0; x < SIZE_CHUNK_TILES; x++) 
-	{
-		for(U32 y = 0; y < SIZE_CHUNK_TILES; y++) 
-		{
-			const U32 tileIndex = x + y * SIZE_CHUNK_TILES;
-			
-			if (m_Tiles[tileIndex] == nullptr)
-				continue;
-
-			Ref<Tile> tile = m_Tiles[tileIndex];
-
-			data["Tiles"].push_back
-			(
-				{
-					{"X", x },
-					{"Y", y },
-					{"SpriteId", static_cast<U16>(tile->Sprite.SpriteType)},
-					{"Frame", tile->Sprite.Frame },
-					{"IsWalkable", tile->bIsWalkable             }
-				}
-			);
-		}
-	}
-
-	const std::string fileName = "chunk(" + std::to_string(m_ChunkCoords.x) + ',' + std::to_string(m_ChunkCoords.y) + ").json";
-	const std::string filePath = "data/chunks/" + fileName;
-
-	std::ofstream outputFile(filePath);
-
-	if (!outputFile.is_open())
-	{
-		DEVIOUS_ERR("Failed to serialize file: " + filePath);
-	}
-	else
-	{
-		DEVIOUS_EVENT("Saved chunk: " << m_ChunkCoords.x << " , "  << m_ChunkCoords.y << " to " << filePath);
-		outputFile << data.dump(4);
-
-		outputFile.close();
-	}
-}

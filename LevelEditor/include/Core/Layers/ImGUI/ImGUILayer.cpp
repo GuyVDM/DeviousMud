@@ -8,6 +8,7 @@
 #include "Core/Renderer/Renderer.h"
 #include "Core/WorldEditor/WorldEditor.h"
 #include "Core/Editor/Editor.h"
+#include "Core/WorldEditor/TileLayer/TileLayer.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
 
@@ -64,12 +65,12 @@ ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Border]              = { 0.24f, 0.24f, 0.24f, 1.0f };
     style.Colors[ImGuiCol_WindowBg]            = { 0.14f, 0.14f, 0.14f, 1.0f };
-    style.Colors[ImGuiCol_TitleBg]             = { 0.24f, 0.24f, 0.24f, 1.0f };
-    style.Colors[ImGuiCol_TitleBgActive]       = { 0.14f, 0.14f, 0.14f, 1.0f };
-    style.Colors[ImGuiCol_TitleBgCollapsed]    = { 0.34f, 0.34f, 0.34f, 1.0f };
+    style.Colors[ImGuiCol_TitleBg]             = { 0.44f, 0.24f, 0.24f, 1.0f };
+    style.Colors[ImGuiCol_TitleBgActive]       = { 0.44f, 0.24f, 0.24f, 1.0f };
+    style.Colors[ImGuiCol_TitleBgCollapsed]    = { 0.44f, 0.14f, 0.14f, 1.0f };
     style.Colors[ImGuiCol_FrameBg]             = { 0.24f, 0.24f, 0.24f, 1.0f };
-    style.Colors[ImGuiCol_FrameBgHovered]      = { 0.14f, 0.14f, 0.14f, 1.0f };
-    style.Colors[ImGuiCol_FrameBgActive]       = { 0.14f, 0.14f, 0.14f, 1.0f };
+    style.Colors[ImGuiCol_FrameBgHovered]      = { 0.34f, 0.34f, 0.34f, 1.0f };
+    style.Colors[ImGuiCol_FrameBgActive]       = { 0.30f, 0.30f, 0.30f, 1.0f };
     style.Colors[ImGuiCol_TabHovered]          = { 0.29f, 0.29f, 0.29f, 1.0f };
     style.Colors[ImGuiCol_Tab]                 = { 0.24f, 0.24f, 0.24f, 1.0f };
     style.Colors[ImGuiCol_TabSelected]         = { 0.34f, 0.34f, 0.34f, 1.0f };
@@ -182,14 +183,15 @@ void ImGUILayer::DrawImGUI()
     if (ImGui::DockSpaceOverViewport(0, 0, ImGuiDockNodeFlags_PassthruCentralNode))
     {
         DrawMenuBar();
-        DrawViewPortHelperButtons();
-        DrawContentBrowser();
-        DrawTileWindow();
+        DrawModeSelectorWindow();
+        DrawTextureSelectorWindow();
+        DrawSettingsWindow();
         DrawRightClickMenu();
+        DrawLayerWindow();
     }
 }
 
-void ImGUILayer::DrawViewPortHelperButtons()
+void ImGUILayer::DrawModeSelectorWindow()
 {
     using namespace App::Config;
 
@@ -328,6 +330,13 @@ void ImGUILayer::DrawMenuBar()
 
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Window"))
+        {
+            if (ImGui::MenuItem("Show Layers", "")) m_bLayerWindowOpen = true;
+
+            ImGui::EndMenu();
+        }
     }
     ImGui::EndMainMenuBar();
 
@@ -341,14 +350,16 @@ void ImGUILayer::DrawMenuBar()
     ImGui::EndSecondMenuBar();
 }
 
-void ImGUILayer::DrawContentBrowser()
+void ImGUILayer::DrawTextureSelectorWindow()
 {
     using namespace App::Config;
 
-    if (TileConfiguration.CurrentTileType != e_EntityType::ENTITY_DEFAULT)
+    if (TileConfiguration.CurrentLayer == e_SelectedLayer::LAYER_NPC)
     {
         return;
     }
+
+    ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
     if (ImGui::Begin("Choose Texture", 0, ImGuiWindowFlags_NoCollapse))
     {
@@ -362,11 +373,10 @@ void ImGUILayer::DrawContentBrowser()
 
             constexpr ImVec2 buttonSize = { 84.0f, 84.0f };
 
-            U32 maxItemsOnLine = static_cast<U32>(floor(ImGui::GetWindowWidth() / buttonSize.x) - 1);
-            
+            U32 maxItemsOnLine = static_cast<U32>(floor(ImGui::GetWindowWidth() / buttonSize.x) - 1); 
             maxItemsOnLine = std::clamp<U32>(maxItemsOnLine, 1, UINT32_MAX);
 
-            for (U16 i = 0; i < sprite.FrameCount; i++)
+            for (U32 i = 0; i < sprite.FrameCount; i++)
             {
                 if(i % maxItemsOnLine != 0)
                 {
@@ -385,43 +395,28 @@ void ImGUILayer::DrawContentBrowser()
         }
     }
 
+    ImGui::PopStyleColor();
+
     ImGui::End();
 }
 
-void ImGUILayer::DrawTileWindow()
+void ImGUILayer::DrawSettingsWindow()
 {
     using namespace App::Config;
 
-    if (ImGui::Begin("Tile Settings:", 0, ImGuiWindowFlags_NoCollapse))
+    if (ImGui::Begin("Settings:", 0, ImGuiWindowFlags_NoCollapse))
     {
-        if (ImGui::BeginTabBar("##SelectItem"))
+        switch (TileConfiguration.CurrentLayer)
         {
-            if(ImGui::BeginTabItem("Tile"))
+            case e_SelectedLayer::LAYER_NPC:
             {
-                TileConfiguration.CurrentTileType = e_EntityType::ENTITY_DEFAULT;
-                ImGui::EndTabItem();
-            }
-
-            if (ImGui::BeginTabItem("Npc"))
-            {
-                TileConfiguration.CurrentTileType = e_EntityType::ENTITY_NPC;
-                ImGui::EndTabItem();
-            }
-
-            ImGui::EndTabBar();
-        }
-
-        switch(TileConfiguration.CurrentTileType) 
-        {
-            case e_EntityType::ENTITY_DEFAULT:
-            {
-                DrawScenicSettings();
+                DrawNPCSettings();
             }
             break;
 
-            case e_EntityType::ENTITY_NPC:
+            default:
             {
-                DrawNPCSettings();
+                DrawScenicSettings();
             }
             break;
         }
@@ -437,7 +432,7 @@ void ImGUILayer::DrawRightClickMenu() const
     static bool bIsOpened = false;
     static U32  framesOpened = 0;
 
-    if (!bIsOpened)
+    if (!bIsOpened && m_bCtrlPressed)
     {
         ImVec2 offset = ImVec2(10.0f, 20.0f);
         ImVec2 position = 
@@ -540,20 +535,18 @@ void ImGUILayer::DrawNPCSettings()
 
     ImGui::Spacing();
 
-    static I32 npcId = 1;
     ImGui::SeparatorText("NPC Settings:");
     ImGui::Text("Id:");
-    if (ImGui::InputInt("##NPCId", &npcId)) 
+    if (ImGui::InputInt("##NPCId", &TileConfiguration.NPCid))
     {
-        npcId = std::clamp<U32>(npcId, 0, INT_FAST32_MAX);
-        TileConfiguration.NPCDefinition = get_npc_definition(npcId);
+        TileConfiguration.NPCid = std::clamp<I32>(TileConfiguration.NPCid, 0, INT_FAST32_MAX);
+        TileConfiguration.SelectedNPC = get_npc_definition(TileConfiguration.NPCid);
     }
 
     ImGui::Spacing();
 
-    static float respawnTime = 1.0f;
     ImGui::Text("Respawn Time:");
-    ImGui::InputFloat("##RespawnTime", &respawnTime, 0.5f, 1.0f);
+    ImGui::InputFloat("##RespawnTime", &TileConfiguration.NPCRespawnTime, 0.5f, 1.0f);
     ImGui::Spacing();
 
     ImGui::Spacing();
@@ -562,21 +555,21 @@ void ImGUILayer::DrawNPCSettings()
 
     ImGui::Text("Name:");
     ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, TileConfiguration.NPCDefinition.name.c_str());
+    ImGui::TextColored({ 0, 255, 0, 255 }, TileConfiguration.SelectedNPC.name.c_str());
 
     ImGui::Text("Combat Level:");
     ImGui::SameLine();
 
-    const std::string levelHeader = "Level-" + std::to_string(TileConfiguration.NPCDefinition.combatLevel);
+    const std::string levelHeader = "Level-" + std::to_string(TileConfiguration.SelectedNPC.combatLevel);
     ImGui::TextColored({ 0, 255, 0, 255 }, levelHeader.c_str());
 
     ImGui::Text("Size:");
     ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(TileConfiguration.NPCDefinition.size).c_str());
+    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(TileConfiguration.SelectedNPC.size).c_str());
 
     ImGui::Text("Sprite Id:");
     ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(static_cast<U32>(TileConfiguration.NPCDefinition.sprite)).c_str());
+    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(static_cast<U32>(TileConfiguration.SelectedNPC.sprite)).c_str());
 
     //*--------------------------------
     // Render sprite preview of the NPC
@@ -591,15 +584,140 @@ void ImGUILayer::DrawNPCSettings()
         const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
-        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.NPCDefinition.sprite);
+        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SelectedNPC.sprite);
         if (!optSprite.has_value())
         {
             return;
         }
 
         ImVec2 uv0, uv1 = ImVec2(0.0f, 0.0f); 
-        ImGuiGetSpriteUVCoords(TileConfiguration.NPCDefinition.sprite, TileConfiguration.Sprite.Frame, uv0, uv1);
+        ImGuiGetSpriteUVCoords(TileConfiguration.SelectedNPC.sprite, TileConfiguration.Sprite.Frame, uv0, uv1);
 
         ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
     }
+}
+
+void ImGUILayer::DrawLayerWindow()
+{
+    constexpr ImVec2 windowSize = { 200.0f, 220.0f };
+    constexpr ImVec2 buttonSize = { windowSize.x - 42.0f, 65.0f };
+
+    constexpr U32 viewportFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+
+    const auto DrawImGuiLayerButton = [this, buttonSize, windowSize](const e_SelectedLayer& _layer)
+    {
+            using namespace App::Config;
+
+            const std::string LayerName   = Layers::GetLayerName(_layer);
+            const I32         buttonIndex = static_cast<I32>(_layer);
+            const ImVec2      buttonPos   = ImVec2
+            (
+                0.0f,
+                23.0f + ((buttonSize.y) * static_cast<float>(buttonIndex))
+            );
+
+            //*--------------------
+            // Create layer button.
+            //
+            {
+                ImGui::SetCursorPos(buttonPos);
+
+                ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+                const std::string buttonId = "##LayerButton" + std::to_string(buttonIndex);
+                if(ImGui::Button(buttonId.c_str(), buttonSize)) 
+                {
+                    TileConfiguration.CurrentLayer = _layer;
+                    TileConfiguration.Sprite = SubSprite(Layers::LayerToSprite(_layer), 0);
+                }
+
+                ImGui::PopStyleColor(3);
+            }
+
+            //*--------------------
+            // Display selection fill & border
+            //         
+            if (_layer == TileConfiguration.CurrentLayer)
+            {
+                constexpr float scrollBarsizePx = 16;
+
+                const ImVec2 pos  = ImVec2(ImGui::GetItemRectMin().x + 1, ImGui::GetItemRectMin().y);
+                const ImVec2 pos1 = ImVec2(pos.x + ImGui::GetWindowWidth() - scrollBarsizePx, pos.y + buttonSize.y);
+
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                constexpr ImU32 fillColor = IM_COL32(20, 80, 128, 255);
+                drawList->AddRectFilled(pos, pos1, fillColor);
+
+                constexpr ImU32 outlineColor = IM_COL32(0, 120, 215, 255);
+                drawList->AddRect(pos, pos1, outlineColor, 0.0f, 0, 1.0f);
+            }
+
+            //*-------------------------------
+            // Render layer icon on the button
+            //
+            {
+                constexpr ImVec2 buttonIconSize = { 30.0f, 30.0f };
+                const     ImVec2 buttonIconPos =
+                {
+                    10.0f,
+                    buttonPos.y + (buttonSize.y / 2.0f) - (buttonIconSize.y / 2.0f)
+                };
+
+                ImGui::SetCursorPos(buttonIconPos);
+                ImGui::Image(m_Icons[e_ImGuiIconType::ICON_LAYER], buttonIconSize);
+            }
+
+            //*-------------------------------
+            // Render text next to the icon
+            //
+            {
+                const ImVec2 buttonTextSize = ImGui::CalcTextSize(LayerName.c_str());
+                const ImVec2 buttonTextPos =
+                {
+                    50.0f,
+                    buttonPos.y + (buttonSize.y * 0.5f) - (buttonTextSize.y * 0.5f)
+                };
+
+                ImGui::SetCursorPos(buttonTextPos);
+                ImGui::Text(LayerName.c_str());
+            }
+
+            //*-------------------------------
+            // Render checkbox to the right of the button
+            //
+            {
+                const std::string checkboxLabel = "##LayerCheckbox" + std::to_string(buttonIndex);
+
+                const ImVec2 checkboxSize = { 42.0f, 42.0f };
+                const ImVec2 checkboxPos =
+                {
+                    windowSize.x - checkboxSize.x,
+                    buttonPos.y + (buttonSize.y * 0.5f) - (checkboxSize.y * 0.25f)
+                };
+
+                const U32 bitPos = static_cast<U32>(_layer);
+                bool bIsLayerVisible = U32IsBitSet(TileConfiguration.VisibleLayerFlags, bitPos);
+
+                ImGui::SetCursorPos(checkboxPos);
+                if (ImGui::Checkbox(checkboxLabel.c_str(), &bIsLayerVisible))
+                {
+                    U32FlipBit(App::Config::TileConfiguration.VisibleLayerFlags, bitPos);
+                }
+            }
+    };
+
+    ImGui::SetNextWindowSize(windowSize);
+    if(ImGui::Begin("Layers", &m_bLayerWindowOpen, viewportFlags))
+    {
+        for(U32 i = 0; i < Layers::s_LayerCount; i++) 
+        {
+            const e_SelectedLayer layer = static_cast<e_SelectedLayer>(i);
+            DrawImGuiLayerButton(layer);
+        }
+    }
+
+    ImGui::End();
 }

@@ -29,7 +29,7 @@ const bool EditorLayer::HandleEvent(const SDL_Event& _event)
 
             if (!bCtrlPressed)
             {
-                g_globals.WorldEditor->Remove();
+                g_globals.WorldEditor->RemoveLayerEntity();
             }
         }
     }

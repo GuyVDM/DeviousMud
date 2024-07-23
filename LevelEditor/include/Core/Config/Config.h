@@ -5,14 +5,10 @@
 
 #include "Shared/Game/NPCDef.h"
 
-
-struct Tile;
-struct ScenicTile;
-struct ObjectTile;
-struct NPC;
+class Tile;
 class Chunk;
 
-enum class e_EntityType;
+enum class e_SelectedLayer : U8;
 
 enum class e_InteractionMode : U8
 {
@@ -28,16 +24,19 @@ namespace App
 {
 	namespace Config 
 	{
-		constexpr I32      GRIDCELLSIZE = 32;
+		constexpr I32 GRIDCELLSIZE = 32;
 
 		const static char* s_FontPath = "data/font/Roboto-Regular.ttf";
 
 		struct TileConfig 
 		{
-			e_EntityType		 CurrentTileType;
+			e_SelectedLayer		 CurrentLayer;
+			U32                  VisibleLayerFlags;
 			SubSprite            Sprite;
+			NPCDef               SelectedNPC;
+			float                NPCRespawnTime;
+			I32                  NPCid;
 			bool                 bIsWalkable;
-			NPCDef               NPCDefinition;
 			e_InteractionMode    InteractionMode;
 			WeakRef<Chunk>       ChunkClipboard;
 		};

@@ -17,7 +17,7 @@ struct NPCDef
 	std::string          name           = "null";
 	uint32_t             combatLevel    = 0;
 	uint8_t              size           = 1;                             //UNUSED
-	Graphics::SpriteType sprite;
+	Graphics::SpriteType sprite         = Graphics::SpriteType::NONE;
 	e_AnimationType      walkingAnim    = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      attackAnim     = e_AnimationType::NO_ANIMATION;
 	e_AnimationType      idleAnim       = e_AnimationType::NO_ANIMATION;

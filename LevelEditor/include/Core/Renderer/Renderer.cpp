@@ -320,7 +320,7 @@ void Renderer::EndFrame()
 			//Calculate spritesheet UV's and individual sprite size.
 			Utilities::ivec2 spriteUV(0), spriteSize(0, 0);
 			{
-				Optional<SpriteFrameArgs> optSpriteInfo = GetSpriteFrameInfo(SubSprite(queryItem.Type, queryItem.Frame));
+				Optional<SpriteFrameArgs> optSpriteInfo = GetSpriteFrameInfo(SubSprite(queryItem.SpriteType, queryItem.Frame));
 
 				if(optSpriteInfo.has_value()) 
 				{
@@ -377,13 +377,13 @@ void Renderer::RenderText(const TextArgs& _args)
 	SDL_QueryTexture(textTexture, NULL, NULL, &textureDimensions.x, &textureDimensions.y);
 
 	RenderQueryInstance query;
-	query.Color    = _args.Color;
-	query.Flags    = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
-	query.Frame    = 0;
-	query.Position = _args.Position;
-	query.Size     = textureDimensions;
-	query.Texture  = textTexture;
-	query.Type     = Graphics::SpriteType::NONE;
+	query.Color      = _args.Color;
+	query.Flags      = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
+	query.Frame      = 0;
+	query.Position   = _args.Position;
+	query.Size       = textureDimensions;
+	query.Texture    = textTexture;
+	query.SpriteType = Graphics::SpriteType::NONE;
 
 	m_RenderQuery[_args.ZOrder].push_back(query);
 
@@ -426,19 +426,19 @@ SDL_Renderer* Renderer::GetRenderer()
 
 void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
 {
-	if (_query.Type == Graphics::SpriteType::NONE)
+	if (_query.SpriteType == Graphics::SpriteType::NONE)
 	{
 		return;
 	}
 
 	RenderQueryInstance instance;
-	instance.Color    = _query.Color;
-	instance.Type     = _query.Type;
-	instance.Frame    = _query.Frame;
-	instance.Position = _query.Position;
-	instance.Size     = _query.Size;
-	instance.Flags    = e_TextureFlags::TEXTURE_NONE;
-	instance.Texture  = m_Sprites[_query.Type].Texture;
+	instance.Color      = _query.Color;
+	instance.SpriteType = _query.SpriteType;
+	instance.Frame      = _query.Frame;
+	instance.Position   = _query.Position;
+	instance.Size       = _query.Size;
+	instance.Flags      = e_TextureFlags::TEXTURE_NONE;
+	instance.Texture    = m_Sprites[_query.SpriteType].Texture;
 
 	m_RenderQuery[_zOrder].push_back(instance);
 }

@@ -17,7 +17,8 @@ enum class e_ImGuiIconType
 	ICON_GRID,
 	ICON_SELECT,
 	ICON_WAND,
-	ICON_DRAG
+	ICON_DRAG,
+	ICON_LAYER
 };
 
 class ImguiIcons 
@@ -38,6 +39,7 @@ public:
 			{ e_ImGuiIconType::ICON_SELECT, "icons/select.png"  },
 			{ e_ImGuiIconType::ICON_WAND,   "icons/wand.png"    },
 			{ e_ImGuiIconType::ICON_DRAG,   "icons/cursor.png"  },
+			{ e_ImGuiIconType::ICON_LAYER,  "icons/layer.png"   }
 		};
 
 		return iconMap;
@@ -60,13 +62,13 @@ private:
 
 	void DrawImGUI();
 
-	void DrawViewPortHelperButtons();
+	void DrawModeSelectorWindow();
 
 	void DrawMenuBar();
 
-	void DrawContentBrowser();
+	void DrawTextureSelectorWindow();
 
-	void DrawTileWindow();
+	void DrawSettingsWindow();
 
 	void DrawRightClickMenu() const;
 
@@ -74,10 +76,13 @@ private:
 
 	void DrawNPCSettings();
 
+	void DrawLayerWindow();
+
 private:
 	SDL_Renderer* m_Renderer;
 
 	std::map<e_ImGuiIconType, SDL_Texture*> m_Icons;
 
 	bool m_bCtrlPressed = false;
+	bool m_bLayerWindowOpen = false;
 };
