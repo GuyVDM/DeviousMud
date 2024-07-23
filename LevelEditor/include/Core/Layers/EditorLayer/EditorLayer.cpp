@@ -20,7 +20,7 @@ const bool EditorLayer::HandleEvent(const SDL_Event& _event)
 
         if (g_Input->GetMouse(e_MouseButton::BUTTON_LEFT))
         {
-            g_globals.WorldEditor->Place();
+            g_globals.WorldEditor->PlaceLayerEntity();
         }
 
         if (g_Input->GetMouse(e_MouseButton::BUTTON_RIGHT))

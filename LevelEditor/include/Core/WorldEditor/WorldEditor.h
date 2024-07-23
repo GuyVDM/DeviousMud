@@ -26,7 +26,7 @@ class WorldEditor
 public:
 	void AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer);
 
-	void Place();
+	void PlaceLayerEntity();
 
 	void RemoveLayerEntity();
 
@@ -97,6 +97,8 @@ private:
 	void RemoveTilesSelection();
 
 	void Fill();
+
+	void RemoveFill();
 
 	void RenderTiles();
 

@@ -48,7 +48,7 @@ void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2&
 	);
 }
 
-void WorldEditor::Place()
+void WorldEditor::PlaceLayerEntity()
 {
 	switch (App::Config::TileConfiguration.InteractionMode)
 	{
@@ -113,7 +113,7 @@ void WorldEditor::RemoveLayerEntity()
 			//Just doing it once per input is fine.
 			if (g_Input->GetMouseDown(e_MouseButton::BUTTON_RIGHT))
 			{
-				RemoveTilesSelection();
+				RemoveFill();
 			}
 		}
 		break;
@@ -764,6 +764,19 @@ void WorldEditor::Fill()
 	for (const Utilities::ivec2& _pos : m_SelectionArgs.GetSelectedGridSpaces())
 	{
 		PlaceTileEntity(_pos);
+	}
+}
+
+void WorldEditor::RemoveFill()
+{
+	for(Utilities::ivec2& pos : m_SelectionArgs.SelectedTiles) 
+	{
+		if(!m_SelectionArgs.IsOverlapping(pos)) 
+		{
+			continue;
+		}
+
+		RemoveFromTile(pos);
 	}
 }
 
