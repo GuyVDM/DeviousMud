@@ -68,6 +68,8 @@ private:
  
 	Optional<Ref<Chunk>> TryGetChunk(const Utilities::ivec2& _gridCoords);
 
+	void DrawHoverTileInfo();
+
 	void HandleShortCuts();
 
 	void Update();

@@ -69,6 +69,13 @@ struct SpriteFrameArgs
 	U32              FrameCount;
 };
 
+enum class e_TextAlignment 
+{
+	RIGHT = 0x00,
+	MIDDLE,
+	LEFT
+};
+
 struct TextArgs 
 {
 	Utilities::ivec2 Position;
@@ -141,7 +148,7 @@ public:
 	/// Renders text to the screen.
 	/// </summary>
 	/// <param name="_args"></param>
-	void RenderText(const TextArgs& _args);
+	void RenderText(const TextArgs& _args, const float& _scale = 1.0f, const e_TextAlignment& _alignment = e_TextAlignment::RIGHT);
 
 	/// <summary>
 	/// Returns the SDL_Getwindow instance.

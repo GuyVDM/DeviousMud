@@ -364,7 +364,7 @@ void Renderer::EndFrame()
 	SDL_RenderPresent(m_Renderer);
 }
 
-void Renderer::RenderText(const TextArgs& _args)
+void Renderer::RenderText(const TextArgs& _args, const float& _scale, const e_TextAlignment& _alignment)
 {
 	SDL_Texture* textTexture = m_FontLoader->TextToTexture(m_Renderer, _args.Text.c_str(), _args.TextSize);
 	if(!textTexture) 
@@ -381,9 +381,24 @@ void Renderer::RenderText(const TextArgs& _args)
 	query.Flags      = e_TextureFlags::TEXTURE_DESTROY_AFTER_USE;
 	query.Frame      = 0;
 	query.Position   = _args.Position;
-	query.Size       = textureDimensions;
+	query.Size       = textureDimensions * _scale;
 	query.Texture    = textTexture;
 	query.SpriteType = Graphics::SpriteType::NONE;
+
+	switch(_alignment) 
+	{
+		case e_TextAlignment::MIDDLE:
+		{
+			query.Position.x = query.Position.x - (query.Size.x * 0.5f);
+		}
+		break;
+
+		case e_TextAlignment::LEFT:
+		{
+			query.Position.x = query.Position.x - query.Size.x;
+		}
+		break;
+	}
 
 	m_RenderQuery[_args.ZOrder].push_back(query);
 

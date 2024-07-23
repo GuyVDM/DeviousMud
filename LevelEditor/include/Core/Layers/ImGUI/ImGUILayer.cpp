@@ -307,6 +307,8 @@ void ImGUILayer::DrawModeSelectorWindow()
 
 void ImGUILayer::DrawMenuBar()
 {
+    using namespace App::Config;
+
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File", "Ctrl+E"))
@@ -334,6 +336,14 @@ void ImGUILayer::DrawMenuBar()
         if (ImGui::BeginMenu("Window"))
         {
             if (ImGui::MenuItem("Show Layers", "")) m_bLayerWindowOpen = true;
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Options"))
+        {
+            ImGui::MenuItem("(toggles)", NULL, false, false);
+            if (ImGui::MenuItem("Toggle NPC Parameters", "")) SettingsConfiguration.bShowNpcParams = !SettingsConfiguration.bShowNpcParams;
 
             ImGui::EndMenu();
         }
@@ -404,25 +414,20 @@ void ImGUILayer::DrawSettingsWindow()
 {
     using namespace App::Config;
 
-    if (ImGui::Begin("Settings:", 0, ImGuiWindowFlags_NoCollapse))
+    switch (TileConfiguration.CurrentLayer)
     {
-        switch (TileConfiguration.CurrentLayer)
+        case e_SelectedLayer::LAYER_NPC:
         {
-            case e_SelectedLayer::LAYER_NPC:
-            {
-                DrawNPCSettings();
-            }
-            break;
-
-            default:
-            {
-                DrawScenicSettings();
-            }
-            break;
+            DrawNPCSettings();
         }
-    }
+        break;
 
-    ImGui::End();
+        default:
+        {
+            DrawScenicSettings();
+        }
+        break;
+    }
 }
 
 void ImGUILayer::DrawRightClickMenu() const
@@ -501,104 +506,107 @@ void ImGUILayer::DrawScenicSettings()
 {
     using namespace App::Config;
 
-    ImGui::SeparatorText("Preview Window:");
-
-    const     ImVec2 windowSize  = ImGui::GetWindowSize();
-    constexpr ImVec2 previewSize = { 84.0f, 84.0f };
-
-    ImGui::SameLine((windowSize.x * 0.5f) - previewSize.x * 0.5f);
-
-    const ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
-    const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
-
-    Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.Sprite.SpriteType);
-
-    if (!optSprite.has_value())
+    if (ImGui::Begin("Selected Brush:", 0, ImGuiWindowFlags_NoCollapse))
     {
-        return;
-    }
-
-    ImVec2 uv0, uv1;
-    ImGuiGetSpriteUVCoords(TileConfiguration.Sprite.SpriteType, TileConfiguration.Sprite.Frame, uv0, uv1);
-
-    ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
-}
-
-void ImGUILayer::DrawNPCSettings()
-{
-    using namespace App::Config;
-
-    ImGui::Spacing();
-
-    ImGui::SeparatorText("NPC Settings:");
-    ImGui::Text("Id:");
-    if (ImGui::InputInt("##NPCId", &TileConfiguration.NPCid))
-    {
-        TileConfiguration.NPCid = std::clamp<I32>(TileConfiguration.NPCid, 0, INT_FAST32_MAX);
-        TileConfiguration.SelectedNPC = get_npc_definition(TileConfiguration.NPCid);
-    }
-
-    ImGui::Spacing();
-
-    ImGui::Text("Respawn Time:");
-    ImGui::InputFloat("##RespawnTime", &TileConfiguration.NPCRespawnTime, 0.5f, 1.0f);
-    ImGui::Spacing();
-
-    ImGui::Spacing();
-
-    ImGui::SeparatorText("Preview:");
-
-    ImGui::Text("Name:");
-    ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, TileConfiguration.SelectedNPC.name.c_str());
-
-    ImGui::Text("Combat Level:");
-    ImGui::SameLine();
-
-    const std::string levelHeader = "Level-" + std::to_string(TileConfiguration.SelectedNPC.combatLevel);
-    ImGui::TextColored({ 0, 255, 0, 255 }, levelHeader.c_str());
-
-    ImGui::Text("Size:");
-    ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(TileConfiguration.SelectedNPC.size).c_str());
-
-    ImGui::Text("Sprite Id:");
-    ImGui::SameLine();
-    ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(static_cast<U32>(TileConfiguration.SelectedNPC.sprite)).c_str());
-
-    //*--------------------------------
-    // Render sprite preview of the NPC
-    //
-    {
-        ImVec2 windowSize = ImGui::GetWindowSize();
-        ImVec2 previewSize = { 84.0f, 84.0f };
+        const     ImVec2 windowSize = ImGui::GetWindowSize();
+        constexpr ImVec2 previewSize = { 84.0f, 84.0f };
 
         ImGui::SameLine((windowSize.x * 0.5f) - previewSize.x * 0.5f);
 
-        ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+        const ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
         const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
 
-        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SelectedNPC.sprite);
+        Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.Sprite.SpriteType);
+
         if (!optSprite.has_value())
         {
             return;
         }
 
-        ImVec2 uv0, uv1 = ImVec2(0.0f, 0.0f); 
-        ImGuiGetSpriteUVCoords(TileConfiguration.SelectedNPC.sprite, TileConfiguration.Sprite.Frame, uv0, uv1);
+        ImVec2 uv0, uv1;
+        ImGuiGetSpriteUVCoords(TileConfiguration.Sprite.SpriteType, TileConfiguration.Sprite.Frame, uv0, uv1);
 
         ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
     }
+    ImGui::End();
+}
+
+void ImGUILayer::DrawNPCSettings()
+{
+    using namespace App::Config;
+    if (ImGui::Begin("NPC Window:", 0, ImGuiWindowFlags_NoCollapse))
+    {
+        ImGui::Spacing();
+
+        ImGui::SeparatorText("NPC Settings:");
+        ImGui::Text("Id:");
+        if (ImGui::InputInt("##NPCId", &TileConfiguration.NPCid))
+        {
+            TileConfiguration.NPCid = std::clamp<I32>(TileConfiguration.NPCid, 0, INT_FAST32_MAX);
+            TileConfiguration.SelectedNPC = get_npc_definition(TileConfiguration.NPCid);
+            TileConfiguration.Sprite.SpriteType = TileConfiguration.SelectedNPC.sprite;
+        }
+
+        ImGui::Spacing();
+
+        ImGui::Text("Respawn Time:");
+        ImGui::InputFloat("##RespawnTime", &TileConfiguration.NPCRespawnTime, 0.5f, 1.0f);
+        ImGui::Spacing();
+
+        ImGui::Spacing();
+
+        ImGui::SeparatorText("Preview:");
+
+        ImGui::Text("Name:");
+        ImGui::SameLine();
+        ImGui::TextColored({ 0, 255, 0, 255 }, TileConfiguration.SelectedNPC.name.c_str());
+
+        ImGui::Text("Combat Level:");
+        ImGui::SameLine();
+
+        const std::string levelHeader = "Level-" + std::to_string(TileConfiguration.SelectedNPC.combatLevel);
+        ImGui::TextColored({ 0, 255, 0, 255 }, levelHeader.c_str());
+
+        ImGui::Text("Size:");
+        ImGui::SameLine();
+        ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(TileConfiguration.SelectedNPC.size).c_str());
+
+        ImGui::Text("Sprite Id:");
+        ImGui::SameLine();
+        ImGui::TextColored({ 0, 255, 0, 255 }, std::to_string(static_cast<U32>(TileConfiguration.SelectedNPC.sprite)).c_str());
+
+        //*--------------------------------
+        // Render sprite preview of the NPC
+        //
+        {
+            ImVec2 windowSize = ImGui::GetWindowSize();
+            ImVec2 previewSize = { 84.0f, 84.0f };
+
+            ImGui::SameLine((windowSize.x * 0.5f) - previewSize.x * 0.5f);
+
+            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+            const float verticalOffset = contentRegionAvailable.y * 0.5f - 42.0f;
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + verticalOffset);
+
+            Optional<Sprite> optSprite = g_globals.Renderer->GetSprite(TileConfiguration.SelectedNPC.sprite);
+            if (optSprite.has_value())
+            {
+                ImVec2 uv0, uv1 = ImVec2(0.0f, 0.0f);
+                ImGuiGetSpriteUVCoords(TileConfiguration.SelectedNPC.sprite, TileConfiguration.Sprite.Frame, uv0, uv1);
+
+                ImGui::Image(optSprite.value().Texture, { 84.0f, 84.0f }, uv0, uv1);
+            }
+        }
+    }
+
+    ImGui::End();
 }
 
 void ImGUILayer::DrawLayerWindow()
 {
     constexpr ImVec2 windowSize = { 200.0f, 220.0f };
     constexpr ImVec2 buttonSize = { windowSize.x - 42.0f, 65.0f };
-
-    constexpr U32 viewportFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 
     const auto DrawImGuiLayerButton = [this, buttonSize, windowSize](const e_SelectedLayer& _layer)
     {
@@ -706,14 +714,20 @@ void ImGUILayer::DrawLayerWindow()
     };
 
     ImGui::SetNextWindowSize(windowSize);
-    if(ImGui::Begin("Layers", &m_bLayerWindowOpen, viewportFlags))
-    {
-        for(U32 i = 0; i < Layers::s_LayerCount; i++) 
-        {
-            const e_SelectedLayer layer = static_cast<e_SelectedLayer>(i);
-            DrawImGuiLayerButton(layer);
-        }
-    }
+    
+    constexpr U32 viewportFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking;
 
-    ImGui::End();
+    if (m_bLayerWindowOpen)
+    {
+        if (ImGui::Begin("Layers", &m_bLayerWindowOpen, viewportFlags))
+        {
+            for (U32 i = 0; i < Layers::s_LayerCount; i++)
+            {
+                const e_SelectedLayer layer = static_cast<e_SelectedLayer>(i);
+                DrawImGuiLayerButton(layer);
+            }
+        }
+
+        ImGui::End();
+    }
 }

@@ -22,5 +22,6 @@ App::Config::SettingsConfig App::Config::SettingsConfiguration = SettingsConfig
 (
 	/* BrushSize            */  Utilities::ivec2(1),
 	/* bShowWalkableTiles   */  false,
-	/* bRenderChunkOutlines */  true
+	/* bRenderChunkOutlines */  true,
+	/* ShowNPCParams        */  true
 );

@@ -27,6 +27,7 @@ void WorldEditor::Update()
 	DrawBrush();
 	RenderTiles();
 	DrawSelection();
+	DrawHoverTileInfo();
 }
 
 void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
@@ -231,7 +232,7 @@ Optional<Ref<TileEntity>> WorldEditor::TryDetachTileEntity(const Utilities::ivec
 	const Utilities::ivec2 localChunkCoords = Chunk::ToLocalChunkCoords(_gridCoords);
 	const e_SelectedLayer  layer            = App::Config::TileConfiguration.CurrentLayer;
 
-	return m_Chunks[chunkCoords]->DetachFromTile(localChunkCoords, layer);
+	return m_Chunks[chunkCoords]->TryDetachFromTile(localChunkCoords, layer);
 }
 
 Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoords)
@@ -244,6 +245,54 @@ Optional<Ref<Chunk>> WorldEditor::TryGetChunk(const Utilities::ivec2& _gridCoord
 	}
 
 	return std::nullopt;
+}
+
+void WorldEditor::DrawHoverTileInfo()
+{
+	using namespace App::Config;
+
+	Optional<Ref<TileEntity>> tileEntt = TryGetTileEntity(m_HoveredGridCell);
+
+	if(!tileEntt.has_value()) 
+	{
+		return;
+	}
+
+	switch(TileConfiguration.CurrentLayer) 
+	{
+		case e_SelectedLayer::LAYER_NPC:
+		{
+			Ref<NPCEntity> npc = std::static_pointer_cast<NPCEntity>(tileEntt.value());
+
+			const Utilities::ivec2 textPos = Utilities::ivec2(m_HoveredGridCell.x * GRIDCELLSIZE + (GRIDCELLSIZE * 0.5f), m_HoveredGridCell.y * GRIDCELLSIZE);
+
+			TextArgs args;
+			// Render Npc id.
+			{
+				args.Position = textPos - Utilities::ivec2(0, 10);
+				args.Text = "Npcid: " + std::to_string(npc->NpcId);
+				args.TextSize = 56;
+				args.Color = { 255,255,255,255 };
+				args.ZOrder = 100;
+				g_globals.Renderer->RenderText(args, 0.125f, e_TextAlignment::MIDDLE);
+			}
+
+			// Render respawn time
+			{
+				args.Position = textPos - Utilities::ivec2(0, 20);
+				args.Text = "Name: " + get_npc_definition(npc->NpcId).name;
+				g_globals.Renderer->RenderText(args, 0.125f, e_TextAlignment::MIDDLE);
+			}
+
+			// Render respawn time
+			{
+				args.Text = "Respawntime: " + std::to_string(npc->RespawnTime);
+				args.Position = textPos - Utilities::ivec2(0, 30);
+				g_globals.Renderer->RenderText(args, 0.125f, e_TextAlignment::MIDDLE);
+			}
+		}
+		break;
+	}
 }
 
 void WorldEditor::HandleShortCuts()
@@ -618,7 +667,6 @@ void WorldEditor::PickTile()
 	//
 	Ref<TileEntity> tileEntity;
 	{
-		const e_SelectedLayer layer = TileConfiguration.CurrentLayer;
 		Optional<Ref<TileEntity>> optTileEntt = TryGetTileEntity(m_HoveredGridCell);
 
 		if (!optTileEntt.has_value())
@@ -628,6 +676,19 @@ void WorldEditor::PickTile()
 
 		//Extract the tile entity.
 		tileEntity = optTileEntt.value();
+	}
+
+	switch (TileConfiguration.CurrentLayer)
+	{
+		case e_SelectedLayer::LAYER_NPC:
+		{
+			Ref<NPCEntity> npc = std::static_pointer_cast<NPCEntity>(tileEntity);
+
+			TileConfiguration.NPCid          = npc->NpcId;
+			TileConfiguration.NPCRespawnTime = npc->RespawnTime;
+			TileConfiguration.SelectedNPC    = get_npc_definition(npc->NpcId);
+		}
+		break;
 	}
 
 	TileConfiguration.Sprite = SubSprite
@@ -818,21 +879,36 @@ void WorldEditor::DrawBrush()
 
 	m_HoveredGridCell = GetHoveredGridCell();
 
-	const Color rectCol    = { 255, 255, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, Time::GetElapsedTime()) };
-	const Color outlineCol = { 120, 120, 0, DMath::Occilate<U8>(30.0f, 100.0f, 3.0f, Time::GetElapsedTime()) };
-
 	SDL_Rect rect{};
 
 	switch(TileConfiguration.InteractionMode) 
 	{
-		case e_InteractionMode::MODE_BRUSH:
+	case e_InteractionMode::MODE_BRUSH:
+	{
+		for (I32 x = 0; x < SettingsConfiguration.BrushSize.x; x++)
 		{
-			rect.x = m_HoveredGridCell.x * GRIDCELLSIZE;
-			rect.y = m_HoveredGridCell.y * GRIDCELLSIZE;
-			rect.w = GRIDCELLSIZE * SettingsConfiguration.BrushSize.x;
-			rect.h = GRIDCELLSIZE * SettingsConfiguration.BrushSize.y;
+			for (I32 y = 0; y < SettingsConfiguration.BrushSize.y; y++)
+			{
+				const Utilities::ivec2 pos =
+				{
+					(m_HoveredGridCell.x + x) * GRIDCELLSIZE,
+				    (m_HoveredGridCell.y + y) * GRIDCELLSIZE
+				};
+
+				constexpr Color previewHighlight = { 150, 150, 0, 140 };
+
+				RenderQuery query;
+				query.Color      = previewHighlight;
+				query.Frame      = TileConfiguration.Sprite.Frame;
+				query.Position   = pos;
+				query.Size       = GRIDCELLSIZE;
+				query.SpriteType = TileConfiguration.Sprite.SpriteType;
+
+				g_globals.Renderer->Render(query, 10);
+			}
 		}
-		break;
+	}
+		return;
 
 		case e_InteractionMode::MODE_WAND:
 		case e_InteractionMode::MODE_PICKER:
@@ -844,6 +920,10 @@ void WorldEditor::DrawBrush()
 		}
 		break;
 	}
+
+	const U8 occilateAlpha = DMath::Occilate<U8>(30.0f, 100.0f, 1.5f, Time::GetElapsedTime());
+	const Color rectCol = { 255, 255, 0, occilateAlpha };
+	const Color outlineCol = { 120, 120, 0, occilateAlpha };
 
 	g_globals.Renderer->DrawRect(rect, rectCol, 10);
 }

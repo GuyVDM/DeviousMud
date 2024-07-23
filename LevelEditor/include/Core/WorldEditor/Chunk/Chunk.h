@@ -64,7 +64,7 @@ public:
 	/// <param name="_localChunkCoords"></param>
 	/// <param name="_layer"></param>
 	/// <returns></returns>
-	Optional<Ref<TileEntity>> DetachFromTile(const Utilities::ivec2& _localChunkCoords, const e_SelectedLayer& _layer);
+	Optional<Ref<TileEntity>> TryDetachFromTile(const Utilities::ivec2& _localChunkCoords, const e_SelectedLayer& _layer);
 
 	/// <summary>
 	/// Tries to return a tile entity that is attached to the tile based on the given layertype.

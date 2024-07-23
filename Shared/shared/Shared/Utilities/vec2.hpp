@@ -66,6 +66,18 @@ namespace Utilities
             return _ivec2(x * _other.x, y * _other.y);
         }
 
+        inline _ivec2 operator*(const float& _scale) const
+        {
+            float newX = static_cast<float>(x) * _scale;
+            float newY = static_cast<float>(y) * _scale;
+
+            return _ivec2
+            (
+                static_cast<int32_t>(newX),
+                static_cast<int32_t>(newY)
+            );
+        }
+
         inline _ivec2 operator/(const int32_t& divisor) const 
         {
             if (divisor == 0)

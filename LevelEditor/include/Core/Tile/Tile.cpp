@@ -7,6 +7,7 @@
 #include "Core/Renderer/Renderer.h"
 #include "Core/WorldEditor/WorldEditor.h"
 #include "Core/WorldEditor/Chunk/Chunk.h"
+#include "Core/Camera/Camera.h"
 
 #include "Shared/Game/NPCDef.h"
 
@@ -17,6 +18,19 @@ void Tile::Render()
 	const Utilities::ivec2 chunkCoords = ChunkCoords * SIZE_CHUNK_TILES;
 	const Utilities::ivec2 position    = (LocalChunkCoords + chunkCoords) * App::Config::GRIDCELLSIZE;
 	const Utilities::ivec2 size        = Utilities::ivec2(App::Config::GRIDCELLSIZE);
+	Color color = { 255, 255, 255, 255 };
+
+	//*---------------------------------------
+	// Draw whether tiles are walkable or not.
+	//
+	if (SettingsConfiguration.bShowWalkableTiles)
+	{
+		if (!bIsWalkable)
+		{
+			//Grey out the color if it's not walkable.
+			color = { 255, 0, 0, 100 };
+		}
+	}
 
 	for (const auto&[layer, entity] : m_EntityLayers)
 	{
@@ -29,7 +43,7 @@ void Tile::Render()
 		}
 
 		RenderQuery query;
-		query.Color      = { 255,255,255,255 };
+		query.Color      = color;
 		query.Frame      = entity->Frame;
 		query.SpriteType = entity->SpriteType;
 		query.Position   = position;
@@ -46,15 +60,4 @@ void Tile::Render()
 		size.x,
 		size.y
 	};
-
-	//*---------------------------------------
-	// Draw whether tiles are walkable or not.
-	//
-	if (App::Config::SettingsConfiguration.bShowWalkableTiles)
-	{
-		const Color color = bIsWalkable ? Color(0, 255, 0, 70) 
-			                            : Color(255, 0, 0, 70);
-
-		g_globals.Renderer->DrawRect(rect, color);
-	}
 }

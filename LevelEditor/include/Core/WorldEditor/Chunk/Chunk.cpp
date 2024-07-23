@@ -109,7 +109,7 @@ bool Chunk::RemoveFromTile(const Utilities::ivec2& _localChunkCoords, const e_Se
 	return true;
 }
 
-Optional<Ref<TileEntity>> Chunk::DetachFromTile(const Utilities::ivec2& _localChunkCoords, const e_SelectedLayer& _layer)
+Optional<Ref<TileEntity>> Chunk::TryDetachFromTile(const Utilities::ivec2& _localChunkCoords, const e_SelectedLayer& _layer)
 {
 	Optional<Ref<TileEntity>> optEntt = TryGetTileEntity(_localChunkCoords, _layer);
 

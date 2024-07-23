@@ -46,6 +46,7 @@ namespace App
 			Utilities::ivec2 BrushSize = Utilities::ivec2(1, 1);
 			bool bShowWalkableTiles    = false;
 			bool bRenderChunkVisuals   = true;
+			bool bShowNpcParams        = false;
 		};
 
 		extern TileConfig     TileConfiguration;

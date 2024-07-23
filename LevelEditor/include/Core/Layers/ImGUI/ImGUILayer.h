@@ -83,6 +83,6 @@ private:
 
 	std::map<e_ImGuiIconType, SDL_Texture*> m_Icons;
 
-	bool m_bCtrlPressed = false;
-	bool m_bLayerWindowOpen = false;
+	bool m_bCtrlPressed     = false;
+	bool m_bLayerWindowOpen = true;
 };
