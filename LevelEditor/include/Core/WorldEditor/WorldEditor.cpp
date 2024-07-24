@@ -262,6 +262,11 @@ void WorldEditor::DrawHoverTileInfo()
 	{
 		case e_SelectedLayer::LAYER_NPC:
 		{
+			if (!SettingsConfiguration.bShowNpcParams)
+			{
+				return;
+			}
+
 			Ref<NPCEntity> npc = std::static_pointer_cast<NPCEntity>(tileEntt.value());
 
 			const Utilities::ivec2 textPos = Utilities::ivec2(m_HoveredGridCell.x * GRIDCELLSIZE + (I32)(roundf((float)(GRIDCELLSIZE * 0.5f))), m_HoveredGridCell.y * GRIDCELLSIZE);

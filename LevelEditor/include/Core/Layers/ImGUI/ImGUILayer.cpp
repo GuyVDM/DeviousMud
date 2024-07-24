@@ -316,8 +316,8 @@ void ImGUILayer::DrawMenuBar()
         {
             ImGui::MenuItem("(file)", NULL, false, false);
 
-            if (ImGui::MenuItem("Load Map", "CTRL+L")) std::string test = FileHandler::BrowseFile("C:/");
-            if (ImGui::MenuItem("Save Map", "CTRL+S")) FileHandler::ExportLevelToJSON();
+            if (ImGui::MenuItem("Load Map", "CTRL+L")) DEVIOUS_LOG("Loading maps are currently not supported, sorry.");
+            if (ImGui::MenuItem("Save Map", "CTRL+S")) DEVIOUS_LOG("Saving maps are currently not supported, sorry.");
 
             ImGui::Separator();
 
@@ -344,7 +344,7 @@ void ImGUILayer::DrawMenuBar()
         if (ImGui::BeginMenu("Options"))
         {
             ImGui::MenuItem("(toggles)", NULL, false, false);
-            if (ImGui::MenuItem("Toggle NPC Parameters", "")) SettingsConfiguration.bShowNpcParams = !SettingsConfiguration.bShowNpcParams;
+            if (ImGui::MenuItem("Toggle NPC Parameters on Hover", "")) SettingsConfiguration.bShowNpcParams = !SettingsConfiguration.bShowNpcParams;
 
             ImGui::EndMenu();
         }
@@ -384,14 +384,19 @@ void ImGUILayer::DrawTextureSelectorWindow()
 
             constexpr ImVec2 buttonSize = { 84.0f, 84.0f };
 
-            U32 maxItemsOnLine = static_cast<U32>(floor(ImGui::GetWindowWidth() / buttonSize.x) - 1); 
-            maxItemsOnLine = std::clamp<U32>(maxItemsOnLine, 1, UINT32_MAX);
+            I32 maxItemsOnLine = static_cast<I32>(ImGui::GetWindowWidth() / buttonSize.x) + 1; 
+            I32 itemCountOnCurrentLine = 0;
 
-            for (U32 i = 0; i < sprite.FrameCount; i++)
+            for (I32 i = 0; i < static_cast<I32>(sprite.FrameCount); i++)
             {
-                if(i % maxItemsOnLine != 0)
+                itemCountOnCurrentLine++;
+                if(itemCountOnCurrentLine % maxItemsOnLine != 0)
                 {
                     ImGui::SameLine(0.0f, 0.0f);
+                }
+                else
+                {
+                    itemCountOnCurrentLine = 1;
                 }
 
                 ImVec2 uv0, uv1;
@@ -842,34 +847,26 @@ void ImGUILayer::DrawLoggingWindow()
                     continue;
                 }
 
-                ImVec4 msgColor = { 255, 255, 255, 255 };
                 e_ImGuiIconType iconType = e_ImGuiIconType::ICON_INFO;
 
                 switch (msg.LogType)
                 {
-                case e_LogType::TYPE_ERROR:
-                {
-                    iconType = e_ImGuiIconType::ICON_ERROR;
-                    msgColor = { 255, 0, 0, 255 };
-                }
-                break;
+                    case e_LogType::TYPE_ERROR:
+                        iconType = e_ImGuiIconType::ICON_ERROR;
+                        break;
 
-                case e_LogType::TYPE_WARN:
-                {
-                    iconType = e_ImGuiIconType::ICON_WARNING;
-                    msgColor = { 255, 255, 0, 255 };
-                }
-                break;
+                    case e_LogType::TYPE_WARN:
+                        iconType = e_ImGuiIconType::ICON_WARNING;
+                        break;
 
-                case e_LogType::TYPE_EVENT:
-                {
-                    iconType = e_ImGuiIconType::ICON_EVENT;
-                    msgColor = { 0, 255, 0, 255 };
-                }
-                break;
+                    case e_LogType::TYPE_EVENT:
+                        iconType = e_ImGuiIconType::ICON_EVENT;
+                        break;
                 }
 
                 ImGui::SetCursorPos(ImVec2(25.0f, ImGui::GetCursorPos().y));
+
+                constexpr ImVec4 msgColor = { 255, 255, 255, 255 };
                 ImGui::TextColored(msgColor, msg.Contents.c_str());
                 ImVec2 prevCursorPos = ImGui::GetCursorPos();
 
