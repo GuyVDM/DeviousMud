@@ -824,12 +824,11 @@ void ImGUILayer::DrawLoggingWindow()
         ImGui::Spacing();
 
         constexpr ImVec2 minContentSize = { 0.0f, 0.0f };
-        const     ImVec2 maxContentSize = { static_cast<float>(Editor::s_WindowWidth), ImGui::GetContentRegionAvail().y };
+        const     ImVec2 maxContentSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
 
         if (maxContentSize.y > 0.0f)
         {
-            ImGui::SetNextWindowSizeConstraints(minContentSize, maxContentSize);
-            ImGui::BeginChild("ScrollableArea", ImVec2(0, 200), true, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysVerticalScrollbar);
+            ImGui::BeginChild("ScrollableArea", maxContentSize, true, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
             for (Message& msg : Logger::GetMessages())
             {
