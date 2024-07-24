@@ -750,13 +750,13 @@ void WorldEditor::RenderChunkVisuals()
 				const Utilities::ivec2 textRenderPos = Utilities::ivec2(rect.x, rect.y) + offset;
 
 				TextArgs textArgs;
-				textArgs.Color = { 150, 150, 100, 150 };
+				textArgs.Color = { 255, 255, 255, 150 };
 				textArgs.Position = textRenderPos;
 				textArgs.Text = coordinateStream.str();
-				textArgs.TextSize = 20;
+				textArgs.TextSize = 40;
 				textArgs.ZOrder = 10;
 
-				g_globals.Renderer->RenderText(textArgs);
+				g_globals.Renderer->RenderText(textArgs, 0.5f);
 			}
 		}
 	}
