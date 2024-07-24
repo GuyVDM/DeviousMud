@@ -48,8 +48,8 @@ public:
 
 			{ e_ImGuiIconType::ICON_INFO,   "icons/info.png"    },
 			{ e_ImGuiIconType::ICON_EVENT,  "icons/event.png"   },
-			{ e_ImGuiIconType::ICON_ERROR,  "icons/warning.png" },
-			{ e_ImGuiIconType::ICON_WARNING,"icons/error.png"   }
+			{ e_ImGuiIconType::ICON_ERROR,  "icons/error.png"   },
+			{ e_ImGuiIconType::ICON_WARNING,"icons/warning.png" }
 		};
 
 		return iconMap;
