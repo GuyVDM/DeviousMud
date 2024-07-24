@@ -195,6 +195,7 @@
     <ClInclude Include="include\Core\Input\InputHandler\InputHandler.h" />
     <ClInclude Include="include\Core\Layers\Layer.h" />
     <ClInclude Include="include\Core\Layers\LayerStack.h" />
+    <ClInclude Include="include\Core\Logger\Logger.hpp" />
     <ClInclude Include="include\Core\Math\DMath.hpp" />
     <ClInclude Include="include\Core\Renderer\FontLoader\FontLoader.h" />
     <ClInclude Include="include\Core\Renderer\Renderer.h" />

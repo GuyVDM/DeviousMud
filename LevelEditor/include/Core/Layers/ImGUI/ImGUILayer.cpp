@@ -188,6 +188,7 @@ void ImGUILayer::DrawImGUI()
         DrawSettingsWindow();
         DrawRightClickMenu();
         DrawLayerWindow();
+        DrawLoggingWindow();
     }
 }
 
@@ -506,7 +507,9 @@ void ImGUILayer::DrawScenicSettings()
 {
     using namespace App::Config;
 
-    if (ImGui::Begin("Selected Brush:", 0, ImGuiWindowFlags_NoCollapse))
+    const ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+
+    if (ImGui::Begin("Selected Brush", 0, flags))
     {
         const     ImVec2 windowSize = ImGui::GetWindowSize();
         constexpr ImVec2 previewSize = { 84.0f, 84.0f };
@@ -730,4 +733,156 @@ void ImGUILayer::DrawLayerWindow()
 
         ImGui::End();
     }
+}
+
+void ImGUILayer::DrawLoggingWindow()
+{
+    static char logFilterBuf[256] = "";
+
+    const auto DrawLogFilterButton = [this](const e_LogType& _logType)
+    {
+        ImGui::SameLine();
+
+        e_ImGuiIconType icon = e_ImGuiIconType::ICON_INFO;
+
+        float  multiplier = 4.0f;
+
+        switch (_logType)
+        {
+            case e_LogType::TYPE_ERROR:
+                icon = e_ImGuiIconType::ICON_ERROR;
+                multiplier = 1.0f;
+                break;
+
+            case e_LogType::TYPE_WARN:
+                icon = e_ImGuiIconType::ICON_WARNING;
+                multiplier = 2.0f;
+                break;
+
+            case e_LogType::TYPE_EVENT:
+                icon = e_ImGuiIconType::ICON_EVENT;
+                multiplier = 3.0f;
+                break;
+        }
+
+        constexpr ImVec2 filterButtonSize = ImVec2(50.0f, 20.0f);
+
+        ImVec2 buttonPos = ImVec2((ImGui::GetWindowSize().x - (filterButtonSize.x + 5.0f) * multiplier), ImGui::GetCursorPosY());
+
+        ImGui::SetCursorPos(buttonPos);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+
+        const std::string label = "##LogFilter" + std::to_string(multiplier);
+        if (ImGui::Button(label.c_str(), filterButtonSize))
+        {
+            m_logFilterFlags ^= _logType;
+        }
+
+        ImGui::PopStyleVar();
+
+        constexpr ImVec2 filterIconSize = ImVec2(14.0f, 14.0f);
+        const     ImVec2 iconPos = ImVec2(buttonPos.x + 4.0f, buttonPos.y + (filterButtonSize.y * 0.5f) - (filterIconSize.y * 0.5f));
+
+        ImVec4 tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        if((m_logFilterFlags & _logType) == 0) 
+        {
+            tintColor = { 0.6f, 0.6f, 0.6f, 0.6f };
+        }
+
+        ImGui::SetCursorPos(iconPos);
+        ImGui::Image(m_Icons[icon], filterIconSize, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), tintColor);
+
+        const ImVec2 textPos = ImVec2(buttonPos.x + filterIconSize.x + 8.0f, buttonPos.y + 2.0f);
+        ImGui::SetCursorPos(textPos);
+        ImGui::Text(std::to_string(Logger::GetMessagesCountOfLogType(_logType)).c_str());
+    };
+
+    constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar;
+    if (ImGui::Begin("Logger"), 0, windowFlags)
+    {
+        if (ImGui::Button("Clear")) Logger::ClearLog();
+        ImGui::SameLine();
+        ImGui::InputText("Filter", logFilterBuf, IM_ARRAYSIZE(logFilterBuf));
+        ImGui::SameLine();
+
+        const ImVec2 filterButtonContentSize = ImVec2(ImGui::GetContentRegionAvail().x, 32.0f);
+
+        ImGui::BeginChild("Filterbuttons", filterButtonContentSize, 0, windowFlags);
+        DrawLogFilterButton(e_LogType::TYPE_INFO);
+        DrawLogFilterButton(e_LogType::TYPE_EVENT);
+        DrawLogFilterButton(e_LogType::TYPE_WARN);
+        DrawLogFilterButton(e_LogType::TYPE_ERROR);
+        ImGui::EndChild();
+
+        ImGui::Spacing();
+
+        constexpr ImVec2 minContentSize = { 0.0f, 0.0f };
+        const     ImVec2 maxContentSize = { static_cast<float>(Editor::s_WindowWidth), ImGui::GetContentRegionAvail().y };
+
+        if (maxContentSize.y > 0.0f)
+        {
+            ImGui::SetNextWindowSizeConstraints(minContentSize, maxContentSize);
+            ImGui::BeginChild("ScrollableArea", ImVec2(0, 200), true, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+            for (Message& msg : Logger::GetMessages())
+            {
+                if (std::strlen(logFilterBuf) > 0)
+                {
+                    if (std::strstr(msg.Contents.c_str(), logFilterBuf) == nullptr)
+                    {
+                        continue;
+                    }
+                }
+
+                //If were filtering these log types out.
+                if((m_logFilterFlags & msg.LogType) == 0) 
+                {
+                    continue;
+                }
+
+                ImVec4 msgColor = { 255, 255, 255, 255 };
+                e_ImGuiIconType iconType = e_ImGuiIconType::ICON_INFO;
+
+                switch (msg.LogType)
+                {
+                case e_LogType::TYPE_ERROR:
+                {
+                    iconType = e_ImGuiIconType::ICON_ERROR;
+                    msgColor = { 255, 0, 0, 255 };
+                }
+                break;
+
+                case e_LogType::TYPE_WARN:
+                {
+                    iconType = e_ImGuiIconType::ICON_WARNING;
+                    msgColor = { 255, 255, 0, 255 };
+                }
+                break;
+
+                case e_LogType::TYPE_EVENT:
+                {
+                    iconType = e_ImGuiIconType::ICON_EVENT;
+                    msgColor = { 0, 255, 0, 255 };
+                }
+                break;
+                }
+
+                ImGui::SetCursorPos(ImVec2(25.0f, ImGui::GetCursorPos().y));
+                ImGui::TextColored(msgColor, msg.Contents.c_str());
+                ImVec2 prevCursorPos = ImGui::GetCursorPos();
+
+                constexpr ImVec2 iconSize = { 16.0f, 16.0f };
+                ImGui::SetCursorPos(ImVec2(5.0f, prevCursorPos.y - (iconSize.y * 1.25f)));
+                ImGui::Image(m_Icons[iconType], iconSize);
+                ImGui::SetCursorPos(prevCursorPos);
+
+            }
+
+            ImGui::EndChild();
+        }
+    }
+
+    ImGui::End();
 }

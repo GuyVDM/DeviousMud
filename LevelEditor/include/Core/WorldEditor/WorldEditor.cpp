@@ -264,7 +264,7 @@ void WorldEditor::DrawHoverTileInfo()
 		{
 			Ref<NPCEntity> npc = std::static_pointer_cast<NPCEntity>(tileEntt.value());
 
-			const Utilities::ivec2 textPos = Utilities::ivec2(m_HoveredGridCell.x * GRIDCELLSIZE + (GRIDCELLSIZE * 0.5f), m_HoveredGridCell.y * GRIDCELLSIZE);
+			const Utilities::ivec2 textPos = Utilities::ivec2(m_HoveredGridCell.x * GRIDCELLSIZE + (I32)(roundf((float)(GRIDCELLSIZE * 0.5f))), m_HoveredGridCell.y * GRIDCELLSIZE);
 
 			TextArgs args;
 			// Render Npc id.

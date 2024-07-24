@@ -15,7 +15,7 @@
 #include <fstream>
 #include <vendor/nolhmann/json.hpp>
 
-#include "Shared/Utilities/Logger.hpp"
 #include "Shared/Utilities/Assert.h"
 
+#include "Core/Logger/Logger.hpp"
 #include "Core/Math/DMath.hpp"

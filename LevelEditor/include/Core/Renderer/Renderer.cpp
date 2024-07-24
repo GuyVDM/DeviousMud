@@ -389,7 +389,7 @@ void Renderer::RenderText(const TextArgs& _args, const float& _scale, const e_Te
 	{
 		case e_TextAlignment::MIDDLE:
 		{
-			query.Position.x = query.Position.x - (query.Size.x * 0.5f);
+			query.Position.x = query.Position.x - static_cast<U32>(roundf(static_cast<float>(query.Size.x) * 0.5f));
 		}
 		break;
 

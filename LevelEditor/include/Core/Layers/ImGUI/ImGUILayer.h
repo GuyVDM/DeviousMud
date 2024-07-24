@@ -18,7 +18,12 @@ enum class e_ImGuiIconType
 	ICON_SELECT,
 	ICON_WAND,
 	ICON_DRAG,
-	ICON_LAYER
+	ICON_LAYER,
+
+	ICON_INFO,
+	ICON_WARNING,
+	ICON_ERROR,
+	ICON_EVENT
 };
 
 class ImguiIcons 
@@ -39,7 +44,12 @@ public:
 			{ e_ImGuiIconType::ICON_SELECT, "icons/select.png"  },
 			{ e_ImGuiIconType::ICON_WAND,   "icons/wand.png"    },
 			{ e_ImGuiIconType::ICON_DRAG,   "icons/cursor.png"  },
-			{ e_ImGuiIconType::ICON_LAYER,  "icons/layer.png"   }
+			{ e_ImGuiIconType::ICON_LAYER,  "icons/layer.png"   },
+
+			{ e_ImGuiIconType::ICON_INFO,   "icons/info.png"    },
+			{ e_ImGuiIconType::ICON_EVENT,  "icons/event.png"   },
+			{ e_ImGuiIconType::ICON_ERROR,  "icons/warning.png" },
+			{ e_ImGuiIconType::ICON_WARNING,"icons/error.png"   }
 		};
 
 		return iconMap;
@@ -78,11 +88,14 @@ private:
 
 	void DrawLayerWindow();
 
+	void DrawLoggingWindow();
+
 private:
 	SDL_Renderer* m_Renderer;
 
 	std::map<e_ImGuiIconType, SDL_Texture*> m_Icons;
 
+	U8   m_logFilterFlags   = 0xFF;
 	bool m_bCtrlPressed     = false;
 	bool m_bLayerWindowOpen = true;
 };

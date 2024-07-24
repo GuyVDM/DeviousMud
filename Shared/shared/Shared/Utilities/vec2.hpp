@@ -78,6 +78,15 @@ namespace Utilities
             );
         }
 
+        inline _ivec2 operator*(const int32_t& _scale) const
+        {
+            return _ivec2
+            (
+                x * _scale,
+                y * _scale
+            );
+        }
+
         inline _ivec2 operator/(const int32_t& divisor) const 
         {
             if (divisor == 0)
