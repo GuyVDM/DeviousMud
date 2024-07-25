@@ -180,12 +180,3 @@ const Utilities::ivec2 Chunk::ToLocalChunkCoords(const Utilities::ivec2& _gridCo
 		(_gridCoords.y % SIZE_CHUNK_TILES + SIZE_CHUNK_TILES) % SIZE_CHUNK_TILES
 	};
 }
-
-void Chunk::Deserialize(nlohmann::json& _json) 
-{
-};
-
-void Chunk::Serialize() 
-{
-
-};

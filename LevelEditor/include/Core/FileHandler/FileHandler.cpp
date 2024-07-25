@@ -8,37 +8,6 @@
 #include <shlobj.h>
 #include <Windows.h>
 
-const bool FileHandler::ExportLevelToJSON() 
-{
-    using json = nlohmann::json;
-
-    int test = 42;
-
-    json j;
-    j["value"] = test;
-
-    std::string filePath = "saved/dmlevel.json";
-
-    std::ofstream outputFile(filePath);
-
-    if (!outputFile.is_open())
-    {
-        DEVIOUS_ERR("Failed to open file.");
-        return false;
-    }
-    else
-    {
-        outputFile << j.dump(4);
-
-        outputFile.close();
-
-        DEVIOUS_EVENT("Succesfully exported [saved/dmlevel.json]");
-        return true;
-    }
-
-    return false;
-}
-
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     if (uMsg == BFFM_INITIALIZED)
@@ -51,68 +20,57 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPAR
     return 0;
 }
 
-std::string FileHandler::BrowseFolder(std::string saved_path)
+std::string FileHandler::SaveFile(const std::string& _savedPath)
 {
-    TCHAR path[MAX_PATH];
+    HRESULT init = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
-    const char* path_param = saved_path.c_str();
-
-    BROWSEINFO bi = { 0 };
-    bi.lpszTitle = L"Browse for folder...";
-    bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-    bi.lpfn = BrowseCallbackProc;
-    bi.lParam = (LPARAM)path_param;
-
-    LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-
-    if (pidl != 0)
+    IFileDialog* pfd = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+    if (SUCCEEDED(hr))
     {
-        //Get the name of the folder and put it in path
-        SHGetPathFromIDList(pidl, path);
+        pfd->SetOptions(FOS_OVERWRITEPROMPT | FOS_FORCEFILESYSTEM);
 
-        //Free memory used
-        IMalloc* imalloc = 0;
-        if (SUCCEEDED(SHGetMalloc(&imalloc)))
+        // Set initial directory and file name
+        std::wstring initialDir(_savedPath.begin(), _savedPath.end());
+        IShellItem* psiInitial = nullptr;
+        hr = SHCreateItemFromParsingName(initialDir.c_str(), nullptr, IID_PPV_ARGS(&psiInitial));
+        if (SUCCEEDED(hr))
         {
-            imalloc->Free(pidl);
-            imalloc->Release();
+            pfd->SetFolder(psiInitial);
+            pfd->SetFileName(initialDir.c_str());
+            psiInitial->Release();
         }
 
-        std::wstring wPath = path;
-        return std::string(wPath.begin(), wPath.end());
+        // Show the dialog
+        hr = pfd->Show(nullptr);
+        if (SUCCEEDED(hr))
+        {
+            // Get the selected file
+            IShellItem* psiResult = nullptr;
+            hr = pfd->GetResult(&psiResult);
+            if (SUCCEEDED(hr))
+            {
+                // Get the file path
+                PWSTR pszPath = nullptr;
+                hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
+                if (SUCCEEDED(hr))
+                {
+                    // Convert to std::string
+                    std::wstring filePathWStr(pszPath);
+                    std::string filePath(filePathWStr.begin(), filePathWStr.end());
+                    CoTaskMemFree(pszPath); // Free the path memory
+                    psiResult->Release();
+                    pfd->Release();
+                    CoUninitialize(); // Uninitialize COM library
+                    return filePath;
+                }
+                psiResult->Release();
+            }
+        }
+        pfd->Release();
     }
 
-    return "";
+    CoUninitialize(); // Uninitialize COM library
+    return ""; // Return empty string if no file was selected or an error occurred
 }
 
-std::string FileHandler::BrowseFile(std::string _savedPath)
-{
-    OPENFILENAME ofn;      
-    WCHAR szFile[260];
-
-    std::wstring initialDir = std::wstring(_savedPath.begin(), _savedPath.end());
-
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = NULL;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = L"All\0*.*\0Text\0*.TXT\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = initialDir.c_str();
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-    if (GetOpenFileName(&ofn) == TRUE)
-    {
-        std::wstring filePathWStr(ofn.lpstrFile);
-
-        std::string filePath(filePathWStr.begin(), filePathWStr.end());
-
-        return filePath;
-    }
-
-    return "";
-}

@@ -3,7 +3,7 @@
 //Official first include.
 #include "Core/WorldEditor/WorldEditor.h"
 
-#include "Core/WorldEditor/Chunk/Chunk.h"
+#include "Core/FileHandler/FileHandler.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Config/Config.h"
 #include "Core/Config/Time/Time.hpp"
@@ -30,6 +30,42 @@ void WorldEditor::Update()
 	DrawHoverTileInfo();
 }
 
+void WorldEditor::LoadMap()
+{
+	std::string path = FileHandler::SaveFile("../data/map");
+
+	std::ifstream is(path, std::ios::binary);
+	if (!is)
+	{
+		DEVIOUS_ERR("Error opening file for reading.");
+		return;
+	}
+
+	m_Chunks.clear();
+
+	DEVIOUS_EVENT("Loaded map at directory: " << path);
+
+	cereal::BinaryInputArchive ar(is);
+	ar(m_Chunks);
+}
+
+void WorldEditor::SaveMap()
+{
+	std::string path = FileHandler::SaveFile("../data/map");
+
+	std::ofstream os(path, std::ios::binary);
+	if (!os) 
+	{
+		DEVIOUS_ERR("Error opening file for reading.");
+		return;
+	}
+
+	DEVIOUS_EVENT("Saved map at directory: " << path);
+
+	cereal::BinaryOutputArchive ar(os);
+	ar(m_Chunks);
+}
+
 void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
 {
 	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(_gridCoords);
@@ -38,6 +74,7 @@ void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2&
 	{
 		m_Chunks[chunkCoords] = std::make_shared<Chunk>(chunkCoords);
 	}
+
 	Ref<Chunk>& chunk = m_Chunks[chunkCoords];
 
 	//Move over the TileEntity to it's new parent tile.
@@ -194,16 +231,6 @@ void WorldEditor::PasteChunk()
 			chunk->AddTile(tileCopy);
 		}
 	}
-}
-
-void WorldEditor::SerializeHoveredChunk()
-{
-	const Utilities::ivec2 chunkCoords = Chunk::ToChunkCoords(m_HoveredGridCell);
-
-	if (m_Chunks.find(chunkCoords) == m_Chunks.end())
-		return;
-
-	m_Chunks[chunkCoords]->Serialize();
 }
 
 const Optional<Ref<TileEntity>> WorldEditor::TryGetTileEntity(const Utilities::ivec2& _gridCoords)

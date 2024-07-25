@@ -161,8 +161,6 @@ void ImGUILayer::LoadImGuiIcons()
             return;
         }
 
-        DEVIOUS_EVENT("Succesfully loaded icon: " << path);
-
         m_Icons[type] = texture;
         SDL_FreeSurface(surface);
     }
@@ -316,13 +314,12 @@ void ImGUILayer::DrawMenuBar()
         {
             ImGui::MenuItem("(file)", NULL, false, false);
 
-            if (ImGui::MenuItem("Load Map", "CTRL+L")) DEVIOUS_LOG("Loading maps are currently not supported, sorry.");
-            if (ImGui::MenuItem("Save Map", "CTRL+S")) DEVIOUS_LOG("Saving maps are currently not supported, sorry.");
+            if (ImGui::MenuItem("Load Map", "CTRL+L")) g_globals.WorldEditor->LoadMap();
+            if (ImGui::MenuItem("Save Map", "CTRL+S")) g_globals.WorldEditor->SaveMap();
 
             ImGui::Separator();
 
-            ImGui::MenuItem("(assets)", NULL, false, false);
-            if (ImGui::MenuItem("Load Asset Folder", "CTRL+L")) std::string test = FileHandler::BrowseFile("C:/");
+            ImGui::MenuItem("(export)", NULL, false, false);
 
             ImGui::EndMenu();
         }

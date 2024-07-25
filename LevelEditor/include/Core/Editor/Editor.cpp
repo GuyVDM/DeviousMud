@@ -57,6 +57,14 @@ void Editor::Start()
 	}
 }
 
+Editor::~Editor()
+{
+	g_globals.WorldEditor = nullptr;
+	g_globals.Renderer = nullptr;
+	g_globals.Camera = nullptr;
+	m_LayerStack->Clear();
+}
+
 void Editor::GenerateLayers()
 {
 	m_LayerStack = std::make_shared<LayerStack>();

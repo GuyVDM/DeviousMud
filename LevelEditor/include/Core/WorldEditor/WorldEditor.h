@@ -11,7 +11,8 @@
 #include <array>
 #include <map>
 
-class Chunk;
+#include "Core/WorldEditor/Chunk/Chunk.h"
+
 struct Camera;
 
 enum class e_SelectedLayer : U8;
@@ -21,10 +22,21 @@ namespace Graphics
 	enum class SpriteType : U16;
 }
 
-class WorldEditor 
+namespace cereal 
+{
+	template<class Archive>
+	void serialize(Archive& _ar, Utilities::ivec2& _ivec) 
+	{
+		_ar(_ivec.x, _ivec.y);
+	}
+}
+
+class WorldEditor
 {
 public:
-	void AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer);
+	void SaveMap();
+
+	void LoadMap();
 
 	void PlaceLayerEntity();
 
@@ -38,11 +50,11 @@ public:
 
 	void RemoveChunk();
 
-	void SerializeHoveredChunk();
-
 	void ClearSelection();
 
 	void SetSelectionNavigatable(const bool& _bCanNavigate);
+
+	void AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer);
 
 	const bool IsSelectionActive() const;
 

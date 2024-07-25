@@ -28,7 +28,7 @@ public:
 
 public:
 	Editor() = default;
-	virtual ~Editor() = default;
+	virtual ~Editor();
 
 private:
 	void GenerateLayers();

@@ -2,18 +2,26 @@
 #include "Core/Core.hpp"
 #include "Core/Serialization/JsonSerializable.h"
 
-class Tile;
-class TileEntity;
+#include "Core/Tile/Tile.h"
 
 enum class e_SelectedLayer : U8;
 
 constexpr I16 SIZE_CHUNK_TILES = 16;
 constexpr I16 TILE_COUNT_CHUNK = SIZE_CHUNK_TILES * SIZE_CHUNK_TILES;
 
-class Chunk : JsonSerializable<Chunk>
+class Chunk
 {
 public:
-	IMPLEMENT_SERIALIZABLE;
+	template<class Archive>
+	void serialize(Archive& ar)
+	{
+		ar(m_ChunkCoords, m_TileCount);
+
+		for(I32 i = 0; i < TILE_COUNT_CHUNK; i++) 
+		{
+			ar(m_Tiles[i]);
+		}
+	}
 
 	/// <summary>
 	/// Converts the local coordinates relative to the chunk into a valid index pointing
@@ -102,6 +110,7 @@ public:
 	static const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _gridCoords);
 
 public:
+	Chunk() = default;
 	Chunk(Utilities::ivec2 _chunkCoords) : m_ChunkCoords(_chunkCoords) {};
 	virtual ~Chunk() = default;
 

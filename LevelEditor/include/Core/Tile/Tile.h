@@ -8,6 +8,7 @@
 
 #include <map>
 
+
 /// <summary>
 /// Basic tile entity.
 /// </summary>
@@ -32,6 +33,12 @@ public:
 		return std::make_shared<TileEntity>(*this);
 	}
 
+	template<class Archive>
+	void serialize(Archive& ar)
+	{
+		ar(SpriteType, Frame);
+	}
+
 public:
 	TileEntity() = default;
 	virtual ~TileEntity() = default;
@@ -43,14 +50,24 @@ public:
 class NPCEntity : public TileEntity 
 {
 public:
-	U32   NpcId       = 0;
+	U32   NpcId = 0;
 	float RespawnTime = 1.0f;
 
 	inline virtual Ref<TileEntity> Clone() override
 	{
 		return std::make_shared<NPCEntity>(*this);
 	}
+
+	template<class Archive>
+	void serialize(Archive& ar)
+	{
+		ar(cereal::base_class<TileEntity>(this));
+		ar(SpriteType, Frame);
+	}
 };
+
+CEREAL_REGISTER_TYPE(NPCEntity);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(TileEntity, NPCEntity)
 
 class Tile
 {
@@ -58,6 +75,12 @@ public:
 	Utilities::ivec2 LocalChunkCoords;
 	Utilities::ivec2 ChunkCoords;
 	bool             bIsWalkable;
+
+	template<class Archive>
+	void serialize(Archive& ar)
+	{
+		ar(LocalChunkCoords, ChunkCoords, bIsWalkable, m_EntityLayers);
+	}
 
 	inline Optional<Ref<TileEntity>> TryGetEntity(const e_SelectedLayer& _layer)
 	{
@@ -90,8 +113,8 @@ public:
 	inline Tile(const Tile* _other) 
 	{
 		LocalChunkCoords = _other->LocalChunkCoords;
-		ChunkCoords = _other->ChunkCoords;
-		bIsWalkable = _other->bIsWalkable;
+		ChunkCoords      = _other->ChunkCoords;
+		bIsWalkable      = _other->bIsWalkable;
 
 		for(auto&[layer, tileEntt] : _other->m_EntityLayers)
 		{
