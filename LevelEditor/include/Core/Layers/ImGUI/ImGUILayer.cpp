@@ -774,7 +774,7 @@ void ImGUILayer::DrawLoggingWindow()
 
         constexpr ImVec2 filterButtonSize = ImVec2(50.0f, 20.0f);
 
-        ImVec2 buttonPos = ImVec2((ImGui::GetWindowSize().x - (filterButtonSize.x + 5.0f) * multiplier), ImGui::GetCursorPosY());
+        ImVec2 buttonPos = ImVec2((ImGui::GetWindowSize().x - (filterButtonSize.x + 5.0f) * multiplier), 0.0f);
 
         ImGui::SetCursorPos(buttonPos);
 
@@ -788,7 +788,7 @@ void ImGUILayer::DrawLoggingWindow()
 
         ImGui::PopStyleVar();
 
-        constexpr ImVec2 filterIconSize = ImVec2(14.0f, 14.0f);
+        constexpr ImVec2 filterIconSize = ImVec2(16.0f, 16.0f);
         const     ImVec2 iconPos = ImVec2(buttonPos.x + 4.0f, buttonPos.y + (filterButtonSize.y * 0.5f) - (filterIconSize.y * 0.5f));
 
         ImVec4 tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
