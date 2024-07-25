@@ -27,6 +27,8 @@ class WorldEditor
 public:
 	void CleanMap();
 
+	void QuickSaveMap();
+
 	void SaveMap();
 
 	void LoadMap();
@@ -120,6 +122,8 @@ private:
 	const bool IsValidChunk(const Utilities::ivec2& _chunkCoords) const;
 
 private:
+	std::string m_CurrentMapPath = "";
+
 	std::vector<Utilities::ivec2> m_VisitedTiles;
 	
 	Utilities::ivec2 m_HoveredGridCell = { 0, 0 };

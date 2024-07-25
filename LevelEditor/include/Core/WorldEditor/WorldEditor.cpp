@@ -35,7 +35,18 @@ void WorldEditor::Update()
 
 void WorldEditor::LoadMap()
 {
-	std::string path = FileHandler::SaveFile("../data/map");
+	COMDLG_FILTERSPEC _fileTypeArray[1] =
+	{ L"DMEditorMapFile *.dmap*", L"*.dmap*" };
+
+	DialogueBoxArgs args;
+	args.Operation = e_FileOperationType::FILE_LOAD;
+	args.WindowTitle = L"Load Editor Map File";
+	args.FilterTypeArray = _fileTypeArray;
+	args.FilterArraySize = 1;
+	args.SelectButtonLabel = L"Load";
+	args.InitDir = "C://";
+
+	std::string path = FileHandler::OpenFileWindow(args);
 
 	if(path.empty()) 
 	{
@@ -65,41 +76,80 @@ void WorldEditor::LoadMap()
 	}
 }
 
-void WorldEditor::CleanMap()
-{
-	ClearSelection();
-	m_Chunks.clear();
-	g_globals.Camera->Reset();
-}
-
 void WorldEditor::SaveMap()
 {
-	std::string path = FileHandler::SaveFile("../data/map");
+	COMDLG_FILTERSPEC _fileTypeArray[1] =
+	{ L"DMEditorMapFile *.dmap*", L"*.dmap*" };
 
-	if (path.empty())
+	DialogueBoxArgs args;
+	args.Operation = e_FileOperationType::FILE_SAVE;
+	args.WindowTitle = L"Save Editor Map File";
+	args.FilterTypeArray = _fileTypeArray;
+	args.FilterArraySize = 1;
+	args.SelectButtonLabel = L"Save";
+	args.InitialFileName = L"Mymap.dmap";
+	args.InitDir = "C://";
+
+	m_CurrentMapPath = FileHandler::OpenFileWindow(args);
+
+	if (m_CurrentMapPath.empty())
 	{
 		return;
 	}
 
 	try
 	{
-		std::ofstream os(path, std::ios::binary);
+		std::ofstream os(m_CurrentMapPath, std::ios::binary);
 		if (!os)
 		{
-			DEVIOUS_ERR("Failed to save map: " << path.c_str());
+			DEVIOUS_ERR("Failed to save map: " << m_CurrentMapPath.c_str());
 			return;
 		}
 
-		DEVIOUS_EVENT("Saved map at directory: " << path);
+		DEVIOUS_EVENT("Saved map at directory: " << m_CurrentMapPath);
 
 		cereal::BinaryOutputArchive ar(os);
 		ar(m_Chunks);
+
+		m_CurrentMapPath = m_CurrentMapPath;
 	}
-	catch(cereal::Exception& e)
+	catch (cereal::Exception& e)
 	{
-		DEVIOUS_ERR("File couldn't get saved at: " << path);
+		DEVIOUS_ERR("File couldn't get saved at: " << m_CurrentMapPath);
 		DEVIOUS_ERR(e.what());
 	}
+}
+
+void WorldEditor::QuickSaveMap()
+{
+	if(m_CurrentMapPath.empty()) 
+	{
+		//If there's no mapfile attached to the current map,
+		//We need to specify a safefile anyways before we can do any quicksaves.
+		SaveMap();
+		return;
+	}
+
+	try
+	{
+		std::ofstream os(m_CurrentMapPath, std::ios::binary);
+		cereal::BinaryOutputArchive ar(os);
+		ar(m_Chunks);
+		DEVIOUS_EVENT("Saved map at directory: " << m_CurrentMapPath);
+	}
+	catch (cereal::Exception& e)
+	{
+		DEVIOUS_ERR("File couldn't get saved at: " << m_CurrentMapPath);
+		DEVIOUS_ERR(e.what());
+	}
+}
+
+void WorldEditor::CleanMap()
+{
+	m_CurrentMapPath = "";
+	ClearSelection();
+	m_Chunks.clear();
+	g_globals.Camera->Reset();
 }
 
 void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
@@ -366,7 +416,7 @@ void WorldEditor::DrawHoverTileInfo()
 void WorldEditor::HandleShortCuts()
 {
 	const bool bCtrlPressed = (g_Input->GetKey(SDLK_RCTRL) || g_Input->GetKey(SDLK_LCTRL));
-	const bool bAltPressed  = (g_Input->GetKey(SDLK_RALT)  || g_Input->GetKey(SDLK_LALT));
+	const bool bAltPressed = (g_Input->GetKey(SDLK_RALT) || g_Input->GetKey(SDLK_LALT));
 
 	//*-----------------------------------
 	// Delete all tiles that are selected.
@@ -391,54 +441,65 @@ void WorldEditor::HandleShortCuts()
 			mode = e_SelectionMode::ADDITION;
 		}
 		else
-		if (bAltPressed)
-		{
-			mode = e_SelectionMode::SUBTRACTION;
-		}
+			if (bAltPressed)
+			{
+				mode = e_SelectionMode::SUBTRACTION;
+			}
 
 		m_SelectionArgs.SelectionMode = mode;
+	}
+
+	//*------------------------
+	// Quick editor file shortcuts bound to ctrl
+	//
+	{
+		if (bCtrlPressed)
+		{
+			if (g_Input->GetKeyDown(SDLK_s))
+			{
+				QuickSaveMap();
+			}
+			return;
+		}
 	}
 
 	//*-------------------------
 	// Shortcut to editor tools
 	//
 	{
-		if(bCtrlPressed) 
+		if (g_Input->GetKeyDown(SDLK_f))
 		{
-			if(g_Input->GetKey(SDLK_f)) 
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_FILL;
-			}
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_FILL;
+		}
 
-			if (g_Input->GetKey(SDLK_p))
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_PICKER;
-			}
+		if (g_Input->GetKeyDown(SDLK_p))
+		{
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_PICKER;
+		}
 
-			if (g_Input->GetKey(SDLK_s))
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_SELECTION;
-			}
+		if (g_Input->GetKeyDown(SDLK_s))
+		{
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_SELECTION;
+		}
 
-			if (g_Input->GetKey(SDLK_d))
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_DRAG;
-			}
+		if (g_Input->GetKeyDown(SDLK_d))
+		{
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_DRAG;
+		}
 
-			if (g_Input->GetKey(SDLK_b))
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_BRUSH;
-			}
+		if (g_Input->GetKeyDown(SDLK_b))
+		{
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_BRUSH;
+		}
 
-			if (g_Input->GetKey(SDLK_w))
-			{
-				App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_WAND;
-			}
+		if (g_Input->GetKeyDown(SDLK_w))
+		{
+			App::Config::TileConfiguration.InteractionMode = e_InteractionMode::MODE_WAND;
+		}
 
-			if (g_Input->GetKey(SDLK_r))
-			{
-				g_globals.Camera->Reset();
-			}
+		if (g_Input->GetKeyDown(SDLK_r))
+		{
+			g_globals.Camera->Reset();
 		}
 	}
 }

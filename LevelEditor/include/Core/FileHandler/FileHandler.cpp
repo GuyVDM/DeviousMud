@@ -2,12 +2,6 @@
 
 #include "Core/FileHandler/FileHandler.h"
 
-#include <codecvt>
-#include <commdlg.h>
-#include <locale>
-#include <shlobj.h>
-#include <Windows.h>
-
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     if (uMsg == BFFM_INITIALIZED)
@@ -20,18 +14,33 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPAR
     return 0;
 }
 
-std::string FileHandler::SaveFile(const std::string& _savedPath)
+
+
+std::string FileHandler::OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs)
 {
     HRESULT init = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
     IFileDialog* pfd = nullptr;
-    HRESULT hr = CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+
+    const CLSID operation = _dialogueBoxArgs.Operation == e_FileOperationType::FILE_LOAD ? CLSID_FileOpenDialog : CLSID_FileSaveDialog;
+    HRESULT hr = CoCreateInstance(operation, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
     if (SUCCEEDED(hr))
     {
-        pfd->SetOptions(FOS_OVERWRITEPROMPT | FOS_FORCEFILESYSTEM);
+        FILEOPENDIALOGOPTIONS flags = FOS_FORCEFILESYSTEM;
+        if (_dialogueBoxArgs.Operation == e_FileOperationType::FILE_SAVE)
+        {
+            flags |= FOS_OVERWRITEPROMPT;
+        };
+
+        // Customize our dialogue box.
+        pfd->SetOptions(flags);
+        pfd->SetTitle(_dialogueBoxArgs.WindowTitle.c_str());
+        pfd->SetOkButtonLabel(_dialogueBoxArgs.SelectButtonLabel.c_str());
+        pfd->SetFileName(_dialogueBoxArgs.InitialFileName.c_str());
+        pfd->SetFileTypes(_dialogueBoxArgs.FilterArraySize, _dialogueBoxArgs.FilterTypeArray);
 
         // Set initial directory and file name
-        std::wstring initialDir(_savedPath.begin(), _savedPath.end());
+        std::wstring initialDir(_dialogueBoxArgs.InitDir.begin(), _dialogueBoxArgs.InitDir.end());
         IShellItem* psiInitial = nullptr;
         hr = SHCreateItemFromParsingName(initialDir.c_str(), nullptr, IID_PPV_ARGS(&psiInitial));
         if (SUCCEEDED(hr))
@@ -55,9 +64,8 @@ std::string FileHandler::SaveFile(const std::string& _savedPath)
                 hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
                 if (SUCCEEDED(hr))
                 {
-                    // Convert to std::string
                     std::wstring filePathWStr(pszPath);
-                    std::string filePath(filePathWStr.begin(), filePathWStr.end());
+                    std::string filePath(filePathWStr.begin(), filePathWStr.end()); // Convert to std::string
                     CoTaskMemFree(pszPath); // Free the path memory
                     psiResult->Release();
                     pfd->Release();
@@ -71,6 +79,6 @@ std::string FileHandler::SaveFile(const std::string& _savedPath)
     }
 
     CoUninitialize(); // Uninitialize COM library
-    return ""; // Return empty string if no file was selected or an error occurred
+    return ""; // Return empty string if no file was succesfully selected.
 }
 
