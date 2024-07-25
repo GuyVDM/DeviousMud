@@ -147,6 +147,71 @@ void WorldEditor::QuickSaveMap()
 	}
 }
 
+void WorldEditor::ImportAndMergeMap()
+{
+	COMDLG_FILTERSPEC _fileTypeArray[1] =
+	{ L"DMEditorMapFile *.dmap*", L"*.dmap*" };
+
+	DialogueBoxArgs args;
+	args.Operation = e_FileOperationType::FILE_LOAD;
+	args.WindowTitle = L"Import and Merge";
+	args.FilterTypeArray = _fileTypeArray;
+	args.FilterArraySize = 1;
+	args.SelectButtonLabel = L"Merge";
+	args.InitialFileName = L"Mymap.dmap";
+	args.InitDir = "C://";
+
+	std::string path = FileHandler::OpenFileWindow(args);
+
+	if (path.empty())
+	{
+		return;
+	}
+
+	try
+	{
+		std::map<Utilities::ivec2, Ref<Chunk>> tempContainer;
+
+		std::ifstream is(path, std::ios::binary);
+		if (!is)
+		{
+			DEVIOUS_ERR("Failed to merge map: " << path.c_str());
+			return;
+		}
+
+		cereal::BinaryInputArchive ar(is);
+		ar(tempContainer);
+
+		//Copy over chunks & tiles to our scene.
+		for(auto&[pos, tempChunk] : tempContainer) 
+		{
+			if(!m_Chunks[pos])  
+			{
+				m_Chunks[pos] = tempChunk;
+			}
+			else 
+			{
+				Ref<Chunk>& chunk = m_Chunks[pos];
+				for(U32 i = 0; i < TILE_COUNT_CHUNK; i++) 
+				{
+					Ref<Tile> tile = tempChunk->m_Tiles[i];
+					if(tile) 
+					{
+						chunk->m_Tiles[i] = tile;
+					}
+				}
+			}
+		}
+
+		DEVIOUS_EVENT("Succesfully merged the scene with: " << path);
+	}
+	catch (cereal::Exception& e)
+	{
+		DEVIOUS_ERR("Failed to merge scene with file: " << m_CurrentMapPath);
+		DEVIOUS_ERR(e.what());
+	}
+}
+
 void WorldEditor::CleanMap()
 {
 	m_CurrentMapPath = "";

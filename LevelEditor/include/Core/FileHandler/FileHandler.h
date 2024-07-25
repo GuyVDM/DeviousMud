@@ -35,5 +35,5 @@ struct DialogueBoxArgs
 class FileHandler 
 {
 public:
-	static std::string OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs);
+	static const std::string OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs);
 };

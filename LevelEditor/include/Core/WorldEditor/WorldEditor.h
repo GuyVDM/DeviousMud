@@ -37,6 +37,11 @@ public:
 	void QuickSaveMap();
 
 	/// <summary>
+	/// Will import another map and merge it into the current scene.
+	/// </summary>
+	void ImportAndMergeMap();
+
+	/// <summary>
 	/// Asks for file name and directory to save your changes to.
 	/// </summary>
 	void SaveMap();

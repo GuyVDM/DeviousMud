@@ -16,7 +16,7 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPAR
 
 
 
-std::string FileHandler::OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs)
+const std::string FileHandler::OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs)
 {
     HRESULT init = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 

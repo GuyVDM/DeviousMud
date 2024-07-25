@@ -315,13 +315,17 @@ void ImGUILayer::DrawMenuBar()
         {
             ImGui::MenuItem("(file)", NULL, false, false);
 
-            if (ImGui::MenuItem("Load Map", "CTRL+L")) g_globals.WorldEditor->LoadMap();
-            if (ImGui::MenuItem("Save Map", "CTRL+S")) g_globals.WorldEditor->QuickSaveMap();
-            if (ImGui::MenuItem("New  Map", "")) 
+            if (ImGui::MenuItem("Load", "")) g_globals.WorldEditor->LoadMap();
+            if (ImGui::MenuItem("Save",    "CTRL+S")) g_globals.WorldEditor->QuickSaveMap();
+            if (ImGui::MenuItem("Save as", "CTRL+S")) g_globals.WorldEditor->SaveMap();
+            if (ImGui::MenuItem("Import & Merge", "")) g_globals.WorldEditor->ImportAndMergeMap();
+            
+            ImGui::Separator();
+            ImGui::MenuItem("(scene)", NULL, false, false);
+            if (ImGui::MenuItem("Clean", "")) 
             {
                 m_bNewMapPopup = true;
             }
-
             ImGui::Separator();
 
             ImGui::MenuItem("(export)", NULL, false, false);
