@@ -12,16 +12,7 @@ constexpr I16 TILE_COUNT_CHUNK = SIZE_CHUNK_TILES * SIZE_CHUNK_TILES;
 class Chunk
 {
 public:
-	template<class Archive>
-	void serialize(Archive& ar)
-	{
-		ar(m_ChunkCoords, m_TileCount);
-
-		for(I32 i = 0; i < TILE_COUNT_CHUNK; i++) 
-		{
-			ar(m_Tiles[i]);
-		}
-	}
+	const static U32 CHUNK_VERSION = 1;
 
 	/// <summary>
 	/// Converts the local coordinates relative to the chunk into a valid index pointing
@@ -109,6 +100,17 @@ public:
 	/// <returns></returns>
 	static const Utilities::ivec2 ToLocalChunkCoords(const Utilities::ivec2& _gridCoords);
 
+	template<class Archive>
+	void serialize(Archive& ar, const std::uint32_t version)
+	{
+		ar(m_ChunkCoords, m_TileCount);
+
+		for (I32 i = 0; i < TILE_COUNT_CHUNK; i++)
+		{
+			ar(m_Tiles[i]);
+		}
+	}
+
 public:
 	Chunk() = default;
 	Chunk(Utilities::ivec2 _chunkCoords) : m_ChunkCoords(_chunkCoords) {};
@@ -119,3 +121,6 @@ public:
 	U32 m_TileCount = 0;
 	std::array<Ref<Tile>, TILE_COUNT_CHUNK> m_Tiles;
 };
+
+//Versioning for serialization
+CEREAL_CLASS_VERSION(Chunk, Chunk::CHUNK_VERSION);

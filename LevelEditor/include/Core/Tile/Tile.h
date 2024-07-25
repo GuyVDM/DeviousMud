@@ -3,137 +3,68 @@
 
 #include "Core/WorldEditor/TileLayer/TileLayer.h"
 
-#include "Shared/Game/SpriteTypes.hpp"
 #include "Shared/Utilities/vec2.hpp"
 
 #include <map>
 
-
-/// <summary>
-/// Basic tile entity.
-/// </summary>
-class TileEntity
-{
-public:
-	Graphics::SpriteType SpriteType = Graphics::SpriteType::NONE;
-	U32                  Frame      = 0;
-
-	inline const bool operator==(const TileEntity* _other) 
-	{
-		return _other->Frame == Frame && _other->SpriteType == SpriteType;
-	}
-
-	inline const bool operator!=(const TileEntity* _other)
-	{
-		return _other->Frame != Frame || _other->SpriteType != SpriteType;
-	}
-
-	inline virtual Ref<TileEntity> Clone() 
-	{
-		return std::make_shared<TileEntity>(*this);
-	}
-
-	template<class Archive>
-	void serialize(Archive& ar)
-	{
-		ar(SpriteType, Frame);
-	}
-
-public:
-	TileEntity() = default;
-	virtual ~TileEntity() = default;
-};
-
-/// <summary>
-/// NPC entity, besides visuals it holds a NPC indentifier and how long until it respawns.
-/// </summary>
-class NPCEntity : public TileEntity 
-{
-public:
-	U32   NpcId = 0;
-	float RespawnTime = 1.0f;
-
-	inline virtual Ref<TileEntity> Clone() override
-	{
-		return std::make_shared<NPCEntity>(*this);
-	}
-
-	template<class Archive>
-	void serialize(Archive& ar)
-	{
-		ar(cereal::base_class<TileEntity>(this));
-		ar(SpriteType, Frame);
-	}
-};
-
-CEREAL_REGISTER_TYPE(NPCEntity);
-CEREAL_REGISTER_POLYMORPHIC_RELATION(TileEntity, NPCEntity)
+class TileEntity;
 
 class Tile
 {
 public:
+	const static U32 TILE_VERSION = 1;
+
 	Utilities::ivec2 LocalChunkCoords;
 	Utilities::ivec2 ChunkCoords;
 	bool             bIsWalkable;
 
+	/// <summary>
+	/// Will try and return a TileEntity with the specified layer if it exists.
+	/// </summary>
+	/// <param name="_layer"></param>
+	/// <returns></returns>
+	Optional<Ref<TileEntity>> TryGetEntity(const e_SelectedLayer& _layer);
+
+	/// <summary>
+	/// Returns false if there are no tile entities bound to this tile.
+	/// </summary>
+	/// <returns></returns>
+	const bool IsEmpty() const;
+
+	/// <summary>
+	/// Register a tile entity at the specified layer.
+	/// </summary>
+	/// <param name="_tileEntity"></param>
+	/// <param name="_layer"></param>
+	void InsertLayerEntity(Ref<TileEntity> _tileEntity, const e_SelectedLayer& _layer);
+
+	/// <summary>
+	/// Remove entitiy at the specified layer.
+	/// </summary>
+	/// <param name="_layer"></param>
+	void RemoveLayerEntity(const e_SelectedLayer& _layer);
+
+	/// <summary>
+	/// Render the tile to the screen.
+	/// </summary>
+	virtual void Render();
+
 	template<class Archive>
-	void serialize(Archive& ar)
+	void serialize(Archive& ar, const std::uint32_t version)
 	{
 		ar(LocalChunkCoords, ChunkCoords, bIsWalkable, m_EntityLayers);
 	}
 
-	inline Optional<Ref<TileEntity>> TryGetEntity(const e_SelectedLayer& _layer)
-	{
-		if(m_EntityLayers.find(_layer) == m_EntityLayers.end())
-		{
-			return std::nullopt;
-		}
-
-		return m_EntityLayers[_layer];
-	}
-
-	inline const bool IsEmpty() const
-	{
-		return m_EntityLayers.size() == 0;
-	}
-
-	inline void InsertLayerEntity(Ref<TileEntity> _tileEntity, const e_SelectedLayer& _layer)
-	{
-		m_EntityLayers[_layer] = _tileEntity;
-	}
-
-	inline void RemoveLayerEntity(const e_SelectedLayer& _layer) 
-	{
-		m_EntityLayers.erase(_layer);
-	}
-
-	virtual void Render();
-
 public:
-	inline Tile(const Tile* _other) 
-	{
-		LocalChunkCoords = _other->LocalChunkCoords;
-		ChunkCoords      = _other->ChunkCoords;
-		bIsWalkable      = _other->bIsWalkable;
-
-		for(auto&[layer, tileEntt] : _other->m_EntityLayers)
-		{
-			m_EntityLayers[layer] = tileEntt->Clone();
-		}
-	}
-
-	inline Tile()
-	{
-		LocalChunkCoords = Utilities::ivec2(0);
-		ChunkCoords      = Utilities::ivec2(0);
-		bIsWalkable      = true;
-	};
+	Tile(const Tile* _other);
+	Tile();
 
 private:
 	std::map<e_SelectedLayer, Ref<TileEntity>> m_EntityLayers;
 };
 
-
+//Versioning for serialization
+CEREAL_CLASS_VERSION(Tile, Tile::TILE_VERSION);
 
 
 

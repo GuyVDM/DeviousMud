@@ -3,13 +3,42 @@
 #include "Core/Tile/Tile.h"
 
 #include "Core/Config/Config.h"
+#include "Core/Camera/Camera.h"
 #include "Core/Globals/Globals.h"
 #include "Core/Renderer/Renderer.h"
 #include "Core/WorldEditor/WorldEditor.h"
 #include "Core/WorldEditor/Chunk/Chunk.h"
-#include "Core/Camera/Camera.h"
+
+//Needed for serialization
+#include "Core/Tile/Entities/TileEntity/TileEntity.h"
+#include "Core/Tile/Entities/NPCEntity/NPCEntity.h"
 
 #include "Shared/Game/NPCDef.h"
+
+Optional<Ref<TileEntity>> Tile::TryGetEntity(const e_SelectedLayer& _layer)
+{
+	if (m_EntityLayers.find(_layer) == m_EntityLayers.end())
+	{
+		return std::nullopt;
+	}
+
+	return m_EntityLayers[_layer];
+}
+
+const bool Tile::IsEmpty() const
+{
+	return m_EntityLayers.size() == 0;
+}
+
+void Tile::InsertLayerEntity(Ref<TileEntity> _tileEntity, const e_SelectedLayer& _layer)
+{
+	m_EntityLayers[_layer] = _tileEntity;
+}
+
+void Tile::RemoveLayerEntity(const e_SelectedLayer& _layer)
+{
+	m_EntityLayers.erase(_layer);
+}
 
 void Tile::Render()
 {
@@ -60,4 +89,23 @@ void Tile::Render()
 		size.x,
 		size.y
 	};
+}
+
+Tile::Tile(const Tile* _other)
+{
+	LocalChunkCoords = _other->LocalChunkCoords;
+	ChunkCoords = _other->ChunkCoords;
+	bIsWalkable = _other->bIsWalkable;
+
+	for (auto& [layer, tileEntt] : _other->m_EntityLayers)
+	{
+		m_EntityLayers[layer] = tileEntt->Clone();
+	}
+}
+
+Tile::Tile()
+{
+	LocalChunkCoords = Utilities::ivec2(0);
+	ChunkCoords = Utilities::ivec2(0);
+	bIsWalkable = true;
 }

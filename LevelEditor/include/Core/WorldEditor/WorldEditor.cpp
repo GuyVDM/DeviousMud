@@ -13,6 +13,9 @@
 #include "Core/Renderer/Renderer.h"
 #include "Core/WorldEditor/TileLayer/TileLayer.h"
 
+#include "Core/Tile/Entities/TileEntity/TileEntity.h"
+#include "Core/Tile/Entities/NPCEntity/NPCEntity.h"
+
 #include "Shared/Game/SpriteTypes.hpp"
 
 WorldEditor::WorldEditor()
@@ -51,6 +54,7 @@ void WorldEditor::LoadMap()
 
 void WorldEditor::CleanMap()
 {
+	ClearSelection();
 	m_Chunks.clear();
 	g_globals.Camera->Reset();
 }

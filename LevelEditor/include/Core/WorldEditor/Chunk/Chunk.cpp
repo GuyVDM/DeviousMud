@@ -5,6 +5,7 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Renderer/Renderer.h"
+#include "Core/Tile/Entities/TileEntity/TileEntity.h"
 
 #include "Core/Tile/Tile.h"
 

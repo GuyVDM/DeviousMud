@@ -202,6 +202,8 @@
     <ClInclude Include="include\Core\Renderer\SubSprite\SubSprite.hpp" />
     <ClInclude Include="include\Core\Serialization\CerealSerializable.h" />
     <ClInclude Include="include\Core\Serialization\JsonSerializable.h" />
+    <ClInclude Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.h" />
+    <ClInclude Include="include\Core\Tile\Entities\TileEntity\TileEntity.h" />
     <ClInclude Include="include\Core\Tile\Tile.h" />
     <ClInclude Include="include\Core\WorldEditor\Chunk\Chunk.h" />
     <ClInclude Include="include\Core\WorldEditor\Selection\Selection.h" />
@@ -230,6 +232,8 @@
     <ClCompile Include="include\Core\Layers\LayerStack.cpp" />
     <ClCompile Include="include\Core\Renderer\FontLoader\FontLoader.cpp" />
     <ClCompile Include="include\Core\Renderer\Renderer.cpp" />
+    <ClCompile Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.cpp" />
+    <ClCompile Include="include\Core\Tile\Entities\TileEntity\TileEntity.cpp" />
     <ClCompile Include="include\Core\Tile\Tile.cpp" />
     <ClCompile Include="include\Core\WorldEditor\Chunk\Chunk.cpp" />
     <ClCompile Include="include\Core\WorldEditor\Selection\Selection.cpp" />

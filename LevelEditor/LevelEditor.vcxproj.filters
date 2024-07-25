@@ -120,6 +120,12 @@
     <ClInclude Include="include\Core\Logger\Logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Tile\Entities\TileEntity\TileEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\Core\Camera\Camera.cpp">
@@ -195,6 +201,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\Core\WorldEditor\Chunk\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Core\Tile\Entities\TileEntity\TileEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

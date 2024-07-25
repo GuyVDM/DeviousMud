@@ -28,7 +28,6 @@ using U32 = unsigned int;
 
 using U64 = unsigned long long;
 
-
 template<typename T>
 using Optional = std::optional<T>;
 
