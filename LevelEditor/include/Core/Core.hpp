@@ -41,6 +41,15 @@ using WeakRef = std::weak_ptr<T>;
 template<typename T>
 using Scope = std::unique_ptr<T>;
 
+namespace cereal
+{
+	template<class Archive>
+	void serialize(Archive& _ar, Utilities::ivec2& _ivec)
+	{
+		_ar(_ivec.x, _ivec.y);
+	}
+}
+
 inline bool U32IsBitSet(const U32& _value, const U32 _bitPosition)
 {
     const U32 mask = 1U << _bitPosition;

@@ -22,18 +22,11 @@ namespace Graphics
 	enum class SpriteType : U16;
 }
 
-namespace cereal 
-{
-	template<class Archive>
-	void serialize(Archive& _ar, Utilities::ivec2& _ivec) 
-	{
-		_ar(_ivec.x, _ivec.y);
-	}
-}
-
 class WorldEditor
 {
 public:
+	void CleanMap();
+
 	void SaveMap();
 
 	void LoadMap();

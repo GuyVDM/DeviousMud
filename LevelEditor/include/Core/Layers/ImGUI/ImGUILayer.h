@@ -90,6 +90,8 @@ private:
 
 	void DrawLoggingWindow();
 
+	void DrawNewMapPopup();
+
 private:
 	SDL_Renderer* m_Renderer;
 
@@ -98,4 +100,5 @@ private:
 	U8   m_logFilterFlags   = 0xFF;
 	bool m_bCtrlPressed     = false;
 	bool m_bLayerWindowOpen = true;
+	bool m_bNewMapPopup     = false;
 };

@@ -41,12 +41,18 @@ void WorldEditor::LoadMap()
 		return;
 	}
 
-	m_Chunks.clear();
+	CleanMap();
 
 	DEVIOUS_EVENT("Loaded map at directory: " << path);
 
 	cereal::BinaryInputArchive ar(is);
 	ar(m_Chunks);
+}
+
+void WorldEditor::CleanMap()
+{
+	m_Chunks.clear();
+	g_globals.Camera->Reset();
 }
 
 void WorldEditor::SaveMap()

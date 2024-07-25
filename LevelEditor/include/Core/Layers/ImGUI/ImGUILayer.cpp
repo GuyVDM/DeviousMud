@@ -187,6 +187,7 @@ void ImGUILayer::DrawImGUI()
         DrawRightClickMenu();
         DrawLayerWindow();
         DrawLoggingWindow();
+        DrawNewMapPopup();
     }
 }
 
@@ -316,6 +317,10 @@ void ImGUILayer::DrawMenuBar()
 
             if (ImGui::MenuItem("Load Map", "CTRL+L")) g_globals.WorldEditor->LoadMap();
             if (ImGui::MenuItem("Save Map", "CTRL+S")) g_globals.WorldEditor->SaveMap();
+            if (ImGui::MenuItem("New  Map", "")) 
+            {
+                m_bNewMapPopup = true;
+            }
 
             ImGui::Separator();
 
@@ -878,4 +883,45 @@ void ImGUILayer::DrawLoggingWindow()
     }
 
     ImGui::End();
+}
+
+void ImGUILayer::DrawNewMapPopup()
+{
+    if (m_bNewMapPopup)
+    {
+        ImGui::OpenPopup("Potential Unsaved Changes");
+    }
+
+    if (ImGui::BeginPopupModal("Potential Unsaved Changes", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Are you sure you want to create a new map?");
+
+        constexpr ImVec4 textWarningCol = { 255, 0, 0, 255 };
+        ImGui::TextColored(textWarningCol, "Any unsaved changes will be gone forever.");
+
+        constexpr ImVec2 buttonSize = { 60.0f, 20.0f };
+        constexpr float offsetFromMiddle = 20.0f;
+        const float windowXHalfExtends = ImGui::GetWindowWidth() * 0.5f;
+
+        ImGui::Spacing();
+
+        ImGui::SetCursorPosX((windowXHalfExtends + offsetFromMiddle));
+        if (ImGui::Button("Yes", buttonSize))
+        {
+            m_bNewMapPopup = false;
+            g_globals.WorldEditor->CleanMap();
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        ImGui::SetCursorPosX(((windowXHalfExtends - offsetFromMiddle)) - buttonSize.x);
+        if (ImGui::Button("No", buttonSize))
+        {
+            m_bNewMapPopup = false;
+            ImGui::CloseCurrentPopup();
+        }
+    }
+
+    ImGui::EndPopup();
 }
