@@ -183,21 +183,39 @@ void WorldEditor::ImportAndMergeMap()
 		ar(tempContainer);
 
 		//Copy over chunks & tiles to our scene.
-		for(auto&[pos, tempChunk] : tempContainer) 
+		for (auto& [pos, tempChunk] : tempContainer)
 		{
-			if(!m_Chunks[pos])  
+			if (!m_Chunks[pos])
 			{
 				m_Chunks[pos] = tempChunk;
+				continue;
 			}
-			else 
+
+			Ref<Chunk>& chunk = m_Chunks[pos];
+
+			for (U32 i = 0; i < TILE_COUNT_CHUNK; i++)
 			{
-				Ref<Chunk>& chunk = m_Chunks[pos];
-				for(U32 i = 0; i < TILE_COUNT_CHUNK; i++) 
+				Ref<Tile>& tempTile = tempChunk->m_Tiles[i];
+				if (!tempTile)
 				{
-					Ref<Tile> tile = tempChunk->m_Tiles[i];
-					if(tile) 
+					continue;
+				}
+
+				Ref<Tile>& ourTile = chunk->m_Tiles[i];
+				if (!ourTile)
+				{
+					ourTile = tempTile;
+					continue;
+				}
+
+				for (U8 i = 0; i < static_cast<U8>(e_SelectedLayer::LAYER_COUNT); i++)
+				{
+					const e_SelectedLayer layer = static_cast<e_SelectedLayer>(i);
+
+					Optional<Ref<TileEntity>> optEntt = tempTile->TryGetEntity(layer);
+					if (optEntt.has_value())
 					{
-						chunk->m_Tiles[i] = tile;
+						ourTile->InsertLayerEntity(optEntt.value(), layer);
 					}
 				}
 			}
