@@ -163,6 +163,12 @@ public:
 	SDL_Renderer* GetRenderer();
 
 	/// <summary>
+	/// Update window title and display map name besides it.
+	/// </summary>
+	/// <param name="_currentMapName"></param>
+	void UpdateMapName(const std::string& _mapFilePath);
+
+	/// <summary>
 	/// Returns true or false based on if the rect is visible on the screen.
 	/// </summary>
 	/// <param name="_rect"></param>
@@ -183,6 +189,8 @@ private:
 	void CreateRectTexture();
 
 private:
+	std::string m_WindowName;
+
 	SDL_Window* m_Window;
 
 	SDL_Renderer* m_Renderer;

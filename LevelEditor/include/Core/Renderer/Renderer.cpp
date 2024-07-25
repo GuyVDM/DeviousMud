@@ -19,6 +19,10 @@ Renderer::Renderer(const Utilities::ivec2& _windowSize)
 
 	CreateSDLWindow(_windowSize.x, _windowSize.y);
 
+	SDL_Surface* editorIconSurface = IMG_Load("icons/windowicon.png");
+	SDL_SetWindowIcon(m_Window, editorIconSurface);
+	SDL_FreeSurface(editorIconSurface);
+
 	for(const auto& sprite : Graphics::SpriteConfig::spriteMap()) 
 	{
 		LoadSprites(sprite);
@@ -408,14 +412,16 @@ void Renderer::CreateSDLWindow(const I32& _width, const I32& _height)
 {
 	U32 flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
+	m_WindowName = "DM Editor";
+
 	if (_width == 0 && _height == 0)
 	{
 		flags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
-		m_Window = SDL_CreateWindow("DM Editor", 0, 0, 1000, 1000, flags);
+		m_Window = SDL_CreateWindow("DM Editor - Untitled Map", 0, 0, 1000, 1000, flags);
 	}
 	else
 	{
-		m_Window = SDL_CreateWindow("DM Editor", 0, 0, _width, _height, flags);
+		m_Window = SDL_CreateWindow("DM Editor - Untitled Map", 0, 0, _width, _height, flags);
 	}
 
 	if (!m_Window)
@@ -437,6 +443,23 @@ SDL_Window* Renderer::GetWindow()
 SDL_Renderer* Renderer::GetRenderer()
 {
 	return m_Renderer;
+}
+
+void Renderer::UpdateMapName(const std::string& _mapFilePath)
+{
+	std::string fileName = "Untitled Map";
+
+	if(!_mapFilePath.empty()) 
+	{
+		fileName = _mapFilePath;
+	}
+
+	std::string windowName = m_WindowName;
+	windowName.append(" - ");
+	windowName.append(fileName);
+
+	SDL_SetWindowTitle(m_Window, windowName.c_str());
+
 }
 
 void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)

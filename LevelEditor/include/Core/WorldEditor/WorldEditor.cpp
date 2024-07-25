@@ -39,12 +39,12 @@ void WorldEditor::LoadMap()
 	{ L"DMEditorMapFile *.dmap*", L"*.dmap*" };
 
 	DialogueBoxArgs args;
-	args.Operation = e_FileOperationType::FILE_LOAD;
-	args.WindowTitle = L"Load Editor Map File";
-	args.FilterTypeArray = _fileTypeArray;
-	args.FilterArraySize = 1;
+	args.Operation         = e_FileOperationType::FILE_LOAD;
+	args.WindowTitle       = L"Load Editor Map File";
+	args.FilterTypeArray   = _fileTypeArray;
+	args.FilterArraySize   = 1;
 	args.SelectButtonLabel = L"Load";
-	args.InitDir = "C://";
+	args.InitDir           = "C://";
 
 	std::string path = FileHandler::OpenFileWindow(args);
 
@@ -62,12 +62,14 @@ void WorldEditor::LoadMap()
 			return;
 		}
 
-		CleanMap();
 
 		DEVIOUS_EVENT("Loaded map at directory: " << path);
-
+		CleanMap();
+		m_CurrentMapPath = path;
 		cereal::BinaryInputArchive ar(is);
 		ar(m_Chunks);
+
+		g_globals.Renderer->UpdateMapName(m_CurrentMapPath);
 	}
 	catch(cereal::Exception& e) 
 	{
@@ -82,13 +84,13 @@ void WorldEditor::SaveMap()
 	{ L"DMEditorMapFile *.dmap*", L"*.dmap*" };
 
 	DialogueBoxArgs args;
-	args.Operation = e_FileOperationType::FILE_SAVE;
-	args.WindowTitle = L"Save Editor Map File";
-	args.FilterTypeArray = _fileTypeArray;
-	args.FilterArraySize = 1;
+	args.Operation         = e_FileOperationType::FILE_SAVE;
+	args.WindowTitle       = L"Save Editor Map File";
+	args.FilterTypeArray   = _fileTypeArray;
+	args.FilterArraySize   = 1;
 	args.SelectButtonLabel = L"Save";
-	args.InitialFileName = L"Mymap.dmap";
-	args.InitDir = "C://";
+	args.InitialFileName   = L"Mymap.dmap";
+	args.InitDir           = "C://";
 
 	m_CurrentMapPath = FileHandler::OpenFileWindow(args);
 
@@ -112,6 +114,7 @@ void WorldEditor::SaveMap()
 		ar(m_Chunks);
 
 		m_CurrentMapPath = m_CurrentMapPath;
+		g_globals.Renderer->UpdateMapName(m_CurrentMapPath);
 	}
 	catch (cereal::Exception& e)
 	{
@@ -147,9 +150,10 @@ void WorldEditor::QuickSaveMap()
 void WorldEditor::CleanMap()
 {
 	m_CurrentMapPath = "";
-	ClearSelection();
+	ClearSelection(); 
 	m_Chunks.clear();
 	g_globals.Camera->Reset();
+	g_globals.Renderer->UpdateMapName(m_CurrentMapPath);
 }
 
 void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
@@ -441,16 +445,16 @@ void WorldEditor::HandleShortCuts()
 			mode = e_SelectionMode::ADDITION;
 		}
 		else
-			if (bAltPressed)
-			{
-				mode = e_SelectionMode::SUBTRACTION;
-			}
+		if (bAltPressed)
+		{
+			mode = e_SelectionMode::SUBTRACTION;
+		}
 
 		m_SelectionArgs.SelectionMode = mode;
 	}
 
 	//*------------------------
-	// Quick editor file shortcuts bound to ctrl
+	// Quick editor shortcuts that're bound to ctrl.
 	//
 	{
 		if (bCtrlPressed)
@@ -516,11 +520,12 @@ void WorldEditor::PlaceTileEntity(const Utilities::ivec2& _gridCoords)
 
 	const e_SelectedLayer layer = TileConfiguration.CurrentLayer;
 
-	Ref<TileEntity> tileEntity;
 
 	//*--------------------------------------------------------------------
 	// Create the tile entity based on the layer we have currently selected,
 	// and place it on top of the hovered tile afterwards.
+	Ref<TileEntity> tileEntity;
+
 	switch(layer)
 	{
 		case e_SelectedLayer::LAYER_NPC:
