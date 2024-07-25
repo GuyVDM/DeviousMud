@@ -37,19 +37,32 @@ void WorldEditor::LoadMap()
 {
 	std::string path = FileHandler::SaveFile("../data/map");
 
-	std::ifstream is(path, std::ios::binary);
-	if (!is)
+	if(path.empty()) 
 	{
-		DEVIOUS_ERR("Error opening file for reading.");
 		return;
 	}
 
-	CleanMap();
+	try
+	{
+		std::ifstream is(path, std::ios::binary);
+		if (!is)
+		{
+			DEVIOUS_ERR("Failed to load map: " << path.c_str());
+			return;
+		}
 
-	DEVIOUS_EVENT("Loaded map at directory: " << path);
+		CleanMap();
 
-	cereal::BinaryInputArchive ar(is);
-	ar(m_Chunks);
+		DEVIOUS_EVENT("Loaded map at directory: " << path);
+
+		cereal::BinaryInputArchive ar(is);
+		ar(m_Chunks);
+	}
+	catch(cereal::Exception& e) 
+	{
+		DEVIOUS_ERR("File is either corrupted or is not valid: " << path);
+		DEVIOUS_ERR(e.what());
+	}
 }
 
 void WorldEditor::CleanMap()
@@ -63,17 +76,30 @@ void WorldEditor::SaveMap()
 {
 	std::string path = FileHandler::SaveFile("../data/map");
 
-	std::ofstream os(path, std::ios::binary);
-	if (!os) 
+	if (path.empty())
 	{
-		DEVIOUS_ERR("Error opening file for reading.");
 		return;
 	}
 
-	DEVIOUS_EVENT("Saved map at directory: " << path);
+	try
+	{
+		std::ofstream os(path, std::ios::binary);
+		if (!os)
+		{
+			DEVIOUS_ERR("Failed to save map: " << path.c_str());
+			return;
+		}
 
-	cereal::BinaryOutputArchive ar(os);
-	ar(m_Chunks);
+		DEVIOUS_EVENT("Saved map at directory: " << path);
+
+		cereal::BinaryOutputArchive ar(os);
+		ar(m_Chunks);
+	}
+	catch(cereal::Exception& e)
+	{
+		DEVIOUS_ERR("File couldn't get saved at: " << path);
+		DEVIOUS_ERR(e.what());
+	}
 }
 
 void WorldEditor::AddTileEntityTo(Ref<TileEntity> _tile, const Utilities::ivec2& _gridCoords, const e_SelectedLayer& _layer)
