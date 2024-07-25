@@ -459,7 +459,6 @@ void Renderer::UpdateMapName(const std::string& _mapFilePath)
 	windowName.append(fileName);
 
 	SDL_SetWindowTitle(m_Window, windowName.c_str());
-
 }
 
 void Renderer::Render(const RenderQuery& _query, const U8& _zOrder)
