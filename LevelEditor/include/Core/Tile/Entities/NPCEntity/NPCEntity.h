@@ -18,7 +18,15 @@ public:
 	void serialize(Archive& ar, const std::uint32_t version)
 	{
 		ar(cereal::base_class<TileEntity>(this));
-		ar(SpriteType, Frame);
+
+		switch (version)
+		{
+			case 1:
+			{
+				ar(NpcId, RespawnTime);
+			}
+			break;
+		}
 	}
 };
 
