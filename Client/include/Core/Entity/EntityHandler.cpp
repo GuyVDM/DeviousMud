@@ -14,11 +14,6 @@
 
 using Config = DM::CLIENT::Config;
 
-using namespace DM;
-using namespace Path;
-
-using namespace Graphics::Animation;
-
 EntityHandler::EntityHandler()
 {
 	m_localPlayerId = 0;

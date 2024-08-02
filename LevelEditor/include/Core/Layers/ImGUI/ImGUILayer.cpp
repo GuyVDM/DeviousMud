@@ -73,7 +73,9 @@ ImGUILayer::ImGUILayer(SDL_Window* _window, SDL_Renderer* _renderer)
     style.Colors[ImGuiCol_FrameBgActive]       = { 0.30f, 0.30f, 0.30f, 1.0f };
     style.Colors[ImGuiCol_TabHovered]          = { 0.29f, 0.29f, 0.29f, 1.0f };
     style.Colors[ImGuiCol_Tab]                 = { 0.24f, 0.24f, 0.24f, 1.0f };
-    style.Colors[ImGuiCol_TabSelected]         = { 0.34f, 0.34f, 0.34f, 1.0f };
+    style.Colors[ImGuiCol_TabSelected]         = { 0.14f, 0.14f, 0.14f, 1.0f };
+    style.Colors[ImGuiCol_TabUnfocused]        = { 0.24f, 0.24f, 0.24f, 1.0f };
+    style.Colors[ImGuiCol_TabUnfocusedActive]  = { 0.34f, 0.34f, 0.34f, 1.0f };
     style.Colors[ImGuiCol_TabSelectedOverline] = { 0.24f, 0.24f, 0.24f, 1.0f };
     style.Colors[ImGuiCol_ResizeGripHovered]   = { 0.5f,  0.5f,  0.0f,  1.0f };
     style.Colors[ImGuiCol_ResizeGripActive]    = { 0.7f,  0.7f,  0.0f,  1.0f };

@@ -546,6 +546,11 @@ void WorldEditor::HandleShortCuts()
 			{
 				QuickSaveMap();
 			}
+
+			if(g_Input->GetKeyDown(SDLK_r)) 
+			{
+				g_globals.Camera->Reset();
+			}
 			return;
 		}
 	}
