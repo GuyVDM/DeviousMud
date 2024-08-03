@@ -18,6 +18,42 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Core\Config\Config.cpp" />
+    <ClCompile Include="src\Core\Events\Handler\EventHandler.cpp" />
+    <ClCompile Include="src\Core\Events\Query\EventQuery.cpp" />
+    <ClCompile Include="src\Core\Game\Admin\CommandHandler.cpp" />
+    <ClCompile Include="src\Core\Game\Combat\CombatHandler.cpp" />
+    <ClCompile Include="src\Core\Game\Entity\Definition\EntityDef.cpp" />
+    <ClCompile Include="src\Core\Game\Entity\EntityHandler.cpp" />
+    <ClCompile Include="src\Core\Game\World\World.cpp" />
+    <ClCompile Include="src\Core\Network\Client\ClientInfo.cpp" />
+    <ClCompile Include="src\Core\Network\Connection\ConnectionHandler.cpp" />
+    <ClCompile Include="src\Core\Network\NetworkHandler.cpp" />
+    <ClCompile Include="src\precomp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Core\Config\Config.h" />
+    <ClInclude Include="include\Core\Events\Handler\EventHandler.h" />
+    <ClInclude Include="include\Core\Events\Query\EventQuery.h" />
+    <ClInclude Include="include\Core\Game\Admin\CommandHandler.h" />
+    <ClInclude Include="include\Core\Game\Combat\CombatHandler.h" />
+    <ClInclude Include="include\Core\Game\Entity\Definition\EntityDef.h" />
+    <ClInclude Include="include\Core\Game\Entity\EntityHandler.h" />
+    <ClInclude Include="include\Core\Game\World\NPCWorldSpawn.h" />
+    <ClInclude Include="include\Core\Game\World\World.h" />
+    <ClInclude Include="include\Core\Globals\S_Globals.h" />
+    <ClInclude Include="include\Core\Network\Client\ClientInfo.h" />
+    <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h" />
+    <ClInclude Include="include\Core\Network\NetworkHandler.h" />
+    <ClInclude Include="include\precomp.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -173,42 +209,6 @@
       <AdditionalDependencies>enet.lib;enet64.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="include\Core\Game\Admin\CommandHandler.cpp" />
-    <ClCompile Include="include\Core\Game\Combat\CombatHandler.cpp" />
-    <ClCompile Include="include\Core\Config\Config.cpp" />
-    <ClCompile Include="include\Core\Events\Handler\EventHandler.cpp" />
-    <ClCompile Include="include\Core\Events\Query\EventQuery.cpp" />
-    <ClCompile Include="include\Core\Game\Entity\Definition\EntityDef.cpp" />
-    <ClCompile Include="include\Core\Game\Entity\EntityHandler.cpp" />
-    <ClCompile Include="include\Core\Game\World\World.cpp" />
-    <ClCompile Include="include\Core\Network\Client\ClientInfo.cpp" />
-    <ClCompile Include="include\Core\Network\Connection\ConnectionHandler.cpp" />
-    <ClCompile Include="include\Core\Network\NetworkHandler.cpp" />
-    <ClCompile Include="include\precomp.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Server.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\Core\Game\Admin\CommandHandler.h" />
-    <ClInclude Include="include\Core\Game\Combat\CombatHandler.h" />
-    <ClInclude Include="include\Core\Config\Config.h" />
-    <ClInclude Include="include\Core\Events\Handler\EventHandler.h" />
-    <ClInclude Include="include\Core\Events\Query\EventQuery.h" />
-    <ClInclude Include="include\Core\Game\Entity\Definition\EntityDef.h" />
-    <ClInclude Include="include\Core\Game\Entity\EntityHandler.h" />
-    <ClInclude Include="include\Core\Game\World\NPCWorldSpawn.hpp" />
-    <ClInclude Include="include\Core\Game\World\World.h" />
-    <ClInclude Include="include\Core\Globals\S_Globals.h" />
-    <ClInclude Include="include\Core\Network\Client\ClientInfo.h" />
-    <ClInclude Include="include\Core\Network\Connection\ConnectionHandler.h" />
-    <ClInclude Include="include\Core\Network\NetworkHandler.h" />
-    <ClInclude Include="include\precomp.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

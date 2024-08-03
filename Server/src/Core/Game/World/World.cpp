@@ -2,10 +2,8 @@
 
 #include "Core/Game/World/World.h"
 
-#include "Core/Game/World/NPCWorldSpawn.hpp"
-
+#include "Core/Game/World/NPCWorldSpawn.h"
 #include "Core/Game/Entity/EntityHandler.h"
-
 #include "Core/Globals/S_Globals.h"
 
 void Server::World::init()

@@ -1,6 +1,6 @@
 #include "precomp.h"
 
-#include "Config.h"
+#include "Core/Config/Config.h"
 
 #include <cmath>
 
