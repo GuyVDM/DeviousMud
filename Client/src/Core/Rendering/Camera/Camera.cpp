@@ -1,5 +1,5 @@
 #include "precomp.h"
-#include "Camera.h"
+#include "Core/Rendering/Camera/Camera.h"
 
 
 Camera::Camera(Utilities::vec2 _pos) : m_pos(_pos)

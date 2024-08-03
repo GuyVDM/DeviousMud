@@ -18,6 +18,80 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Core\Application\Application.cpp" />
+    <ClCompile Include="src\Core\Application\Config\Config.cpp" />
+    <ClCompile Include="src\Core\Entity\EntityHandler.cpp" />
+    <ClCompile Include="src\Core\Entity\Simulation\SimPosition.cpp" />
+    <ClCompile Include="src\Core\Entity\WorldEntity\States\WorldEntityStates.cpp" />
+    <ClCompile Include="src\Core\Entity\WorldEntity\WorldEntity.cpp" />
+    <ClCompile Include="src\Core\Events\Clickable\Clickable.cpp" />
+    <ClCompile Include="src\Core\Events\Clickable\Tile\WorldTile.cpp" />
+    <ClCompile Include="src\Core\Events\EventReceiver.cpp" />
+    <ClCompile Include="src\Core\Network\Client\ClientWrapper.cpp" />
+    <ClCompile Include="src\Core\Network\Packets\ENetPacketHandler.cpp" />
+    <ClCompile Include="src\Core\Rendering\Animation\Animator\Animator.cpp" />
+    <ClCompile Include="src\Core\Rendering\Camera\Camera.cpp" />
+    <ClCompile Include="src\Core\Rendering\Cursor\RSCross.cpp" />
+    <ClCompile Include="src\Core\Rendering\Renderer.cpp" />
+    <ClCompile Include="src\Core\Rendering\Sprite\Sprite.cpp" />
+    <ClCompile Include="src\Core\UI\Layer\EntityLayer\EntityLayer.cpp" />
+    <ClCompile Include="src\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
+    <ClCompile Include="src\Core\UI\Layer\Layer.cpp" />
+    <ClCompile Include="src\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\Canvas\Canvas.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\Chatbox\Chatbox.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\UIComponent.cpp" />
+    <ClCompile Include="src\Core\UI\UIComponent\WorldText\WorldText.cpp" />
+    <ClCompile Include="src\Core\Util\Timer.cpp" />
+    <ClCompile Include="src\precomp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Core\Application\Application.h" />
+    <ClInclude Include="include\Core\Application\Config\Config.h" />
+    <ClInclude Include="include\Core\Entity\EntityHandler.h" />
+    <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h" />
+    <ClInclude Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.h" />
+    <ClInclude Include="include\Core\Entity\WorldEntity\WorldEntity.h" />
+    <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
+    <ClInclude Include="include\Core\Events\Clickable\Tile\WorldTile.h" />
+    <ClInclude Include="include\Core\Events\EventReceiver.h" />
+    <ClInclude Include="include\Core\Global\C_Globals.h" />
+    <ClInclude Include="include\Core\Network\Client\ClientWrapper.h" />
+    <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
+    <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
+    <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
+    <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
+    <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h" />
+    <ClInclude Include="include\Core\Rendering\Renderer.h" />
+    <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
+    <ClInclude Include="include\Core\UI\Layer\EntityLayer\EntityLayer.h" />
+    <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
+    <ClInclude Include="include\Core\UI\Layer\Layer.h" />
+    <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
+    <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h" />
+    <ClInclude Include="include\Core\Util\TimerHandler.h" />
+    <ClInclude Include="include\precomp.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -177,107 +251,6 @@
       <AdditionalDependencies>enet64.lib;ws2_32.lib;winmm.lib;SDL2.lib;SDL2_image.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Client.cpp" />
-    <ClCompile Include="include\Core\Application\Application.cpp" />
-    <ClCompile Include="include\Core\Application\Config\Config.cpp" />
-    <ClCompile Include="include\Core\Entity\Simulation\SimPosition.cpp" />
-    <ClCompile Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.cpp" />
-    <ClCompile Include="include\Core\Rendering\Cursor\RSCross.cpp" />
-    <ClCompile Include="include\Core\Events\Clickable\Clickable.cpp" />
-    <ClCompile Include="include\Core\Entity\WorldEntity\WorldEntity.cpp" />
-    <ClCompile Include="include\Core\Events\Clickable\Tile\WorldTile.cpp" />
-    <ClCompile Include="include\Core\Events\EventReceiver.cpp" />
-    <ClCompile Include="include\Core\Network\Client\ClientWrapper.cpp" />
-    <ClCompile Include="include\Core\Network\Packets\ENetPacketHandler.cpp" />
-    <ClCompile Include="include\Core\Entity\EntityHandler.cpp" />
-    <ClCompile Include="include\Core\Rendering\Animation\Animator\Animator.cpp" />
-    <ClCompile Include="include\Core\Rendering\Camera\Camera.cpp" />
-    <ClCompile Include="include\Core\Rendering\Renderer.cpp" />
-    <ClCompile Include="include\Core\Rendering\Sprite\Sprite.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\HUDLayer\HUDLayer.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\Chatbox\Chatbox.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\Healthbar\Healthbar.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\Canvas\Canvas.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\Layer.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\EntityLayer\EntityLayer.cpp" />
-    <ClCompile Include="include\Core\UI\Layer\WorldLayer\WorldLayer.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\TextComponent\TextComponent.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\UIComponent.cpp" />
-    <ClCompile Include="include\Core\UI\UIComponent\WorldText\WorldText.cpp" />
-    <ClCompile Include="include\Core\Util\Timer.cpp" />
-    <ClCompile Include="include\precomp.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\Core\Application\Application.h" />
-    <ClInclude Include="include\Core\Application\Config\Config.h" />
-    <ClInclude Include="include\Core\Entity\Simulation\SimPosition.h" />
-    <ClInclude Include="include\Core\Entity\WorldEntity\States\WorldEntityStates.h" />
-    <ClInclude Include="include\Core\Rendering\Cursor\RSCross.h" />
-    <ClInclude Include="include\Core\Events\Clickable\Clickable.h" />
-    <ClInclude Include="include\Core\Entity\WorldEntity\WorldEntity.h" />
-    <ClInclude Include="include\Core\Events\Clickable\Tile\WorldTile.h" />
-    <ClInclude Include="include\Core\Events\EventReceiver.h" />
-    <ClInclude Include="include\Core\Global\C_Globals.h" />
-    <ClInclude Include="include\Core\Network\Client\ClientWrapper.h" />
-    <ClInclude Include="include\Core\Network\Packets\ENetPacketHandler.h" />
-    <ClInclude Include="include\Core\Entity\EntityHandler.h" />
-    <ClInclude Include="include\Core\Rendering\Animation\Animator\Animator.h" />
-    <ClInclude Include="include\Core\Rendering\Camera\Camera.h" />
-    <ClInclude Include="include\Core\Rendering\Fonts\FontsConfig.h" />
-    <ClInclude Include="include\Core\Rendering\Renderer.h" />
-    <ClInclude Include="include\Core\Rendering\Sprite\Sprite.h" />
-    <ClInclude Include="include\Core\UI\Layer\HUDLayer\HUDLayer.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\Chatbox\Chatbox.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\Healthbar\Healthbar.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\Hitsplat\Hitsplat.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\OptionsTab\OptionsTab.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\Canvas\Canvas.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\HUDTabMenu\HUDTabMenu.h" />
-    <ClInclude Include="include\Core\UI\Layer\Layer.h" />
-    <ClInclude Include="include\Core\UI\Layer\EntityLayer\EntityLayer.h" />
-    <ClInclude Include="include\Core\UI\Layer\WorldLayer\WorldLayer.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\TextComponent\TextComponent.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\UIComponent.h" />
-    <ClInclude Include="include\Core\UI\UIComponent\WorldText\WorldText.h" />
-    <ClInclude Include="include\Core\Util\TimerHandler.h" />
-    <ClInclude Include="include\precomp.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Client.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets\sprites\Cross.png" />
-    <Image Include="assets\sprites\entity\0.png" />
-    <Image Include="assets\sprites\hitsplat.png" />
-    <Image Include="assets\sprites\hud\backdrop.png" />
-    <Image Include="assets\sprites\hud\box.png" />
-    <Image Include="assets\sprites\hud\chatbox.png" />
-    <Image Include="assets\sprites\hud\frame.png" />
-    <Image Include="assets\sprites\hud\skill\skillcontainer.png" />
-    <Image Include="assets\sprites\hud\tabs\icons\default.png" />
-    <Image Include="assets\sprites\hud\tabs\icons\skills.png" />
-    <Image Include="assets\sprites\hud\tabs\tab.png" />
-    <Image Include="assets\sprites\Tile.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="assets\fonts\runescape_uf.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\sprites\hud\backdrop.pdn" />
-    <None Include="assets\sprites\hud\tabs\Inventory_reference.pdn" />
-    <None Include="assets\sprites\hud\tabs\tab.pdn" />
-    <None Include="cpp.hint" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

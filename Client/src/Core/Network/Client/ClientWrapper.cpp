@@ -1,27 +1,17 @@
 #include "precomp.h"
 
-#include "ClientWrapper.h"
+#include "Core/Network/Client/ClientWrapper.h"
 
 #include "Core/Global/C_Globals.h"
-
 #include "Core/Application/Application.h"
-
 #include "Core/Application/Config/Config.h"
-
 #include "Core/Rendering/Renderer.h"
-
 #include "Core/Rendering/Camera/Camera.h"
-
 #include "Core/Rendering/Renderer.h"
-
 #include "Core/Network/Packets/ENetPacketHandler.h"
-
 #include "Core/Entity/EntityHandler.h"
-
 #include "Core/Util/TimerHandler.h"
-
 #include "Core/UI/Layer/Layer.h"
-
 #include "Shared/Utilities/vec3.hpp"
 
 #include <random>
