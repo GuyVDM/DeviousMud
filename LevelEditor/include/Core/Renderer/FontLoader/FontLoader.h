@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Core.hpp"
+#include "Core/Core.h"
 
 typedef struct _TTF_Font TTF_Font;
 struct SDL_Texture;

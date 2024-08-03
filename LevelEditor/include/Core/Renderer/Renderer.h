@@ -1,7 +1,7 @@
 #pragma once
-#include "Core/Core.hpp"
+#include "Core/Core.h"
 
-#include "Core/Renderer/SubSprite/SubSprite.hpp"
+#include "Core/Renderer/SubSprite/SubSprite.h"
 
 #include "Shared/Utilities/vec2.hpp"
 

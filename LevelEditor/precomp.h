@@ -17,5 +17,5 @@
 
 #include "Shared/Utilities/Assert.h"
 
-#include "Core/Logger/Logger.hpp"
-#include "Core/Math/DMath.hpp"
+#include "Core/Logger/Logger.h"
+#include "Core/Math/DMath.h"

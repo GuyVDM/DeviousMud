@@ -2,7 +2,7 @@
 
 #include "Core/Input/Input.h"
 
-#include "Core/Config/Time/Time.hpp"
+#include "Core/Config/Time/Time.h"
 
 Ref<Input> g_Input = std::make_shared<Input>();
 

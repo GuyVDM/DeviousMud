@@ -1,8 +1,8 @@
 #pragma once
+#include "Core/Core.h"
 
 #include "Shared/Game/SpriteTypes.hpp"
 
-#include "Core/Core.hpp"
 
 /// <summary>
 /// Container in order to specify what part of the spritesheet you want to target.

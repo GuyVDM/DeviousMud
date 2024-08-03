@@ -6,7 +6,7 @@
 #include "Core/FileHandler/FileHandler.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Config/Config.h"
-#include "Core/Config/Time/Time.hpp"
+#include "Core/Config/Time/Time.h"
 #include "Core/Editor/Editor.h"
 #include "Core/Globals/Globals.h"
 #include "Core/Input/Input.h"

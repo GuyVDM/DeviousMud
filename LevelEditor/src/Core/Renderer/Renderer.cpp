@@ -7,7 +7,7 @@
 #include "Core/Globals/Globals.h"
 #include "Core/Config/Config.h"
 #include "Core/Editor/Editor.h"
-#include "Core/Renderer/SubSprite/SubSprite.hpp"
+#include "Core/Renderer/SubSprite/SubSprite.h"
 
 Renderer::Renderer(const Utilities::ivec2& _windowSize)
 {

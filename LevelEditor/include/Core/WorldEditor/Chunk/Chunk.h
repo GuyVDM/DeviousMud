@@ -1,6 +1,5 @@
 #pragma once
-#include "Core/Core.hpp"
-#include "Core/Serialization/JsonSerializable.h"
+#include "Core/Core.h"
 
 #include "Core/Tile/Tile.h"
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Core.hpp"
+#include "Core/Core.h"
 
 typedef union SDL_Event SDL_Event;
 

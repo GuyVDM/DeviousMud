@@ -182,62 +182,6 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Core\Camera\Camera.h" />
-    <ClInclude Include="include\Core\Config\Config.h" />
-    <ClInclude Include="include\Core\Config\Time\Time.hpp" />
-    <ClInclude Include="include\Core\Core.hpp" />
-    <ClInclude Include="include\Core\Editor\Editor.h" />
-    <ClInclude Include="include\Core\FileHandler\FileHandler.h" />
-    <ClInclude Include="include\Core\Globals\Globals.h" />
-    <ClInclude Include="include\Core\Input\Input.h" />
-    <ClInclude Include="include\Core\Layers\EditorLayer\EditorLayer.h" />
-    <ClInclude Include="include\Core\Layers\ImGUI\ImGUILayer.h" />
-    <ClInclude Include="include\Core\Input\InputHandler\InputHandler.h" />
-    <ClInclude Include="include\Core\Layers\Layer.h" />
-    <ClInclude Include="include\Core\Layers\LayerStack.h" />
-    <ClInclude Include="include\Core\Logger\Logger.hpp" />
-    <ClInclude Include="include\Core\Math\DMath.hpp" />
-    <ClInclude Include="include\Core\Renderer\FontLoader\FontLoader.h" />
-    <ClInclude Include="include\Core\Renderer\Renderer.h" />
-    <ClInclude Include="include\Core\Renderer\SubSprite\SubSprite.hpp" />
-    <ClInclude Include="include\Core\Serialization\CerealSerializable.h" />
-    <ClInclude Include="include\Core\Serialization\JsonSerializable.h" />
-    <ClInclude Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.h" />
-    <ClInclude Include="include\Core\Tile\Entities\TileEntity\TileEntity.h" />
-    <ClInclude Include="include\Core\Tile\Tile.h" />
-    <ClInclude Include="include\Core\WorldEditor\Chunk\Chunk.h" />
-    <ClInclude Include="include\Core\WorldEditor\Selection\Selection.h" />
-    <ClInclude Include="include\Core\WorldEditor\TileLayer\TileLayer.h" />
-    <ClInclude Include="include\Core\WorldEditor\WorldEditor.h" />
-    <ClInclude Include="precomp.h" />
-    <ClInclude Include="vendor\imgui\imconfig.h" />
-    <ClInclude Include="vendor\imgui\imgui.h" />
-    <ClInclude Include="vendor\imgui\imgui_impl_sdl2.h" />
-    <ClInclude Include="vendor\imgui\imgui_impl_sdlrenderer2.h" />
-    <ClInclude Include="vendor\imgui\imgui_internal.h" />
-    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
-    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
-    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="include\Core\Camera\Camera.cpp" />
-    <ClCompile Include="include\Core\Config\Config.cpp" />
-    <ClCompile Include="include\Core\Editor\Editor.cpp" />
-    <ClCompile Include="include\Core\FileHandler\FileHandler.cpp" />
-    <ClCompile Include="include\Core\Globals\Globals.cpp" />
-    <ClCompile Include="include\Core\Input\Input.cpp" />
-    <ClCompile Include="include\Core\Layers\EditorLayer\EditorLayer.cpp" />
-    <ClCompile Include="include\Core\Layers\ImGUI\ImGUILayer.cpp" />
-    <ClCompile Include="include\Core\Input\InputHandler\InputHandler.cpp" />
-    <ClCompile Include="include\Core\Layers\LayerStack.cpp" />
-    <ClCompile Include="include\Core\Renderer\FontLoader\FontLoader.cpp" />
-    <ClCompile Include="include\Core\Renderer\Renderer.cpp" />
-    <ClCompile Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.cpp" />
-    <ClCompile Include="include\Core\Tile\Entities\TileEntity\TileEntity.cpp" />
-    <ClCompile Include="include\Core\Tile\Tile.cpp" />
-    <ClCompile Include="include\Core\WorldEditor\Chunk\Chunk.cpp" />
-    <ClCompile Include="include\Core\WorldEditor\Selection\Selection.cpp" />
-    <ClCompile Include="include\Core\WorldEditor\WorldEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -245,6 +189,24 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Core\Camera\Camera.cpp" />
+    <ClCompile Include="src\Core\Config\Config.cpp" />
+    <ClCompile Include="src\Core\Editor\Editor.cpp" />
+    <ClCompile Include="src\Core\FileHandler\FileHandler.cpp" />
+    <ClCompile Include="src\Core\Globals\Globals.cpp" />
+    <ClCompile Include="src\Core\Input\Input.cpp" />
+    <ClCompile Include="src\Core\Input\InputHandler\InputHandler.cpp" />
+    <ClCompile Include="src\Core\Layers\EditorLayer\EditorLayer.cpp" />
+    <ClCompile Include="src\Core\Layers\ImGUI\ImGUILayer.cpp" />
+    <ClCompile Include="src\Core\Layers\LayerStack.cpp" />
+    <ClCompile Include="src\Core\Renderer\FontLoader\FontLoader.cpp" />
+    <ClCompile Include="src\Core\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Core\Tile\Entities\NPCEntity\NPCEntity.cpp" />
+    <ClCompile Include="src\Core\Tile\Entities\TileEntity\TileEntity.cpp" />
+    <ClCompile Include="src\Core\Tile\Tile.cpp" />
+    <ClCompile Include="src\Core\WorldEditor\Chunk\Chunk.cpp" />
+    <ClCompile Include="src\Core\WorldEditor\Selection\Selection.cpp" />
+    <ClCompile Include="src\Core\WorldEditor\WorldEditor.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -287,6 +249,42 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Core\Camera\Camera.h" />
+    <ClInclude Include="include\Core\Config\Config.h" />
+    <ClInclude Include="include\Core\Config\Time\Time.h" />
+    <ClInclude Include="include\Core\Core.h" />
+    <ClInclude Include="include\Core\Editor\Editor.h" />
+    <ClInclude Include="include\Core\FileHandler\FileHandler.h" />
+    <ClInclude Include="include\Core\Globals\Globals.h" />
+    <ClInclude Include="include\Core\Input\Input.h" />
+    <ClInclude Include="include\Core\Input\InputHandler\InputHandler.h" />
+    <ClInclude Include="include\Core\Layers\EditorLayer\EditorLayer.h" />
+    <ClInclude Include="include\Core\Layers\ImGUI\ImGUILayer.h" />
+    <ClInclude Include="include\Core\Layers\Layer.h" />
+    <ClInclude Include="include\Core\Layers\LayerStack.h" />
+    <ClInclude Include="include\Core\Logger\Logger.h" />
+    <ClInclude Include="include\Core\Math\DMath.h" />
+    <ClInclude Include="include\Core\Renderer\FontLoader\FontLoader.h" />
+    <ClInclude Include="include\Core\Renderer\Renderer.h" />
+    <ClInclude Include="include\Core\Renderer\SubSprite\SubSprite.h" />
+    <ClInclude Include="include\Core\Tile\Entities\NPCEntity\NPCEntity.h" />
+    <ClInclude Include="include\Core\Tile\Entities\TileEntity\TileEntity.h" />
+    <ClInclude Include="include\Core\Tile\Tile.h" />
+    <ClInclude Include="include\Core\WorldEditor\Chunk\Chunk.h" />
+    <ClInclude Include="include\Core\WorldEditor\Selection\Selection.h" />
+    <ClInclude Include="include\Core\WorldEditor\TileLayer\TileLayer.h" />
+    <ClInclude Include="include\Core\WorldEditor\WorldEditor.h" />
+    <ClInclude Include="precomp.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_sdl2.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_sdlrenderer2.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

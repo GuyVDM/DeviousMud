@@ -3,7 +3,7 @@
 #include "Core/Editor/Editor.h"
 
 #include "Core/Config/Config.h"
-#include "Core/Config/Time/Time.hpp"
+#include "Core/Config/Time/Time.h"
 #include "Core/Camera/Camera.h"
 #include "Core/Globals/Globals.h"
 #include "Core/Layers/LayerStack.h"
