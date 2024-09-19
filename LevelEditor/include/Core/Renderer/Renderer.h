@@ -182,7 +182,7 @@ public:
 private:
 	void CreateSDLWindow(const I32& _width, const I32& _height);
 
-	void LoadSprites(const Graphics::SpriteArgs& _args);
+	void LoadSprites();
 
 	void DrawGrid();
 

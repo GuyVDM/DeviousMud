@@ -2,20 +2,6 @@
 
 #include "Core/FileHandler/FileHandler.h"
 
-static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-{
-    if (uMsg == BFFM_INITIALIZED)
-    {
-        std::string tmp = (const char*)lpData;
-        std::cout << "path: " << tmp << std::endl;
-        SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-    }
-
-    return 0;
-}
-
-
-
 const std::string FileHandler::OpenFileWindow(const DialogueBoxArgs& _dialogueBoxArgs)
 {
     HRESULT init = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);

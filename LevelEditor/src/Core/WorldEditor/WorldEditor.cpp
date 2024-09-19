@@ -62,7 +62,6 @@ void WorldEditor::LoadMap()
 			return;
 		}
 
-
 		DEVIOUS_EVENT("Loaded map at directory: " << path);
 		CleanMap();
 		m_CurrentMapPath = path;

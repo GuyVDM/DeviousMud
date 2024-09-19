@@ -324,7 +324,7 @@ void ImGUILayer::DrawMenuBar()
             
             ImGui::Separator();
             ImGui::MenuItem("(scene)", NULL, false, false);
-            if (ImGui::MenuItem("Clean", "")) 
+            if (ImGui::MenuItem("New Map", "")) 
             {
                 m_bNewMapPopup = true;
             }
@@ -893,9 +893,12 @@ void ImGUILayer::DrawLoggingWindow()
 
 void ImGUILayer::DrawNewMapPopup()
 {
+    static bool bPopupOpen = false;
+
     if (m_bNewMapPopup)
     {
         ImGui::OpenPopup("Potential Unsaved Changes");
+        bPopupOpen = true;
     }
 
     if (ImGui::BeginPopupModal("Potential Unsaved Changes", NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -929,5 +932,9 @@ void ImGUILayer::DrawNewMapPopup()
         }
     }
 
-    ImGui::EndPopup();
+    if(bPopupOpen)
+    {
+        ImGui::EndPopup();
+        bPopupOpen = false;
+    }
 }

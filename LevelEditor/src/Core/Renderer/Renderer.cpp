@@ -23,10 +23,8 @@ Renderer::Renderer(const Utilities::ivec2& _windowSize)
 	SDL_SetWindowIcon(m_Window, editorIconSurface);
 	SDL_FreeSurface(editorIconSurface);
 
-	for(const auto& sprite : Graphics::SpriteConfig::spriteMap()) 
-	{
-		LoadSprites(sprite);
-	}	CreateRectTexture();
+	LoadSprites();
+	CreateRectTexture();
 
 	m_FontLoader = std::make_shared<FontLoader>(App::Config::s_FontPath);
 
@@ -63,31 +61,34 @@ Renderer::~Renderer()
 	TTF_Quit();
 }
 
-void Renderer::LoadSprites(const Graphics::SpriteArgs& _args)
+void Renderer::LoadSprites()
 {
-	std::string path = "assets/sprites/";
-	path.append(_args.Path);
-
-	DEVIOUS_ASSERT(m_Sprites.find(_args.Type) == m_Sprites.end());
-	SDL_Surface* surface = IMG_Load(path.c_str());
-
-	if (surface == nullptr)
+	for (const auto& sprite : Graphics::SpriteConfig::spriteMap())
 	{
-		DEVIOUS_ERR("Error loading image: " << IMG_GetError());
-		DEVIOUS_ASSERT(surface == nullptr);
+		std::string path = "assets/sprites/";
+		path.append(sprite.Path);
+
+		DEVIOUS_ASSERT(m_Sprites.find(sprite.Type) == m_Sprites.end());
+		SDL_Surface* surface = IMG_Load(path.c_str());
+
+		if (surface == nullptr)
+		{
+			DEVIOUS_ERR("Error loading image: " << IMG_GetError());
+			DEVIOUS_ASSERT(surface == nullptr);
+		}
+
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
+		if (texture == nullptr)
+		{
+			DEVIOUS_ERR("Error loading texture: " << IMG_GetError());
+			DEVIOUS_ASSERT(texture == nullptr);
+		}
+
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+		const U32 frameCount = sprite.Rows * sprite.Columns;
+		m_Sprites[sprite.Type] = Sprite(texture, surface, frameCount, sprite.Rows, sprite.Columns);
 	}
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
-	if (texture == nullptr)
-	{
-		DEVIOUS_ERR("Error loading texture: " << IMG_GetError());
-		DEVIOUS_ASSERT(texture == nullptr);
-	} 
-
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-	const U32 frameCount = _args.Rows * _args.Columns;
-	m_Sprites[_args.Type] = Sprite(texture, surface, frameCount, _args.Rows, _args.Columns);
 }
 
 void Renderer::DrawGrid()
